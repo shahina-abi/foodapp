@@ -101,3 +101,8 @@ export const checkUser = async (req, res, next) => {
         res.status(error.statusCode || 500).json({ message: error.message || 'Internal server error' });
     }
 };
+export const updateProfile = async (req, res) => {
+    const { name, email } = req.body;
+    const user = await User.findByIdAndUpdate(req.user.userId, { name, email }, { new: true });
+    res.json(user);
+};

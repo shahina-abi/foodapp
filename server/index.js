@@ -1,42 +1,43 @@
+// index.js
 import express from 'express';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import cors from 'cors';
 import path from 'path';
-import cookieparser from 'cookie-parser';
-import  connectDB  from "./config/db.js";
-connectDB();
-// Import the centralized routes
+import cookieParser from 'cookie-parser';
+import connectDB from './config/db.js';
 import routes from './routes/index.js';
 
 dotenv.config();
 
+// Initialize Express app
 const app = express();
 
+// Connect to MongoDB
+connectDB();
+
+// Middleware
 app.use(express.json());
 app.use(cors());
+app.use(cookieParser());
 
-// Connect to MongoDB
-mongoose
-  .connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => console.log('MongoDB connected'))
-  .catch((err) => console.log(err));
-
-// Serve static files (uploads)
+// Serve static files for uploads
 app.use('/uploads', express.static(path.join(path.resolve(), '/uploads')));
-app.use(cookieparser());
-// Use the centralized routes from routes/index.js
+
+// Centralized routes
 app.use('/api', routes);
+
+// Home route
+app.get("/", (req, res) => {
+  res.json({ message: "Hello World" });
+});
+
+// 404 Route Not Found
 app.use((req, res, next) => {
   res.status(404).json({ message: 'Route not found' });
 });
 
-
-app.get("/", (req, res, next) => {
-    res.json({ message: "hello world" });
-});
-
-// Error handling middleware (optional)
+// Error Handling Middleware
 app.use((err, req, res, next) => {
   res.status(500).json({
     message: err.message,

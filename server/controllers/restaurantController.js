@@ -1,29 +1,70 @@
-import Restaurant from '../models/restaurantModel.js'; // Import the restaurant model
+import Restaurant from '../models/restaurantModel.js';
 
-// Function to get all restaurants
-export const getRestaurants = async (req, res) => {
-    try {
-        const restaurants = await Restaurant.find(); // Fetch all restaurants from the database
-        res.status(200).json(restaurants); // Respond with the restaurants
-    } catch (error) {
-        res.status(500).json({ message: error.message }); // Handle errors
-    }
+// Get all restaurants
+export const getRestaurants =  async (req, res) => {
+  try {
+    const restaurants = await Restaurant.find().populate('foodItems');
+    res.status(200).json({ success: true, restaurants });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
 };
 
-// Function to add a new restaurant with logo upload
+// Get a single restaurant by ID
+export const getById = async (req, res) => {
+  try {
+    const restaurant = await Restaurant.findById(req.params.id).populate('foodItems');
+    if (!restaurant) return res.status(404).json({ success: false, message: 'Restaurant not found' });
+
+    res.json({ success: true, restaurant });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+
+// Add a new restaurant with logo upload
 export const addRestaurant = async (req, res) => {
-    const { name, location } = req.body; // Destructure name and location from the request body
-    const logo = req.file ? `/uploads/${req.file.filename}` : null; // Handle logo upload
+  try {
+    const { name, location, categories, foodItems } = req.body;
+    const logo = req.file ? `/uploads/${req.file.filename}` : null;
 
-    try {
-        const restaurant = await Restaurant.create({
-            name,
-            location,
-            image: logo // Store the logo path in the database
-        });
+    const restaurant = new Restaurant({
+      name,
+      location,
+      categories,
+      foodItems,
+      image: logo
+    });
+    await restaurant.save();
 
-        res.status(201).json(restaurant); // Respond with the newly created restaurant
-    } catch (error) {
-        res.status(500).json({ message: error.message }); // Handle errors
-    }
+    res.status(201).json({ success: true, restaurant });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+
+export const update = async (req, res) => {
+  try {
+    const updatedRestaurant = await Restaurant.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    if (!updatedRestaurant) return res.status(404).json({ success: false, message: 'Restaurant not found' });
+
+    res.json({ success: true, restaurant: updatedRestaurant });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// Delete a restaurant (Admin only)
+export const remove = async (req, res) => {
+  try {
+    const restaurant = await Restaurant.findById(req.params.id);
+    if (!restaurant) return res.status(404).json({ success: false, message: 'Restaurant not found' });
+
+    await restaurant.remove();
+    res.json({ success: true, message: 'Restaurant deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
 };

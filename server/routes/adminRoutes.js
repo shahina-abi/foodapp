@@ -1,26 +1,32 @@
-// routes/adminRoutes.js
+
 import express from 'express';
-import { loginAdmin, getAllUsers,adminProfile,checkAdmin,adminLogout } from '../controllers/adminController.js';
-import { authAdmin } from "../middleware/authAdmin.js";
+import {
+  adminRegister,
+  adminLogin,
+  adminProfile,
+  adminLogout,
+  checkAdmin,
+  getAllUsers,
+  deleteUser,
+  getAllOrders,
+  updateOrderStatus,
+  createRestaurant,
+  deleteRestaurant,
+} from '../controllers/adminController.js';
+import { authAdmin } from '../middleware/authAdmin.js';
 
 const router = express.Router();
 
-// Admin login route
-router.post('/login', loginAdmin);
-
-// Protected routes (only admins can access)
-router.get('/users', getAllUsers);
-
-router.get("/profile", authAdmin,adminProfile);
-
-// router.put("/profile-update", mentorProfile);
-router.put("/profile-update", authAdmin, (req, res, next) => {});
-
-router.delete("/profile-delete", (req, res, next) => {});
-
-router.post("/log-out",authAdmin,adminLogout);
-
-router.get("/check-mentor", authAdmin, checkAdmin);
-
+router.post('/register', adminRegister);                  // Register a new admin
+router.post('/login', adminLogin);                        // Admin login
+router.get('/profile', authAdmin, adminProfile);          // Get admin profile
+router.post('/logout', authAdmin, adminLogout);           // Admin logout
+router.get('/check-admin', authAdmin, checkAdmin);        // Check if admin is authorized
+router.get('/users', authAdmin, getAllUsers);             // View all users
+router.delete('/users/:userId', authAdmin, deleteUser);   // Delete a user by ID
+router.get('/orders', authAdmin, getAllOrders);           // View all orders
+router.put('/orders/:orderId', authAdmin, updateOrderStatus); // Update order status
+router.post('/restaurants', authAdmin, createRestaurant); // Create a new restaurant
+router.delete('/restaurants/:restaurantId', authAdmin, deleteRestaurant); // Delete a restaurant by ID
 
 export default router;

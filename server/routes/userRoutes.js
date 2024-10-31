@@ -7,7 +7,7 @@ router.post('/register', registerUser);
 
 router.post('/login',userLogin);
 
-router.get("/profile", authUser, userProfile);
+router.get('/profile', authUser, userProfile);
 
 router.put("/profile-update", authUser, (req, res, next) => {});
 

@@ -1,19 +1,29 @@
-import Review from '../models/reviewModel.js';
+  import Review from '../models/reviewModel.js';
 
-// Add a review
+// Add a review for a restaurant
 export const addReview = async (req, res) => {
-  const { food, rating, comment } = req.body;
-  const review = await Review.create({
-    user: req.user._id,
-    food,
-    rating,
-    comment,
-  });
-  res.status(201).json(review);
+    const { restaurant, rating, comment } = req.body;
+    const review = new Review({ user: req.user.userId, restaurant, rating, comment });
+    await review.save();
+
+    res.status(201).json({ message: 'Review added successfully', review });
 };
 
-// Get reviews for a food item
-export const getReviews = async (req, res) => {
-  const reviews = await Review.find({ food: req.params.foodId }).populate('user', 'name');
-  res.json(reviews);
+// Get all reviews for a specific restaurant
+export const getRestaurantReviews = async (req, res) => {
+    const reviews = await Review.find({ restaurant: req.params.restaurantId }).populate('user');
+    res.json(reviews);
+};
+
+// Delete a review (only admin or review author can delete)
+export const deleteReview = async (req, res) => {
+    const review = await Review.findById(req.params.id);
+    if (!review) return res.status(404).json({ message: 'Review not found' });
+
+    if (review.user.toString() !== req.user.userId && req.user.role !== 'admin') {
+        return res.status(403).json({ message: 'Unauthorized' });
+    }
+
+    await review.remove();
+    res.json({ message: 'Review deleted successfully' });
 };

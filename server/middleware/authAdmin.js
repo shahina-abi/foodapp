@@ -1,28 +1,16 @@
 import jwt from 'jsonwebtoken'
 
-export const authAdmin = (req,res,next)=>{
-    try {
-        const {token} = req.cookies;
-        if(!token){
-          return res.status(401).json({message:'user not autherised'}) 
-        }
-        
-        const tokenVerified = jwt.verify(token,process.env.JWT_SECRET_KEY);
-        if(!tokenVerified){
-            return res.status(401).json({message:'user not autherised'}) 
-        }
+export const authAdmin = (req, res, next) => {
+  try {
+    const token = req.cookies.token;
+    if (!token) return res.status(401).json({ message: 'Unauthorized access', success: false });
 
-        
-        if(tokenVerified.role !== 'admin' ){
-            return res.status(401).json({message:'access denied'}) 
-        }
+    const verified = jwt.verify(token, process.env.JWT_SECRET_KEY);
+    if (verified.role !== 'Admin') return res.status(403).json({ message: 'Access denied', success: false });
 
-        req.user=tokenVerified
-        
-        next()
-        
-    } catch (error) {
-        
-        return res.status(401).json({message:'user autherization failed'}) 
-    }
-}
+    req.user = verified;
+    next();
+  } catch (error) {
+    res.status(401).json({ message: 'Authorization failed', success: false });
+  }
+};
