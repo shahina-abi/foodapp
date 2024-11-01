@@ -26,9 +26,13 @@ export const getById = async (req, res) => {
 // Add a new restaurant with logo upload
 export const addRestaurant = async (req, res) => {
   try {
-    const { name, location, categories, foodItems } = req.body;
-    const logo = req.file ? `/uploads/${req.file.filename}` : null;
-
+    let imageUrl;
+    const { name, location, categories, foodItems,image } = req.body;
+     console.log("image====",req.file);
+    if(req.file){
+      imageUrl = await handleImageUpload(req.file.path)
+    }
+    console.log(imageUrl,'=====imageurl');
     const restaurant = new Restaurant({
       name,
       location,

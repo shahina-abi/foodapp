@@ -1,4 +1,5 @@
 import Food from '../models/foodModel.js';
+import { handleImageUpload } from '../utils/cloudinary.js';
 
 // Get all food items
 export const getFoodItems = async (req, res) => {
@@ -26,9 +27,13 @@ export const getById = async (req, res) => {
 // Add a new food item with image upload
 export const addFoodItem = async (req, res) => {
    try {
+    let imageUrl;
     const { name, price, description, restaurant, category } = req.body;
-    const imageUrl = req.file ? `/uploads/${req.file.filename}` : null;
-
+    console.log("image====",req.file);
+    if(req.file){
+      imageUrl = await handleImageUpload(req.file.path)
+    }
+    console.log(imageUrl,'=====imageurl');
     const foodItem = new Food({
       name,
       price,
