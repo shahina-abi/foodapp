@@ -1,4 +1,3 @@
-// index.js
 import express from 'express';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
@@ -18,8 +17,24 @@ connectDB();
 
 // Middleware
 app.use(express.json());
-app.use(cors());
 app.use(cookieParser());
+
+// Define allowed origins
+const allowedOrigins = ['http://localhost:5173'];
+
+// CORS configuration
+app.use(cors({
+    origin: (origin, callback) => {
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error('Request blocked by CORS policy.'));
+        }
+    },
+    credentials: true, // Enable credentials (cookies, etc.)
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept']
+}));
 
 // Serve static files for uploads
 app.use('/uploads', express.static(path.join(path.resolve(), '/uploads')));
@@ -46,7 +61,9 @@ app.use((err, req, res, next) => {
 });
 
 // Start the server
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 3002;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
+
+

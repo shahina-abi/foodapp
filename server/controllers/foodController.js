@@ -64,12 +64,14 @@ export const update = async (req, res) => {
 // Delete a food item (Admin only)
 export const remove = async (req, res) => {
   try {
-    const foodItem = await Food.findById(req.params.id);
-    if (!foodItem) return res.status(404).json({ success: false, message: 'Food item not found' });
+    const deletedFoodItem = await Food.findByIdAndDelete(req.params.id);
+    if (!deletedFoodItem) {
+      return res.status(404).json({ success: false, message: 'Food item not found' });
+    }
 
-    await foodItem.remove();
     res.json({ success: true, message: 'Food item deleted successfully' });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
