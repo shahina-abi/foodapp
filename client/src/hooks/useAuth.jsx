@@ -10,10 +10,15 @@ export const useAuth = () => {
   const { userAuthorized, userInfo } = useSelector((state) => state.user);
   const [loading, setLoading] = useState(false);
 
+  // Function to log in the user
+  const login = (userData) => {
+    dispatch(saveUser(userData)); // Save the user data in Redux store
+  };
+
   const checkUser = async () => {
     setLoading(true);
     try {
-      const response = await axiosInstance.get("/user/check-user");
+      const response = await axiosInstance.get("/users/check");
       if (response?.data?.data) {
         dispatch(saveUser(response.data.data));
       } else {
@@ -38,5 +43,6 @@ export const useAuth = () => {
     isAuthenticated: userAuthorized,
     loading,
     checkUser,
+    login, // Add login to the returned object
   };
 };

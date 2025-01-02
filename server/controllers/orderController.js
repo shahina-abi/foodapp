@@ -41,15 +41,20 @@ export const getUserOrders = async (req, res) => {
   }
 };
 
+
+//};
 // Cancel an order
 export const cancelOrder = async (req, res) => {
   try {
     const order = await Order.findById(req.params.id);
     if (!order) return res.status(404).json({ success: false, message: 'Order not found' });
 
-    order.status = 'Canceled';
+    if (order.status === "Canceled")
+      return res.status(400).json({ success: false, message: 'Order already canceled' });
+
+    order.status = "Canceled";
     await order.save();
-    res.json({ success: true, message: 'Order canceled successfully', order });
+    res.json({ success: true, message: "Order canceled successfully", order });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }

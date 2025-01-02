@@ -13,24 +13,24 @@
 // router.delete('/:id', authAdmin, remove);  
 
 // export default router; 
-   import express from 'express';
+ import express from 'express';
 import {
   getAllRestaurants,
-  createRestaurant,
   getRestaurantById,
+  createRestaurant,
   updateRestaurant,
   deleteRestaurant,
-} from '../controllers/restaurantController.js'; // Importing correct functions
-import { upload } from '../middleware/multer.js'; // Import multer configuration
-import { authAdmin } from '../middleware/authAdmin.js'; // Import admin authentication middleware
+} from "../controllers/restaurantController.js";
+import { upload } from "../middleware/multer.js";
+import { authAdmin } from '../middleware/authAdmin.js';
 
 const router = express.Router();
 
 // Define routes
+router.post('/create', upload.single("image"), authAdmin, createRestaurant); // Create restaurant with admin auth
 router.get('/', getAllRestaurants); // Fetch all restaurants
-router.post('/create', authAdmin, upload.single('image'), createRestaurant); // Create a new restaurant with image upload
 router.get('/:id', getRestaurantById); // Fetch a single restaurant by ID
-router.put('/:id', authAdmin, upload.single('image'), updateRestaurant); // Update a restaurant (includes image update)
-router.delete('/:id', authAdmin, deleteRestaurant); // Delete a restaurant
+router.put('/:id', authAdmin, upload.single("image"), updateRestaurant); // Update restaurant with admin auth
+router.delete('/:id', authAdmin, deleteRestaurant); // Delete restaurant with admin auth
 
 export default router;
