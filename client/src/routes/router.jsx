@@ -42,7 +42,7 @@
 //     ],
 //   },
 // ]);
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, Outlet } from "react-router-dom";
 import UserLayout from "../layout/UserLayout"; // Your shared layout
 import Home from "../pages/user/Home"; // Home page component
 import { RestaurantsPage } from "../pages/user/RestaurantsPage"; // Restaurants page component
@@ -51,27 +51,51 @@ import LoginPage from "../pages/shared/LoginPage"; // Login page component
 import UserProfile from "../pages/user/UserProfile";
 import RestaurantDetailsPage from "../pages/user/RestaurantDetailsPage";
 import FoodItemsPage from "../pages/user/FoodItems";
-import CartPage from "../pages/user/CartPage";
-import { ProtectRoute } from "./ProtectRoute";
+import { CartPage } from "../pages/user/CartPage";
+import AdminDashboard from "../pages/admin/AdminDashboard";
+import { AuthAdmin } from "./ProtectedRoutes/AuthAdmin";
+import { AuthUser } from "./ProtectedRoutes/AuthUser";
+import AdminLayout from "../layout/AdminLayout";
 const router = createBrowserRouter([
   {
     path: "/",
     element: <UserLayout />,
     children: [
-      { path: "/", element: <Home /> },
-      { path: "/restaurants", element: <RestaurantsPage /> },
-      { path: "/restaurants/:id", element: <RestaurantDetailsPage /> },
-      { path: "/restaurants/:restaurantId/foods", element: <FoodItemsPage /> },
-      { path: "/login", element: <LoginPage /> },
+      { path: "/", element: <Home /> }, // Public route
+      { path: "/restaurants", element: <RestaurantsPage /> }, // Public route
+      { path: "/restaurants/:id", element: <RestaurantDetailsPage /> }, // Public route
+      { path: "/restaurants/:restaurantId/foods", element: <FoodItemsPage /> }, // Public route
+      { path: "/login", element: <LoginPage /> }, // Public route for login
+
+      // Protected Routes for Authenticated Users
       {
-        path: "user",
-        element: <ProtectRoute />,
-        children: [
-          { path: "/profile", element: <UserProfile /> },
-          { path: "/cart", element: <CartPage /> }, // Ensure this matches "/user/cart"
+        path: "/users",
+        element: (
+          <AuthUser>
+            <Outlet />
+          </AuthUser>
+        ),
+        childern: [
+          {
+            path: "/profile",
+            element: <UserProfile />,
+          },
+          {
+            path: "/cart",
+            element: <CartPage />,
+          },
         ],
       },
     ],
+  },
+  {
+    path: "/admin",
+    element: (
+      <AuthAdmin>
+        <AdminLayout />
+      </AuthAdmin>
+    ),
+    children: [{ path: "/admin", element: <AdminDashboard /> }],
   },
 ]);
 export default router;

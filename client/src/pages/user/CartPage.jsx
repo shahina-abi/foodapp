@@ -1,146 +1,230 @@
-// Frontend: CartPage.jsx
+// src/pages/CartPage.jsx
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import { axiosInstance } from "../../config/axiosIntance";
+import { CartItem } from "../../components/Card"; // Ensure you have this component
+import { loadStripe } from "@stripe/stripe-js";
+import { toast, ToastContainer } from "react-toastify";
+import { useNavigate } from "react-router-dom";
+import "react-toastify/dist/ReactToastify.css";
 
-const CartPage = () => {
+export const CartPage = () => {
   const [cartItems, setCartItems] = useState([]);
-  const [totalPrice, setTotalPrice] = useState(0);
+  const [cartData, setCartData] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [couponCode, setCouponCode] = useState("");
+  const [discount, setDiscount] = useState(0);
+  const [finalAmount, setFinalAmount] = useState(0);
+  const [paymentLoading, setPaymentLoading] = useState(false);
 
-  // Fetch cart data
-  useEffect(() => {
-    const fetchCart = async () => {
-      try {
-        const { data } = await axios.get("/api/cart", {
-          withCredentials: true,
-        });
-        setCartItems(data.cart.items);
-        setTotalPrice(data.cart.totalPrice);
-      } catch (error) {
-        console.error("Failed to load cart:", error);
-      }
-    };
-    fetchCart();
-  }, []);
+  const navigate = useNavigate();
 
-  // Update cart item quantity
-  const updateQuantity = async (id, quantity) => {
+  // Fetch cart items from the backend
+  const fetchCartItems = async () => {
+    setLoading(true);
     try {
-      const { data } = await axios.put("/api/cart/update", {
-        foodItemId: id,
+      const { data } = await axiosInstance.get("/cart");
+      setCartItems(data.cart.items || []);
+      setCartData(data.cart);
+      setFinalAmount(data.cart.totalPrice || 0);
+      setError(null);
+    } catch (err) {
+      setError("No items in the cart to show.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Remove an item from the cart
+  const handleRemoveItem = async (foodItemId) => {
+    try {
+      const response = await axiosInstance.delete("/cart/remove", {
+        data: { foodItemId },
+      });
+      if (response.data.success) {
+        toast.success("Item removed successfully!");
+        fetchCartItems(); // Refresh cart after removal
+      } else {
+        toast.error("Failed to remove item.");
+      }
+    } catch (err) {
+      toast.error("Error removing item from cart.");
+    }
+  };
+
+  // Update quantity of an item
+  const handleQuantityChange = async (foodItemId, quantity) => {
+    try {
+      const response = await axiosInstance.put("/cart/update", {
+        foodItemId,
         quantity,
       });
-      setCartItems(data.cart.items);
-      setTotalPrice(data.cart.totalPrice);
-    } catch (error) {
-      console.error("Failed to update item:", error);
+      if (response.data.success) {
+        toast.success("Cart updated!");
+        fetchCartItems(); // Refresh cart after update
+      } else {
+        toast.error("Failed to update cart.");
+      }
+    } catch (err) {
+      toast.error("Error updating cart.");
     }
   };
 
-  // Remove item
-  const removeItem = async (id) => {
+  // Apply a coupon code
+  const applyCoupon = async () => {
     try {
-      const { data } = await axios.delete("/api/cart/remove", {
-        data: { foodItemId: id },
+      const response = await axiosInstance.post("/coupons/checkout", {
+        couponCode,
+        cartId: cartData._id,
       });
-      setCartItems(data.cart.items);
-      setTotalPrice(data.cart.totalPrice);
-    } catch (error) {
-      console.error("Failed to remove item:", error);
+      if (response.data.success) {
+        setDiscount(response.data.discount || 0);
+        setFinalAmount(response.data.finalAmount || cartData.totalPrice);
+        toast.success("Coupon applied successfully!");
+      } else {
+        toast.error("Invalid coupon code.");
+      }
+    } catch (err) {
+      toast.error("Failed to apply coupon.");
     }
   };
 
-  // Clear cart
-  const clearCart = async () => {
+  // Handle payment
+  const makePayment = async () => {
+    setPaymentLoading(true);
     try {
-      await axios.delete("/api/cart/clear");
-      setCartItems([]);
-      setTotalPrice(0);
-    } catch (error) {
-      console.error("Failed to clear cart:", error);
+      const stripe = await loadStripe(
+        import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY
+      );
+      if (!stripe) {
+        toast.error("Stripe failed to load.");
+        return;
+      }
+
+      const { data } = await axiosInstance.post(
+        "/payment/create-checkout-session",
+        {
+          products: cartItems,
+          amountInCents: Math.max(finalAmount * 100, 5000), // Minimum charge of ₹50
+        }
+      );
+
+      if (data.sessionId) {
+        const result = await stripe.redirectToCheckout({
+          sessionId: data.sessionId,
+        });
+        if (result.error) {
+          toast.error("Payment failed. Please try again.");
+        }
+      } else {
+        toast.error("Error creating checkout session.");
+      }
+    } catch (err) {
+      toast.error("Payment error. Please try again.");
+    } finally {
+      setPaymentLoading(false);
     }
   };
+
+  // Fetch cart items on page load
+  useEffect(() => {
+    fetchCartItems();
+  }, []);
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
-      <h1 className="text-3xl font-bold text-gray-800 mb-6 text-center">
-        Your Cart
-      </h1>
-      <div className="max-w-3xl mx-auto">
-        {cartItems.length === 0 ? (
-          <p className="text-gray-600 text-center">Your cart is empty.</p>
-        ) : (
-          <div className="space-y-6">
-            {cartItems.map((item) => (
-              <div
-                key={item.foodItem._id}
-                className="flex items-center justify-between bg-white shadow-md p-4 rounded-lg"
-              >
-                <img
-                  src={item.foodItem.image || "https://via.placeholder.com/100"}
-                  alt={item.foodItem.name}
-                  className="w-16 h-16 rounded object-cover"
+    <div className="container mx-auto px-4 py-5">
+      <div className="row g-4">
+        {/* Cart Items Section */}
+        <div className="col-md-8">
+          <div className="card shadow-lg p-4 bg-white rounded-lg">
+            <h2 className="text-xl font-semibold mb-4">Your Cart</h2>
+            {loading ? (
+              <p className="text-gray-500">Loading cart items...</p>
+            ) : error ? (
+              <p className="text-danger">{error}</p>
+            ) : cartItems.length > 0 ? (
+              cartItems.map((item) => (
+                <CartItem
+                  key={item.foodItem._id}
+                  item={item}
+                  onRemove={() => handleRemoveItem(item.foodItem._id)}
+                  onQuantityChange={(quantity) =>
+                    handleQuantityChange(item.foodItem._id, quantity)
+                  }
                 />
-                <div className="flex-1 px-4">
-                  <h2 className="text-lg font-medium text-gray-800">
-                    {item.foodItem.name}
-                  </h2>
-                  <p className="text-sm text-gray-500">
-                    {item.foodItem.description || "Fresh food item"}
-                  </p>
-                  <p className="text-lg font-bold text-gray-900">
-                    ${item.foodItem.price.toFixed(2)}
-                  </p>
-                </div>
-                <div className="flex items-center">
-                  <button
-                    className="px-3 py-1 text-sm bg-red-100 text-red-600 rounded-lg hover:bg-red-200"
-                    onClick={() =>
-                      updateQuantity(item.foodItem._id, item.quantity - 1)
-                    }
-                  >
-                    -
-                  </button>
-                  <span className="px-4 text-gray-800">{item.quantity}</span>
-                  <button
-                    className="px-3 py-1 text-sm bg-green-100 text-green-600 rounded-lg hover:bg-green-200"
-                    onClick={() =>
-                      updateQuantity(item.foodItem._id, item.quantity + 1)
-                    }
-                  >
-                    +
-                  </button>
-                </div>
-                <button
-                  className="ml-4 text-red-600 hover:text-red-800"
-                  onClick={() => removeItem(item.foodItem._id)}
-                >
-                  🗑️
+              ))
+            ) : (
+              <p className="text-gray-500">Your cart is empty.</p>
+            )}
+          </div>
+        </div>
+
+        {/* Price Summary Section */}
+        <div className="col-md-4">
+          <div className="card shadow-lg bg-light p-4 rounded-lg">
+            <h2 className="text-xl font-semibold text-center mb-4">
+              Price Summary
+            </h2>
+            <p className="text-lg font-medium">
+              Total Price:{" "}
+              <span className="text-primary">
+                ${cartData.totalPrice?.toFixed(2)}
+              </span>
+            </p>
+
+            {/* Coupon Section */}
+            <div className="mt-4">
+              <h3 className="text-lg font-semibold mb-2">Have a coupon?</h3>
+              <div className="input-group">
+                <input
+                  type="text"
+                  value={couponCode}
+                  onChange={(e) => setCouponCode(e.target.value)}
+                  placeholder="Enter coupon code"
+                  className="form-control"
+                />
+                <button onClick={applyCoupon} className="btn btn-primary">
+                  Apply
                 </button>
               </div>
-            ))}
-          </div>
-        )}
-        {cartItems.length > 0 && (
-          <div className="mt-6">
-            <p className="text-xl font-bold text-gray-900">
-              Total: ${totalPrice.toFixed(2)}
-            </p>
-            <div className="mt-4 flex justify-between">
-              <button
-                className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
-                onClick={clearCart}
-              >
-                Clear Cart
-              </button>
-              <button className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
-                Checkout
-              </button>
             </div>
+
+            {/* Discount Information */}
+            {discount > 0 && (
+              <div className="mt-3 text-success">
+                <p>Discount: -${discount.toFixed(2)}</p>
+              </div>
+            )}
+
+            {/* Final Amount */}
+            <p className="mt-4 text-lg font-medium">
+              Final Amount:{" "}
+              <span className="text-success">${finalAmount.toFixed(2)}</span>
+            </p>
+
+            {/* Payment Button */}
+            <button
+              className={`btn btn-success w-100 mt-4 ${
+                paymentLoading ? "disabled" : ""
+              }`}
+              onClick={makePayment}
+              disabled={loading || paymentLoading}
+            >
+              {paymentLoading ? "Processing Payment..." : "Proceed to Payment"}
+            </button>
           </div>
-        )}
+        </div>
       </div>
+
+      {/* Toast Notifications */}
+      <ToastContainer
+        position="top-center"
+        autoClose={5000}
+        hideProgressBar={false}
+        closeOnClick
+        pauseOnHover
+        theme="colored"
+      />
     </div>
   );
 };
-
-export default CartPage;

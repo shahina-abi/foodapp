@@ -81,7 +81,7 @@ export default function Header() {
             {/* Partner with Us */}
             <li>
               <Link
-                to="/admin/partner"
+                to="/admin"
                 className="hover:text-orange-400 transition duration-300"
               >
                 Partner with Us
