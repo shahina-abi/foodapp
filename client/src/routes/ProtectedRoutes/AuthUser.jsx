@@ -4,21 +4,18 @@ import { useNavigate } from "react-router-dom";
 
 export const AuthUser = ({ children }) => {
   const [isUser, setIsUser] = useState(false);
-  const [loading, setLoading] = useState(true); // Loading state for better UX
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   const checkUser = async () => {
     try {
-      const response = await axiosInstance({
-        method: "GET",
-        url: "/user/checkuser", // Endpoint to verify user authentication
-      });
+      const response = await axiosInstance.get("/users/check"); // Updated endpoint
       if (response.status === 200) {
         setIsUser(true);
       }
     } catch (error) {
       console.error("User authentication failed:", error);
-      navigate("/"); // Redirect unauthenticated users to the home or login page
+      navigate("/login"); // Redirect to login page if unauthorized
     } finally {
       setLoading(false);
     }
@@ -29,8 +26,13 @@ export const AuthUser = ({ children }) => {
   }, []);
 
   if (loading) {
-    return <div>Loading...</div>; // Render a loading state
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="loader"></div> {/* Use a spinner or loader */}
+        <p>Verifying user...</p>
+      </div>
+    );
   }
 
-  return isUser ? children : null; // Render children if authenticated
+  return isUser ? children : null;
 };

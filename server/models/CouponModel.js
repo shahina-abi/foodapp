@@ -1,9 +1,6 @@
-// models/coupon.js
-const mongoose = require('mongoose');
+import mongoose from "mongoose";
 
-// Import the Cart model (ensure this path is correct)
-const cart = require('../models/cartModel')
-
+// Define the coupon schema
 const couponSchema = new mongoose.Schema({
   code: {
     type: String,
@@ -24,9 +21,11 @@ const couponSchema = new mongoose.Schema({
   },
   cartId: {
     type: mongoose.Schema.Types.ObjectId, // Referencing the Cart model
-    ref: ' cart', // Reference to Cart model
+    ref: "Cart", // Reference to the Cart model
     required: false, // Optional: coupons can be used without a specific cart
   },
 });
 
-module.exports = mongoose.model('Coupon', couponSchema);
+// Export the Coupon model using ES Modules syntax
+const Coupon = mongoose.model("Coupon", couponSchema);
+export default Coupon;

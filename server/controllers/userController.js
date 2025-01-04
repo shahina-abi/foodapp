@@ -193,9 +193,18 @@ export const userLogin = async (req, res) => {
 };
 
 // Check if user is authorized
-export const checkUser = (req, res) => {
-    res.json({ success: true, message: "Authorized user", user: req.user });
+export const checkUser = async (req, res) => {
+  try {
+    const user = req.user; // Extracted via auth middleware
+    if (!user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    res.status(200).json({ message: "User is authenticated" });
+  } catch (error) {
+    res.status(500).json({ message: "Internal Server Error" });
+  }
 };
+
 
 // Logout user
 export const userLogout = (req, res) => {

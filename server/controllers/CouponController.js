@@ -1,89 +1,77 @@
-// controllers/couponController.js
-import Coupon from "../models/CouponModel";
-import Cart from "../models/cartModel";
+import Coupon from "../models/CouponModel.js";
+import Cart from "../models/cartModel.js";
 
 // Create a new coupon
-exports.createCoupon = async (req, res) => {
+export const createCoupon = async (req, res) => {
   const { code, discount, expiryDate } = req.body;
 
   try {
     const newCoupon = new Coupon({ code, discount, expiryDate });
     await newCoupon.save();
-    res.status(201).json({ message: 'Coupon created successfully!' });
+    res.status(201).json({ message: "Coupon created successfully!" });
   } catch (err) {
-    res.status(400).json({ error: 'Error creating coupon: ' + err.message });
+    res.status(400).json({ error: `Error creating coupon: ${err.message}` });
   }
 };
 
 // Validate a coupon
-exports.validateCoupon = async (req, res) => {
-  const { code } = req.body;
+export const validateCoupon = async (req, res) => {
+  const { code, totalPrice } = req.body;
 
   try {
     const coupon = await Coupon.findOne({ code });
 
     if (!coupon) {
-      return res.status(404).json({ error: 'Invalid coupon code' });
-    }
-    if (totalprice < 10) {
-      return res.status(400).json({ error: 'Coupon cannot be applied to orders less than $10' });
+      return res.status(404).json({ error: "Invalid coupon code" });
     }
 
-    // Check if the coupon is expired or inactive
+    if (totalPrice < 10) {
+      return res
+        .status(400)
+        .json({ error: "Coupon cannot be applied to orders less than $10" });
+    }
+
     if (new Date(coupon.expiryDate) < Date.now() || !coupon.isActive) {
-      return res.status(400).json({ error: 'Coupon expired or inactive' });
+      return res.status(400).json({ error: "Coupon expired or inactive" });
     }
 
-    // Coupon is valid
-    res.status(200).json({ message: 'Coupon is valid', discount: coupon.discount });
+    res.status(200).json({ message: "Coupon is valid", discount: coupon.discount });
   } catch (err) {
-    res.status(500).json({ error: 'Server error: ' + err.message });
+    res.status(500).json({ error: `Server error: ${err.message}` });
   }
 };
 
-// Apply coupon in checkout
-exports.applyCoupon = async (req, res) => {
+// Apply coupon at checkout
+export const applyCoupon = async (req, res) => {
   const { couponCode, cartId } = req.body;
 
   try {
-    console.log("Received couponCode:", couponCode);
-    console.log("Received cartId:", cartId);
-
     const coupon = await Coupon.findOne({ code: couponCode, isActive: true });
-    console.log("Found coupon:", coupon);
 
     if (!coupon) {
-      return res.status(400).json({ message: 'Invalid or inactive coupon code' });
+      return res.status(400).json({ message: "Invalid or inactive coupon code" });
     }
 
     const cart = await Cart.findById(cartId);
-    console.log("Found cart:", cart);
 
     if (!cart) {
-      return res.status(400).json({ message: 'Cart not found' });
+      return res.status(400).json({ message: "Cart not found" });
     }
 
-    cart.calculateTotalPrice(); // Call calculateTotalPrice before using totalPrice
-console.log("Cart total price after calculation:", cart.totalPrice);
-
+    await cart.calculateTotalPrice();
 
     const discount = (cart.totalPrice * coupon.discount) / 100;
-    console.log("Calculated discount:", discount);
+    const finalAmount = Math.max(0, cart.totalPrice - discount);
 
-    const finalAmount = cart.totalPrice - discount;
-    console.log("Final amount after applying discount:", finalAmount);
-
-    const amountToPay = finalAmount < 0 ? 0 : finalAmount;
-
-    return res.status(200).json({
-      message: 'Coupon applied successfully',
-      finalAmount: amountToPay,
+    res.status(200).json({
+      message: "Coupon applied successfully",
+      finalAmount,
+      discountAmount: discount,
     });
   } catch (error) {
-    console.error('Error applying coupon:', error);
-    return res.status(500).json({
-      message: 'Error applying coupon',
-      error: error.message || 'An unknown error occurred',
+    res.status(500).json({
+      message: "Error applying coupon",
+      error: error.message || "An unknown error occurred",
     });
   }
 };

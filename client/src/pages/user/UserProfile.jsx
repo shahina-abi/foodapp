@@ -113,11 +113,11 @@ const ProfilePage = () => {
 
   const fetchUserProfile = async () => {
     try {
-      const response = await axiosInstance.get(`/users/profile/${id}`); // Correct URL with dynamic ID
-      setUser(response.data.data); // Assuming API returns { data: { data: user } }
+      const response = await axiosInstance.get(`/users/profile/${id}`);
+      setUser(response.data.data);
     } catch (error) {
       console.error("Error fetching profile:", error);
-      setUser(null); // Handle case when profile fetch fails
+      setUser(null);
     }
   };
 

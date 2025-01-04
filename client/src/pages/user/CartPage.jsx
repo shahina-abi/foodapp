@@ -1,10 +1,8 @@
-// src/pages/CartPage.jsx
 import React, { useEffect, useState } from "react";
 import { axiosInstance } from "../../config/axiosIntance";
-import { CartItem } from "../../components/Card"; // Ensure you have this component
+import { useNavigate } from "react-router-dom";
 import { loadStripe } from "@stripe/stripe-js";
 import { toast, ToastContainer } from "react-toastify";
-import { useNavigate } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
 
 export const CartPage = () => {
@@ -35,7 +33,6 @@ export const CartPage = () => {
     }
   };
 
-  // Remove an item from the cart
   const handleRemoveItem = async (foodItemId) => {
     try {
       const response = await axiosInstance.delete("/cart/remove", {
@@ -43,7 +40,7 @@ export const CartPage = () => {
       });
       if (response.data.success) {
         toast.success("Item removed successfully!");
-        fetchCartItems(); // Refresh cart after removal
+        fetchCartItems();
       } else {
         toast.error("Failed to remove item.");
       }
@@ -52,7 +49,6 @@ export const CartPage = () => {
     }
   };
 
-  // Update quantity of an item
   const handleQuantityChange = async (foodItemId, quantity) => {
     try {
       const response = await axiosInstance.put("/cart/update", {
@@ -61,7 +57,7 @@ export const CartPage = () => {
       });
       if (response.data.success) {
         toast.success("Cart updated!");
-        fetchCartItems(); // Refresh cart after update
+        fetchCartItems();
       } else {
         toast.error("Failed to update cart.");
       }
@@ -70,7 +66,6 @@ export const CartPage = () => {
     }
   };
 
-  // Apply a coupon code
   const applyCoupon = async () => {
     try {
       const response = await axiosInstance.post("/coupons/checkout", {
@@ -89,7 +84,6 @@ export const CartPage = () => {
     }
   };
 
-  // Handle payment
   const makePayment = async () => {
     setPaymentLoading(true);
     try {
@@ -105,7 +99,7 @@ export const CartPage = () => {
         "/payment/create-checkout-session",
         {
           products: cartItems,
-          amountInCents: Math.max(finalAmount * 100, 5000), // Minimum charge of ₹50
+          amountInCents: Math.max(finalAmount * 100, 5000),
         }
       );
 
@@ -126,105 +120,118 @@ export const CartPage = () => {
     }
   };
 
-  // Fetch cart items on page load
   useEffect(() => {
     fetchCartItems();
   }, []);
 
   return (
-    <div className="container mx-auto px-4 py-5">
-      <div className="row g-4">
-        {/* Cart Items Section */}
-        <div className="col-md-8">
-          <div className="card shadow-lg p-4 bg-white rounded-lg">
-            <h2 className="text-xl font-semibold mb-4">Your Cart</h2>
-            {loading ? (
-              <p className="text-gray-500">Loading cart items...</p>
-            ) : error ? (
-              <p className="text-danger">{error}</p>
-            ) : cartItems.length > 0 ? (
-              cartItems.map((item) => (
-                <CartItem
-                  key={item.foodItem._id}
-                  item={item}
-                  onRemove={() => handleRemoveItem(item.foodItem._id)}
-                  onQuantityChange={(quantity) =>
-                    handleQuantityChange(item.foodItem._id, quantity)
-                  }
-                />
-              ))
-            ) : (
-              <p className="text-gray-500">Your cart is empty.</p>
-            )}
-          </div>
-        </div>
-
-        {/* Price Summary Section */}
-        <div className="col-md-4">
-          <div className="card shadow-lg bg-light p-4 rounded-lg">
-            <h2 className="text-xl font-semibold text-center mb-4">
-              Price Summary
-            </h2>
-            <p className="text-lg font-medium">
-              Total Price:{" "}
-              <span className="text-primary">
-                ${cartData.totalPrice?.toFixed(2)}
-              </span>
-            </p>
-
-            {/* Coupon Section */}
-            <div className="mt-4">
-              <h3 className="text-lg font-semibold mb-2">Have a coupon?</h3>
-              <div className="input-group">
-                <input
-                  type="text"
-                  value={couponCode}
-                  onChange={(e) => setCouponCode(e.target.value)}
-                  placeholder="Enter coupon code"
-                  className="form-control"
-                />
-                <button onClick={applyCoupon} className="btn btn-primary">
-                  Apply
-                </button>
-              </div>
-            </div>
-
-            {/* Discount Information */}
-            {discount > 0 && (
-              <div className="mt-3 text-success">
-                <p>Discount: -${discount.toFixed(2)}</p>
-              </div>
-            )}
-
-            {/* Final Amount */}
-            <p className="mt-4 text-lg font-medium">
-              Final Amount:{" "}
-              <span className="text-success">${finalAmount.toFixed(2)}</span>
-            </p>
-
-            {/* Payment Button */}
-            <button
-              className={`btn btn-success w-100 mt-4 ${
-                paymentLoading ? "disabled" : ""
-              }`}
-              onClick={makePayment}
-              disabled={loading || paymentLoading}
-            >
-              {paymentLoading ? "Processing Payment..." : "Proceed to Payment"}
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Toast Notifications */}
+    <div className="max-w-7xl mx-auto p-6">
       <ToastContainer
         position="top-center"
         autoClose={5000}
         hideProgressBar={false}
-        closeOnClick
-        pauseOnHover
-        theme="colored"
       />
+
+      {/* Cart Content */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Cart Items Section */}
+        <div className="lg:col-span-2 bg-white shadow rounded-lg p-6">
+          <h2 className="text-2xl font-semibold mb-4 text-gray-800">
+            Your Cart
+          </h2>
+          {loading ? (
+            <p className="text-gray-500">Loading cart items...</p>
+          ) : error ? (
+            <p className="text-red-500">{error}</p>
+          ) : cartItems.length > 0 ? (
+            cartItems.map((item) => (
+              <div
+                key={item.foodItem._id}
+                className="flex justify-between items-center py-4 border-b"
+              >
+                <div>
+                  <h3 className="text-lg font-medium text-gray-800">
+                    {item.foodItem.name}
+                  </h3>
+                  <p className="text-gray-600">Price: ${item.foodItem.price}</p>
+                  <p className="text-gray-600">Quantity: {item.quantity}</p>
+                </div>
+                <div className="flex space-x-4 items-center">
+                  <input
+                    type="number"
+                    value={item.quantity}
+                    min="1"
+                    onChange={(e) =>
+                      handleQuantityChange(
+                        item.foodItem._id,
+                        parseInt(e.target.value)
+                      )
+                    }
+                    className="border rounded-md px-2 w-16"
+                  />
+                  <button
+                    onClick={() => handleRemoveItem(item.foodItem._id)}
+                    className="text-red-500 hover:text-red-700"
+                  >
+                    Remove
+                  </button>
+                </div>
+              </div>
+            ))
+          ) : (
+            <p className="text-gray-500">Your cart is empty.</p>
+          )}
+        </div>
+
+        {/* Price Summary Section */}
+        <div className="bg-gray-100 shadow rounded-lg p-6">
+          <h2 className="text-2xl font-semibold text-center text-gray-800 mb-4">
+            Price Summary
+          </h2>
+          <p className="text-lg">
+            Total Price:{" "}
+            <span className="font-semibold">
+              ${cartData.totalPrice?.toFixed(2)}
+            </span>
+          </p>
+          {discount > 0 && (
+            <p className="text-green-600">Discount: -${discount.toFixed(2)}</p>
+          )}
+          <p className="text-lg">
+            Final Amount:{" "}
+            <span className="font-semibold text-green-600">
+              ${finalAmount.toFixed(2)}
+            </span>
+          </p>
+
+          {/* Coupon Section */}
+          <div className="mt-4">
+            <input
+              type="text"
+              value={couponCode}
+              onChange={(e) => setCouponCode(e.target.value)}
+              placeholder="Enter coupon code"
+              className="w-full border rounded-md p-2"
+            />
+            <button
+              onClick={applyCoupon}
+              className="w-full bg-blue-600 text-white py-2 rounded-md mt-2 hover:bg-blue-700"
+            >
+              Apply Coupon
+            </button>
+          </div>
+
+          <button
+            onClick={makePayment}
+            disabled={loading || paymentLoading}
+            className={`w-full mt-4 py-2 text-white rounded-md ${
+              paymentLoading ? "bg-gray-500" : "bg-green-600 hover:bg-green-700"
+            }`}
+          >
+            {paymentLoading ? "Processing Payment..." : "Proceed to Payment"}
+          </button>
+        </div>
+      </div>
     </div>
   );
 };
