@@ -1,60 +1,48 @@
-import React from "react";
-import { Outlet } from "react-router-dom";
+import React, { useEffect } from "react";
+import { Outlet, useLocation } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { axiosInstance } from "../config/axiosIntance";
+import { saveadmin, clearadmin } from "../redux/features/adminSlice";
 import AdminHeader from "../components/admin/AdminHeader";
+import Header from "../components/user/Header";
 import AdminFooter from "../components/admin/AdminFooter";
 
-const AdminLayout = () => {
+export const Adminlayout = () => {
+  const { isAdminExist } = useSelector((state) => state.admin);
+  const dispatch = useDispatch();
+  const location = useLocation();
+
+  const checkAdmin = async () => {
+    try {
+      const response = await axiosInstance({
+        method: "GET",
+        url: "/admin/check-admin",
+      });
+
+      // Save admin data if it exists
+      if (response?.data?.data) {
+        dispatch(saveadmin(response.data.data));
+      } else {
+        dispatch(clearadmin());
+      }
+    } catch (error) {
+      console.error("Error checking admin: ", error);
+      dispatch(clearadmin());
+    }
+  };
+
+  useEffect(() => {
+    checkAdmin();
+  }, [location.pathname]);
+
   return (
     <div className="flex flex-col min-h-screen">
       {/* Header */}
-      <AdminHeader />
+      {isAdminExist ? <AdminHeader /> : <Header />}
 
-      <div className="flex flex-1">
-        {/* Sidebar */}
-        <aside className="w-1/4 bg-blue-700 text-white">
-          <nav className="p-6">
-            <h2 className="text-xl font-bold mb-6">Admin Panel</h2>
-            <ul className="space-y-4">
-              <li>
-                <a
-                  href="/admin"
-                  className="hover:bg-blue-600 block px-4 py-2 rounded-md"
-                >
-                  Dashboard
-                </a>
-              </li>
-              <li>
-                <a
-                  href="/admin/users"
-                  className="hover:bg-blue-600 block px-4 py-2 rounded-md"
-                >
-                  Manage Users
-                </a>
-              </li>
-              <li>
-                <a
-                  href="/admin/orders"
-                  className="hover:bg-blue-600 block px-4 py-2 rounded-md"
-                >
-                  Manage Orders
-                </a>
-              </li>
-              <li>
-                <a
-                  href="/admin/restaurants"
-                  className="hover:bg-blue-600 block px-4 py-2 rounded-md"
-                >
-                  Manage Restaurants
-                </a>
-              </li>
-            </ul>
-          </nav>
-        </aside>
-
-        {/* Main Content */}
-        <main className="flex-1 p-6 bg-gray-100">
-          <Outlet />
-        </main>
+      {/* Main Content */}
+      <div className="flex-grow bg-gray-100 p-4">
+        <Outlet />
       </div>
 
       {/* Footer */}
@@ -62,5 +50,3 @@ const AdminLayout = () => {
     </div>
   );
 };
-
-export default AdminLayout;

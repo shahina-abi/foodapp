@@ -22,7 +22,7 @@ export const CartPage = () => {
     setLoading(true);
     try {
       const { data } = await axiosInstance.get("/cart");
-      setCartItems(data.cart.items || []);
+      setCartItems(data.cart.fooditems || []);
       setCartData(data.cart);
       setFinalAmount(data.cart.totalPrice || 0);
       setError(null);

@@ -12,6 +12,7 @@ import {
   updateOrderStatus,
   createRestaurant,
   deleteRestaurant,
+  blockUser
 } from '../controllers/adminController.js';
 import { authAdmin } from '../middleware/authAdmin.js';
 
@@ -28,5 +29,7 @@ router.get('/orders', authAdmin, getAllOrders);           // View all orders
 router.put('/orders/:orderId', authAdmin, updateOrderStatus); // Update order status
 router.post('/restaurants', authAdmin, createRestaurant); // Create a new restaurant
 router.delete('/restaurants/:restaurantId', authAdmin, deleteRestaurant); // Delete a restaurant by ID
+router.post('/users/block/:userId', authAdmin, blockUser); // Block/Unblock user
+   // Delete a user by ID
 
 export default router;

@@ -102,55 +102,67 @@
 // ]);
 // export default router;
 import { createBrowserRouter, Outlet } from "react-router-dom";
-import UserLayout from "../layout/UserLayout";
 import Home from "../pages/user/Home";
-import { RestaurantsPage } from "../pages/user/RestaurantsPage";
+import About from "../pages/user/About";
 import LoginPage from "../pages/shared/LoginPage";
-import UserProfile from "../pages/user/UserProfile";
+import RegisterPage from "../pages/shared/RegisterPage";
+import { RestaurantsPage } from "../pages/user/RestaurantsPage";
 import RestaurantDetailsPage from "../pages/user/RestaurantDetailsPage";
-import FoodItemsPage from "../pages/user/FoodItems";
+import FoodItemsPage from "../pages/user/FoodItemsPage";
+import UserLayout from "../layout/UserLayout";
+import AdminLogin from "../components/admin/AdminLogin";
+import AdminProfile from "../components/admin/AdminProfile";
+import { CreateRestaurants } from "../components/admin/CreateReastaurents";
+import EditRestaurant from "../components/admin/EditRestaurant";
+import EditMenu from "../components/admin/EditMenu";
+import UserList from "../components/admin/UserList";
+import { AuthUser } from "../routes/protectedroutes/AuthUser";
+import { AuthAdmin } from "../routes/protectedroutes/AuthAdmin";
+import { Adminlayout } from "../layout/Adminlayout";
+import UserProfile from "../pages/user/UserProfile";
 import { CartPage } from "../pages/user/CartPage";
-import AdminDashboard from "../pages/admin/AdminDashboard";
-import { AuthAdmin } from "./ProtectedRoutes/AuthAdmin";
-import { AuthUser } from "./ProtectedRoutes/AuthUser";
-import AdminLayout from "../layout/AdminLayout";
-import { RegisterPage } from "../pages/shared/RegisterPage";
-
-const router = createBrowserRouter([
+export const router = createBrowserRouter([
   {
     path: "/",
     element: <UserLayout />,
     children: [
       { path: "/", element: <Home /> },
+      { path: "about", element: <About /> },
+      { path: "login", element: <LoginPage /> },
+      { path: "register", element: <RegisterPage /> },
       { path: "restaurants", element: <RestaurantsPage /> },
       { path: "restaurants/:id", element: <RestaurantDetailsPage /> },
       { path: "restaurants/:restaurantId/foods", element: <FoodItemsPage /> },
-      { path: "login", element: <LoginPage /> },
-      { path: "register", element: <RegisterPage /> },
-
-      // Protected Routes
       {
+        path: "users",
         element: (
           <AuthUser>
             <Outlet />
           </AuthUser>
         ),
-        children: [
-          { path: "profile", element: <UserProfile /> }, // Profile page
-          { path: "cart", element: <CartPage /> }, // Cart page
-        ],
+        children: [{ path: "profile", element: <UserProfile /> }],
       },
+      { path: "cart", element: <CartPage /> }, // Cart page
     ],
   },
   {
-    path: "/admin",
+    path: "/admin/login",
+    element: <AdminLogin />,
+  },
+  {
+    path: "admin",
     element: (
       <AuthAdmin>
-        <AdminLayout />
+        <Adminlayout />
       </AuthAdmin>
     ),
-    children: [{ path: "", element: <AdminDashboard /> }],
+    children: [
+      { path: "profile", element: <AdminProfile /> },
+      { path: "createrestaurant", element: <CreateRestaurants /> },
+      { path: "edit-restaurant/:id", element: <EditRestaurant /> },
+      { path: "editmenu", element: <EditMenu /> },
+      { path: "users", element: <UserList /> },
+    ],
   },
 ]);
-
 export default router;

@@ -158,3 +158,33 @@ export const deleteRestaurant = async (req, res) => {
     res.status(500).json({ success: false, message: 'Failed to delete restaurant', error });
   }
 };
+// Block or Unblock a User (Admin only)
+export const blockUser = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { blocked } = req.body; // Receive the new block status from the request
+
+    // Validate user existence
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    // Update the block status
+    user.blocked = blocked;
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: `User ${blocked ? "blocked" : "unblocked"} successfully.`,
+      user,
+    });
+  } catch (error) {
+    console.error("Error updating user block status:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to update user block status.",
+      error: error.message,
+    });
+  }
+};

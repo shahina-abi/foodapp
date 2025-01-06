@@ -4,7 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { clearUser } from "../../redux/features/UserSlice";
 import { useDispatch } from "react-redux";
 
-const ProfilePage = () => {
+const userProfile = () => {
   const [user, setUser] = useState(null); // Updated to handle null state
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -68,4 +68,4 @@ const ProfilePage = () => {
   );
 };
 
-export default ProfilePage;
+export default userProfile;

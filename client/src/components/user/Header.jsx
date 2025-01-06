@@ -32,10 +32,10 @@ export default function Header() {
             {/* Partner with Us */}
             <li>
               <Link
-                to="/admin"
+                to="/about"
                 className="hover:text-orange-400 transition duration-300"
               >
-                Partner with Us
+                about us
               </Link>
             </li>
           </ul>
@@ -44,10 +44,16 @@ export default function Header() {
         {/* Login/Signup Buttons */}
         <div className="flex space-x-4">
           <Link
-            to="/login"
+            to="/register"
             className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition duration-300"
           >
             Join Us
+          </Link>
+          <Link
+            to="/login"
+            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition duration-300"
+          >
+            login
           </Link>
         </div>
       </div>
