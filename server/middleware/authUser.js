@@ -1,21 +1,23 @@
-
-
 import jwt from "jsonwebtoken";
+import User from "../models/userModel.js";
 
-export const authUser = (req, res, next) => {
+export const authUser = async (req, res, next) => {
   try {
-    // Check for token in cookies or Authorization header
     const token = req.cookies.token || req.headers.authorization?.split(" ")[1];
 
     if (!token) {
       return res.status(401).json({ success: false, message: "User not authorized" });
     }
 
-    // Verify the token
     const decodedToken = jwt.verify(token, process.env.JWT_SECRET_KEY);
 
-    // Attach user information to the request
-    req.user = decodedToken;
+    // Fetch the user details using the ID in the token
+    const user = await User.findById(decodedToken.id).select("-password");
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    req.user = user; // Attach the full user object to the request
 
     next(); // Proceed to the next middleware or route handler
   } catch (error) {

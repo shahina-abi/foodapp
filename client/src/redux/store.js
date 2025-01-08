@@ -2,7 +2,7 @@
 import { configureStore } from "@reduxjs/toolkit";
 import userReducer from "./features/UserSlice";
 import foodReducer from "./features/FoodSlice";
-import adminReducer from "../redux/features/adminslice";
+import adminReducer from "./features/AdminSlice";
 const store = configureStore({
   reducer: {
     user: userReducer,

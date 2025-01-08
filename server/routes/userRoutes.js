@@ -7,7 +7,7 @@ const router = express.Router();
 
 router.post('/register', registerUser);
 router.post('/login', userLogin);
-router.get('/profile/:id', authUser, userProfile);
+router.get('/profile', authUser, userProfile);
 
 router.get('/check', authUser, checkUser); // This should match /api/auth/check
 router.post('/log-out', authUser, userLogout);

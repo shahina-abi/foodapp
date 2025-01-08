@@ -1,21 +1,21 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  userAuthorized: false,
   userInfo: null,
+  userAuthorized: false,
 };
 
 const userSlice = createSlice({
   name: "user",
   initialState,
   reducers: {
-    saveUser(state, action) {
-      state.userAuthorized = true;
+    saveUser: (state, action) => {
       state.userInfo = action.payload;
+      state.userAuthorized = true; // Mark user as authorized
     },
-    clearUser(state) {
-      state.userAuthorized = false;
+    clearUser: (state) => {
       state.userInfo = null;
+      state.userAuthorized = false; // Mark user as unauthorized
     },
   },
 });

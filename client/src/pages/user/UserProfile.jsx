@@ -1,40 +1,40 @@
 import React, { useEffect, useState } from "react";
 import { axiosInstance } from "../../config/axiosIntance";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { clearUser } from "../../redux/features/UserSlice";
 import { useDispatch } from "react-redux";
 
-const userProfile = () => {
-  const [user, setUser] = useState(null); // Updated to handle null state
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
+const UserProfile = () => {
+  const [user, setUser] = useState(null); // User state
+  const navigate = useNavigate(); // Navigation hook
+  const dispatch = useDispatch(); // Redux dispatch for clearing user state
 
-  // Get the user ID from the URL using useParams
-  const { id } = useParams();
-
+  // Fetch user profile data
   const fetchUserProfile = async () => {
     try {
-      const response = await axiosInstance.get(`/users/profile/${id}`);
-      setUser(response.data.data);
+      const response = await axiosInstance.get("/user/profile"); // Fetch from `/user/profile`
+      setUser(response.data.user); // Set user data
     } catch (error) {
       console.error("Error fetching profile:", error);
-      setUser(null);
+      setUser(null); // Clear user data on error
     }
   };
 
+  // Handle logout
   const handleLogout = async () => {
     try {
-      await axiosInstance.post("/users/logout");
-      dispatch(clearUser());
-      navigate("/");
+      await axiosInstance.post("/user/log-out"); // Log out the user
+      dispatch(clearUser()); // Clear Redux user state
+      navigate("/"); // Redirect to home
     } catch (error) {
       console.error("Error logging out:", error);
     }
   };
 
+  // Fetch profile data on component mount
   useEffect(() => {
     fetchUserProfile();
-  }, [id]);
+  }, []);
 
   if (!user) {
     return <div className="text-center text-gray-600">Loading...</div>;
@@ -45,7 +45,7 @@ const userProfile = () => {
       <div className="bg-white shadow-md rounded-lg p-6 w-full max-w-md">
         <div className="flex flex-col items-center">
           <img
-            src={user.profilepic || "https://via.placeholder.com/150"} // Fallback if no profile picture
+            src={user.profilepic || "https://via.placeholder.com/150"} // Fallback if no profile pic
             alt="User profile"
             className="rounded-full w-32 h-32 mb-4 object-cover"
           />
@@ -68,4 +68,4 @@ const userProfile = () => {
   );
 };
 
-export default userProfile;
+export default UserProfile;

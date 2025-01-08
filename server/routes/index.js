@@ -14,7 +14,7 @@ import CouponRoutes from "./CouponRoutes.js";
 const router = express.Router();
 
 // Define the routes with their respective paths
-router.use("/users", userRoutes); // All user-related routes
+router.use("/user", userRoutes); // All user-related routes
 router.use("/foods", foodRoutes); // All food-related routes
 router.use("/restaurants", restaurantRoutes); // All restaurant-related routes
 router.use("/reviews", reviewRoutes); // All review-related routes

@@ -36,14 +36,14 @@ export const addToCart = async (req, res) => {
 // Get all items in the cart for the user
 export const getCart = async (req, res) => {
   try {
-    console.log("Fetching cart for user:", req.user); // Debug log
+    console.log("Fetching cart for user:", req.user?._id); // Debug log
 
     const cart = await Cart.findOne({ user: req.user._id }).populate(
       "items.foodItem",
       "name price"
     );
     if (!cart) {
-      console.log("Cart not found for user:", req.user._id); // Debug log
+      console.log("Cart not found for user:", req.user?._id); // Debug log
       return res.status(404).json({ success: false, message: "Cart is empty" });
     }
     res.json({ success: true, cart });

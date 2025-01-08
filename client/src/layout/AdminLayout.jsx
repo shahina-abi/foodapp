@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { axiosInstance } from "../config/axiosIntance";
-import { saveadmin, clearadmin } from "../redux/features/adminSlice";
+import { saveadmin, clearadmin } from "../redux/features/AdminSlice";
 import AdminHeader from "../components/admin/AdminHeader";
 import Header from "../components/user/Header";
 import AdminFooter from "../components/admin/AdminFooter";

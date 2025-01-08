@@ -21,7 +21,7 @@ export const CartPage = () => {
   const fetchCartItems = async () => {
     setLoading(true);
     try {
-      const { data } = await axiosInstance.get("/cart");
+      const { data } = await axiosInstance.get("/cart/getcart");
       setCartItems(data.cart.fooditems || []);
       setCartData(data.cart);
       setFinalAmount(data.cart.totalPrice || 0);

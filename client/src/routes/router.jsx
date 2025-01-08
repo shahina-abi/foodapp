@@ -101,10 +101,10 @@
 //   },
 // ]);
 // export default router;
-import { createBrowserRouter, Outlet } from "react-router-dom";
+import { createBrowserRouter } from "react-router-dom";
 import Home from "../pages/user/Home";
 import About from "../pages/user/About";
-import LoginPage from "../pages/shared/LoginPage";
+import { LoginPage } from "../pages/user/LoginPage";
 import RegisterPage from "../pages/shared/RegisterPage";
 import { RestaurantsPage } from "../pages/user/RestaurantsPage";
 import RestaurantDetailsPage from "../pages/user/RestaurantDetailsPage";
@@ -116,15 +116,16 @@ import { CreateRestaurants } from "../components/admin/CreateReastaurents";
 import EditRestaurant from "../components/admin/EditRestaurant";
 import EditMenu from "../components/admin/EditMenu";
 import UserList from "../components/admin/UserList";
-import { AuthUser } from "../routes/protectedroutes/AuthUser";
-import { AuthAdmin } from "../routes/protectedroutes/AuthAdmin";
+import { ProtectRoute } from "./ProtectRoute";
 import { Adminlayout } from "../layout/Adminlayout";
 import UserProfile from "../pages/user/UserProfile";
 import { CartPage } from "../pages/user/CartPage";
+import ErrorPage from "../pages/user/ErrorPage";
 export const router = createBrowserRouter([
   {
     path: "/",
     element: <UserLayout />,
+    errorElement: <ErrorPage />,
     children: [
       { path: "/", element: <Home /> },
       { path: "about", element: <About /> },
@@ -133,30 +134,34 @@ export const router = createBrowserRouter([
       { path: "restaurants", element: <RestaurantsPage /> },
       { path: "restaurants/:id", element: <RestaurantDetailsPage /> },
       { path: "restaurants/:restaurantId/foods", element: <FoodItemsPage /> },
+
       {
-        path: "users",
-        element: (
-          <AuthUser>
-            <Outlet />
-          </AuthUser>
-        ),
-        children: [{ path: "profile", element: <UserProfile /> }],
+        path: "user",
+        element: <ProtectRoute />,
+        children: [
+          { path: "profile", element: <UserProfile /> }, // Correct: Relative path
+          // Correct: Relative path
+        ],
+        
+    path: 'Cart',
+    element: (
+      <AuthUser>
+        <UserLayout />
+      </AuthUser>
+    ),
+    children: [
+      {
+        path: 'getcart',
+        element: <CartPage />
+      }
       },
-      { path: "cart", element: <CartPage /> }, // Cart page
     ],
   },
   {
-    path: "/admin/login",
-    element: <AdminLogin />,
-  },
-  {
     path: "admin",
-    element: (
-      <AuthAdmin>
-        <Adminlayout />
-      </AuthAdmin>
-    ),
+    element: <Adminlayout />,
     children: [
+      { path: "login", element: <AdminLogin /> }, // Correct: Relative path
       { path: "profile", element: <AdminProfile /> },
       { path: "createrestaurant", element: <CreateRestaurants /> },
       { path: "edit-restaurant/:id", element: <EditRestaurant /> },
