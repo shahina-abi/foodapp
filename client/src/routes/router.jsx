@@ -140,20 +140,8 @@ export const router = createBrowserRouter([
         element: <ProtectRoute />,
         children: [
           { path: "profile", element: <UserProfile /> }, // Correct: Relative path
-          // Correct: Relative path
+          { path: "cart/getcart", element: <CartPage /> }, // Correct: Relative path
         ],
-        
-    path: 'Cart',
-    element: (
-      <AuthUser>
-        <UserLayout />
-      </AuthUser>
-    ),
-    children: [
-      {
-        path: 'getcart',
-        element: <CartPage />
-      }
       },
     ],
   },
