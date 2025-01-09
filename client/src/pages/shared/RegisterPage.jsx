@@ -10,7 +10,7 @@ export const registerPage = ({ role = "user" }) => {
 
   const user = {
     role: "user",
-    register_api: "/users/register",
+    register_api: "/user/register",
     profile_route: "/user/profile",
     register_route: "register",
   };
@@ -28,7 +28,7 @@ export const registerPage = ({ role = "user" }) => {
     try {
       const response = await axiosInstance({
         method: "POST",
-        url: "users/register",
+        url: "user/register",
         data,
       });
       console.log(response, "====response");

@@ -1,26 +1,51 @@
+// import jwt from "jsonwebtoken";
+// import User from "../models/userModel.js";
+
+// export const authUser = async (req, res, next) => {
+//   try {
+//     const token = req.cookies.token || req.headers.authorization?.split(" ")[1];
+
+//     if (!token) {
+//       return res.status(401).json({ success: false, message: "User not authorized" });
+//     }
+
+//     const decodedToken = jwt.verify(token, process.env.JWT_SECRET_KEY);
+
+//     // Fetch the user details using the ID in the token
+//     const user = await User.findById(decodedToken.id).select("-password");
+//     if (!user) {
+//       return res.status(404).json({ success: false, message: "User not found" });
+//     }
+
+//     req.user = user; // Attach the full user object to the request
+
+//     next(); // Proceed to the next middleware or route handler
+//   } catch (error) {
+//     return res.status(401).json({ success: false, message: "User authorization failed", error: error.message });
+//   }
+// };
+
 import jwt from "jsonwebtoken";
-import User from "../models/userModel.js";
+export const  authUser = (req, res, next) => {
+    try {
+        const { token } = req.cookies;
 
-export const authUser = async (req, res, next) => {
-  try {
-    const token = req.cookies.token || req.headers.authorization?.split(" ")[1];
+        if (!token) {
+            return res.status(401).json({ message: "token not provided" });
+        }
 
-    if (!token) {
-      return res.status(401).json({ success: false, message: "User not authorized" });
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+
+        if (!decoded) {
+            return res.status(401).json({ message: "user not autherized" });
+        }
+
+        req.user = decoded;
+
+        next();
+    } catch (error) {
+        res.status(error.status || 500).json({ error: error.message || "Internal server Error" });
     }
-
-    const decodedToken = jwt.verify(token, process.env.JWT_SECRET_KEY);
-
-    // Fetch the user details using the ID in the token
-    const user = await User.findById(decodedToken.id).select("-password");
-    if (!user) {
-      return res.status(404).json({ success: false, message: "User not found" });
-    }
-
-    req.user = user; // Attach the full user object to the request
-
-    next(); // Proceed to the next middleware or route handler
-  } catch (error) {
-    return res.status(401).json({ success: false, message: "User authorization failed", error: error.message });
-  }
 };
+

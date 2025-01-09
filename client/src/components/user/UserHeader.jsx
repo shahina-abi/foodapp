@@ -83,7 +83,7 @@ export default function UserHeader() {
 
           {/* Cart Link with Icon */}
           <Link
-            to="/cart/getcart"
+            to="/user/cart/getcart"
             className="hover:text-orange-400 transition duration-300 flex items-center space-x-2"
             aria-label="Cart"
           >

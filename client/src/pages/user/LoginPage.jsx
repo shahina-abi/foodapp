@@ -2,39 +2,72 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
+import { Link } from "react-router-dom";
+
 import { axiosInstance } from "../../config/axiosIntance";
 import { useDispatch } from "react-redux";
 import { saveUser } from "../../redux/features/UserSlice";
-export const LoginPage = () => {
+// export const LoginPage = () => {
+//   const { register, handleSubmit } = useForm();
+//   const navigate = useNavigate(); // React Router navigation
+//   const dispatch = useDispatch();
+//   const user = {
+//     login_api: "/user/login", // API endpoint for login
+//     profile_route: "/user/profile", // Route for profile
+//   };
+
+//   // Handle form submission
+//   const onSubmit = async (data) => {
+//     try {
+//       const response = await axiosInstance.post("/user/login", data);
+
+//       if (response.data.success && response.data.user) {
+//         toast.success("Login successful!");
+
+//         // Save user data in Redux
+//         dispatch(saveUser(response.data.user));
+
+//         // Navigate to the user profile page
+//         navigate("/");
+//       } else {
+//         throw new Error("Invalid response structure from the server.");
+//       }
+//     } catch (error) {
+//       console.error("Login Error:", error);
+//       toast.error(
+//         error.response?.data?.message || "Login failed. Please try again later."
+//       );
+//     }
+//   };
+export const LoginPage = ({ role = "user" }) => {
   const { register, handleSubmit } = useForm();
-  const navigate = useNavigate(); // React Router navigation
-  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   const user = {
-    login_api: "/user/login", // API endpoint for login
-    profile_route: "/user/profile", // Route for profile
+    role: "user",
+    login_api: "/user/login",
+    profile_route: "/user/profile",
+    home_route: "/",
+    register_rout: "/user/register",
   };
 
-  // Handle form submission
+  console.log(user, "=====user");
+
   const onSubmit = async (data) => {
     try {
-      const response = await axiosInstance.post("/user/login", data);
+      console.log(data, "====data");
 
-      if (response.data.success && response.data.user) {
-        toast.success("Login successful!");
-
-        // Save user data in Redux
-        dispatch(saveUser(response.data.user));
-
-        // Navigate to the user profile page
-        navigate("/");
-      } else {
-        throw new Error("Invalid response structure from the server.");
-      }
+      const response = await axiosInstance({
+        method: "POST",
+        url: user.login_api,
+        data,
+      });
+      console.log(response, "====response");
+      toast.success("Log-in success");
+      navigate(user.home_route);
     } catch (error) {
-      console.error("Login Error:", error);
-      toast.error(
-        error.response?.data?.message || "Login failed. Please try again later."
-      );
+      toast.error("Log-in failed");
+      console.log(error);
     }
   };
 
@@ -86,12 +119,12 @@ export const LoginPage = () => {
         </form>
         <p className="text-center text-gray-600 mt-4">
           Don't have an account?{" "}
-          <a
-            href="/register"
+          <Link
             className="text-orange-500 font-semibold hover:underline"
+            to={user.register_route} // Assuming this is the correct property name
           >
             Register Now
-          </a>
+          </Link>
         </p>
       </div>
     </div>

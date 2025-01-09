@@ -1,5 +1,5 @@
 import Cart from '../models/cartModel.js';
-import Food from '../models/foodModel.js';
+import FoodItem from '../models/foodModel.js';
 
 // Add an item to the cart or update quantity if it exists
 export const addToCart = async (req, res) => {
@@ -7,9 +7,10 @@ export const addToCart = async (req, res) => {
     const { foodItemId, quantity } = req.body;
     const userId = req.user._id;
 
-    const foodItem = await Food.findById(foodItemId);
+    // Use FoodItem instead of Food
+    const foodItem = await FoodItem.findById(foodItemId);
     if (!foodItem) {
-      return res.status(404).json({ success: false, message: 'Food item not found' });
+      return res.status(404).json({ success: false, message: "Food item not found" });
     }
 
     let cart = await Cart.findOne({ user: userId });
@@ -27,31 +28,30 @@ export const addToCart = async (req, res) => {
     }
 
     await cart.calculateTotalPrice();
-    res.status(201).json({ success: true, message: 'Item added to cart', cart });
+    res.status(201).json({ success: true, message: "Item added to cart", cart });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
 };
-
 // Get all items in the cart for the user
 export const getCart = async (req, res) => {
   try {
-    console.log("Fetching cart for user:", req.user?._id); // Debug log
-
     const cart = await Cart.findOne({ user: req.user._id }).populate(
       "items.foodItem",
-      "name price"
-    );
+      "name price image description"
+    ); // Populate relevant fields from FoodItem
+
     if (!cart) {
-      console.log("Cart not found for user:", req.user?._id); // Debug log
       return res.status(404).json({ success: false, message: "Cart is empty" });
     }
-    res.json({ success: true, cart });
+
+    res.status(200).json({ success: true, cart });
   } catch (error) {
-    console.error("Error fetching cart:", error.message); // Debug log
+    console.error("Error fetching cart:", error.message);
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
 
 
 // Update the quantity of a specific item in the cart

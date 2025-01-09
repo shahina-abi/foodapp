@@ -109,7 +109,7 @@ import RegisterPage from "../pages/shared/RegisterPage";
 import { RestaurantsPage } from "../pages/user/RestaurantsPage";
 import RestaurantDetailsPage from "../pages/user/RestaurantDetailsPage";
 import FoodItemsPage from "../pages/user/FoodItemsPage";
-import UserLayout from "../layout/UserLayout";
+import { UserLayout } from "../layout/UserLayout";
 import AdminLogin from "../components/admin/AdminLogin";
 import AdminProfile from "../components/admin/AdminProfile";
 import { CreateRestaurants } from "../components/admin/CreateReastaurents";
