@@ -1,12 +1,15 @@
+import React from "react";
 import { useSelector } from "react-redux";
-import { Navigate, Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 
-export const ProtectRoute = () => {
-  const { userAuthorized } = useSelector((state) => state.user);
+export const ProtectedRoute = () => {
+  const { isUserAuth } = useSelector((state) => state.user);
+  const navigate = useNavigate();
 
-  if (!userAuthorized) {
-    return <Navigate to="/login" />; // Redirect to login if not authenticated
+  if (!isUserAuth) {
+    navigate("/login");
+    return;
   }
 
-  return <Outlet />; // Render child routes if authenticated
+  return <Outlet />;
 };

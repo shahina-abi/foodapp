@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { axiosInstance } from "../../config/axiosIntance";
 import toast from "react-hot-toast";
 import Header from "../../components/user/Header";
-export const registerPage = ({ role = "user" }) => {
+export const RegisterPage = ({ role = "user" }) => {
   const { register, handleSubmit } = useForm();
   const navigate = useNavigate();
 
@@ -36,7 +36,7 @@ export const registerPage = ({ role = "user" }) => {
       if (userId) {
         localStorage.setItem("userId", userId);
       }
-      toast.success("sign-in success");
+      toast.success("register success");
       navigate("/");
     } catch (error) {
       toast.error("user already exist");
@@ -83,6 +83,20 @@ export const registerPage = ({ role = "user" }) => {
             />
           </div>
 
+          {/* Phone Number Field */}
+          <div className="form-group">
+            <label className="block text-gray-600 font-medium mb-1">
+              Phone Number
+            </label>
+            <input
+              type="tel"
+              {...register("mobile")}
+              placeholder="Enter your phone number"
+              className="input input-bordered w-full border-gray-300 focus:border-purple-500 focus:ring focus:ring-purple-200"
+              required
+            />
+          </div>
+
           {/* Password Field */}
           <div className="form-group">
             <label className="block text-gray-600 font-medium mb-1">
@@ -99,7 +113,7 @@ export const registerPage = ({ role = "user" }) => {
 
           {/* Signup Button */}
           <button className="btn btn-primary w-full bg-purple-500 hover:bg-purple-600 text-white py-2 rounded-lg font-medium">
-            register
+            Register
           </button>
         </form>
 
@@ -117,4 +131,5 @@ export const registerPage = ({ role = "user" }) => {
     </div>
   );
 };
-export default registerPage;
+
+export default RegisterPage;

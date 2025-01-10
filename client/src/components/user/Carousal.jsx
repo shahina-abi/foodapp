@@ -70,7 +70,7 @@ const Carousel = ({ images = [] }) => {
   }
 
   return (
-    <div className="relative w-full max-w-4xl mx-auto overflow-hidden rounded-lg shadow-md">
+    <div className="relative w-full max-w-7xl mx-auto overflow-hidden rounded-lg shadow-md">
       {/* Carousel Images */}
       <div
         className="flex transition-transform duration-500"

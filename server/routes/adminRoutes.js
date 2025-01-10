@@ -1,7 +1,7 @@
 
 import express from 'express';
 import {
-  adminRegister,
+  // adminRegister,
   adminLogin,
   adminProfile,
   adminLogout,
@@ -18,7 +18,7 @@ import { authAdmin } from '../middleware/authAdmin.js';
 
 const router = express.Router();
 
-router.post('/register', adminRegister);                  // Register a new admin
+// router.post('/register', adminRegister);                  // Register a new admin
 router.post('/login', adminLogin);                        // Admin login
 router.get('/profile', authAdmin, adminProfile);          // Get admin profile
 router.post('/logout', authAdmin, adminLogout);           // Admin logout

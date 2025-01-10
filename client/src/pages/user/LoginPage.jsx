@@ -13,7 +13,9 @@ import { saveUser } from "../../redux/features/UserSlice";
 //   const dispatch = useDispatch();
 //   const user = {
 //     login_api: "/user/login", // API endpoint for login
-//     profile_route: "/user/profile", // Route for profile
+//     profile_route: "/user/profile",
+//     register_route: "/register",
+//     home_route: "/",
 //   };
 
 //   // Handle form submission
@@ -48,7 +50,7 @@ export const LoginPage = ({ role = "user" }) => {
     login_api: "/user/login",
     profile_route: "/user/profile",
     home_route: "/",
-    register_rout: "/user/register",
+    register_route: "/register",
   };
 
   console.log(user, "=====user");

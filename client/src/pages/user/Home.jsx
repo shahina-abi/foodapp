@@ -15,7 +15,7 @@ function Home() {
       >
         <div className="bg-black bg-opacity-50 h-full flex flex-col justify-center items-center text-center px-4">
           <h1 className="text-5xl font-extrabold mb-6">
-            Your Favorite Restaurants, Delivered
+            Your Favorite Restaurants in Your Doorstep
           </h1>
           <p className="text-lg mb-8">
             Find your favorite meals delivered fresh and fast.
@@ -25,14 +25,14 @@ function Home() {
             <input
               type="text"
               placeholder="Enter delivery address"
-              className="w-full py-3 px-5 text-gray-800 rounded-t-lg focus:outline-none"
+              className="w-full py-3 px-5 text-gray-800 rounded-lg focus:outline-none"
             />
-            <div className="flex space-x-4">
+            <div className="flex justify-center space-x-4 p-4">
               <Link
                 to="/restaurants"
-                className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition duration-300"
+                className="bg-blue-500 hover:bg-blue-600 text-white px-5 py-3 rounded-md transition duration-300"
               >
-                find Restaurants
+                Find Restaurants
               </Link>
             </div>
           </div>

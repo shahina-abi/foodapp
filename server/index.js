@@ -20,21 +20,28 @@ app.use(express.json());
 app.use(cookieParser());
 
 // Define allowed origins
-const allowedOrigins = ['http://localhost:5173'];
+// const allowedOrigins = ['http://localhost:5173'];
 
-// CORS configuration
 app.use(cors({
-    origin: (origin, callback) => {
-        if (!origin || allowedOrigins.includes(origin)) {
-            callback(null, true);
-        } else {
-            callback(new Error('Request blocked by CORS policy.'));
-        }
-    },
-    credentials: true, // Enable credentials (cookies, etc.)
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept']
+  origin: ["http://localhost:5173"], // Frontend origin
+  credentials: true, // Allows cookies and authorization headers
+  methods: ["GET", "POST", "PUT", "DELETE"], // Allowed HTTP methods
 }));
+
+
+
+
+    // origin: (origin, callback) => {
+    //     if (!origin || allowedOrigins.includes(origin)) {
+    //         callback(null, true);
+    //     } else {
+    //         callback(new Error('Request blocked by CORS policy.'));
+    //     }
+    // },
+    // credentials: true, // Enable credentials (cookies, etc.)
+    // methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    // allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept']
+
 
 // Serve static files for uploads
 app.use('/uploads', express.static(path.join(path.resolve(), '/uploads')));
@@ -43,7 +50,7 @@ app.use('/uploads', express.static(path.join(path.resolve(), '/uploads')));
 app.use('/api', routes);
 
 // Home route
-app.get("/", (req, res) => {
+app.get("/", (req, res,next) => {
   res.json({ message: "Hello World" });
 });
 
@@ -51,7 +58,9 @@ app.get("/", (req, res) => {
 app.use((req, res, next) => {
   res.status(404).json({ message: 'Route not found' });
 });
-
+app.all("*", (req, res) => {
+    return res.status(404).json({ message: "end-point does not exist" });
+});
 // Error Handling Middleware
 app.use((err, req, res, next) => {
   res.status(500).json({

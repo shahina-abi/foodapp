@@ -8,13 +8,14 @@ import logo1 from "../../assets/images/logo.png";
 export default function UserHeader() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { userAuthorized, userInfo } = useSelector((state) => state.user);
+  const { isUserAuth, userData } = useSelector((state) => state.user);
 
-  console.log("UserHeader - userAuthorized:", userAuthorized);
-  console.log("UserHeader - userInfo:", userInfo);
+  console.log("UserHeader - isUserAuth:", isUserAuth);
+  console.log("UserHeader - userData:", userData);
 
-  if (!userAuthorized) {
-    return null; // Prevent rendering if the user is not authorized
+  // Prevent rendering if the user is not authenticated
+  if (!isUserAuth) {
+    return null;
   }
 
   // Handle logout logic
@@ -32,7 +33,7 @@ export default function UserHeader() {
         {/* Logo */}
         <div className="flex items-center space-x-4">
           <img
-            src={logo1} // Update with your actual logo path
+            src={logo1} // Replace with your actual logo path
             alt="FoodBae Logo"
             className="w-12 h-auto" // Adjust dimensions for responsiveness
           />
@@ -66,15 +67,15 @@ export default function UserHeader() {
         {/* User-Specific Options */}
         <div className="flex space-x-4 items-center">
           {/* Show logged-in user's name */}
-          {userInfo?.name && (
+          {userData?.name && (
             <span className="text-sm text-gray-300">
-              Hello, <span className="font-bold">{userInfo.name}</span>
+              Hello, <span className="font-bold">{userData.name}</span>
             </span>
           )}
 
           {/* Profile Link with Icon */}
           <Link
-            to="/user/profile"
+            to={"/user/profile"}
             className="hover:text-orange-400 transition duration-300 flex items-center space-x-2"
             aria-label="Profile"
           >
@@ -83,7 +84,7 @@ export default function UserHeader() {
 
           {/* Cart Link with Icon */}
           <Link
-            to="/user/cart/getcart"
+            to={"user/cart"}
             className="hover:text-orange-400 transition duration-300 flex items-center space-x-2"
             aria-label="Cart"
           >

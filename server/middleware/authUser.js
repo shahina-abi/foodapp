@@ -26,26 +26,29 @@
 // };
 
 import jwt from "jsonwebtoken";
-export const  authUser = (req, res, next) => {
-    try {
-        const { token } = req.cookies;
 
-        if (!token) {
-            return res.status(401).json({ message: "token not provided" });
-        }
+export const authUser = (req, res, next) => {
+  try {
+    const token = req.cookies?.token;
 
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-
-        if (!decoded) {
-            return res.status(401).json({ message: "user not autherized" });
-        }
-
-        req.user = decoded;
-
-        next();
-    } catch (error) {
-        res.status(error.status || 500).json({ error: error.message || "Internal server Error" });
+    if (!token) {
+      return res.status(401).json({ success: false, message: "Token not provided" });
     }
-};
 
+    const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+
+    if (!decoded) {
+      return res.status(401).json({ success: false, message: "User not authorized" });
+    }
+
+    // Attach the user ID to the request
+    req.user = { id: decoded.id };
+
+    next();
+  } catch (error) {
+    res.status(401).json({
+      success: false,
+      message: error.message || "Authentication failed",
+    });
+  }
+};

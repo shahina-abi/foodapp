@@ -1,16 +1,18 @@
-import jwt from 'jsonwebtoken'
+import jwt from 'jsonwebtoken';
 
 export const authAdmin = (req, res, next) => {
   try {
-    const token = req.cookies.token;
-    if (!token) return res.status(401).json({ message: 'Unauthorized access', success: false });
+    const token = req.cookies.adminToken; // Use cookies or headers as needed
+    if (!token) return res.status(401).json({ error: 'Unauthorized' });
 
-    const verified = jwt.verify(token, process.env.JWT_SECRET_KEY);
-    if (verified.role !== 'Admin') return res.status(403).json({ message: 'Access denied', success: false });
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    if (!decoded.isAdmin) {
+      return res.status(403).json({ error: 'Access denied. Admins only.' });
+    }
 
-    req.user = verified;
+    req.user = decoded; // Attach the decoded token to the request
     next();
   } catch (error) {
-    res.status(401).json({ message: 'Authorization failed', success: false });
+    res.status(401).json({ error: 'Invalid or expired token' });
   }
 };

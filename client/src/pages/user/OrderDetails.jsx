@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
-export default function UserProfile() {
+export default function OrderDetails() {
   const [user, setUser] = useState(null);
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);

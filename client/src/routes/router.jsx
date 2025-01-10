@@ -116,9 +116,9 @@ import { CreateRestaurants } from "../components/admin/CreateReastaurents";
 import EditRestaurant from "../components/admin/EditRestaurant";
 import EditMenu from "../components/admin/EditMenu";
 import UserList from "../components/admin/UserList";
-import { ProtectRoute } from "./ProtectRoute";
+import { ProtectedRoute } from "./ProtectRoute";
 import { Adminlayout } from "../layout/Adminlayout";
-import UserProfile from "../pages/user/UserProfile";
+import { UserProfile } from "../pages/user/UserProfile";
 import { CartPage } from "../pages/user/CartPage";
 import ErrorPage from "../pages/user/ErrorPage";
 export const router = createBrowserRouter([
@@ -137,10 +137,11 @@ export const router = createBrowserRouter([
 
       {
         path: "user",
-        element: <ProtectRoute />,
+        element: <ProtectedRoute />,
+
         children: [
           { path: "profile", element: <UserProfile /> }, // Correct: Relative path
-          { path: "cart/getcart", element: <CartPage /> }, // Correct: Relative path
+          { path: "cart", element: <CartPage /> }, // Correct: Relative path
         ],
       },
     ],
