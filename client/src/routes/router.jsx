@@ -82,7 +82,7 @@ import EditRestaurant from "../components/admin/EditRestaurant";
 import EditMenu from "../components/admin/EditMenu";
 import UserList from "../components/admin/UserList";
 import { ProtectRoute } from "../routes/ProtectRoute";
-import { Adminlayout } from "../layout/Adminlayout";
+import { Adminlayout } from "../layout/AdminLayout";
 import { UserProfile } from "../pages/user/UserProfile";
 import { CartPage } from "../pages/user/CartPage";
 import ErrorPage from "../pages/user/ErrorPage";
