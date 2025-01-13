@@ -1,94 +1,297 @@
-// import React, { useEffect, useState } from "react";
-// import { axiosInstance } from "../../config/axiosIntance";
-// import { useNavigate } from "react-router-dom";
-// import { clearUser } from "../../redux/features/UserSlice";
-// import { useDispatch } from "react-redux";
+// // export default UserProfile;
+// import React, { useState } from "react";
+// import { useFetch } from "../../hooks/UseFetch";
+// import { Link } from "react-router-dom";
+// //import {userprofile} from "../../pages/user/OrderDetails"
 
-// const UserProfile = () => {
-//   const [user, setUser] = useState(null); // User state
-//   const navigate = useNavigate(); // Navigation hook
-//   const dispatch = useDispatch(); // Redux dispatch for clearing user state
+// export const UserProfile = () => {
+//   const [profileData, isLoading, error] = useFetch("/user/profile");
+//   const [showOrders, setShowOrders] = useState(false);
 
-//   // Fetch user profile data
-//   const fetchUserProfile = async () => {
-//     try {
-//       const response = await axiosInstance.get("/user/profile"); // Fetch from `/user/profile`
-//       setUser(response.data.user); // Set user data
-//     } catch (error) {
-//       console.error("Error fetching profile:", error);
-//       setUser(null); // Clear user data on error
-//     }
-//   };
+//   return (
+//     <div>
+//       <h2>Profile page</h2>
 
-//   // Handle logout
-//   const handleLogout = async () => {
-//     try {
-//       await axiosInstance.post("/user/log-out"); // Log out the user
-//       dispatch(clearUser()); // Clear Redux user state
-//       navigate("/"); // Redirect to home
-//     } catch (error) {
-//       console.error("Error logging out:", error);
-//     }
-//   };
+//       <button
+//         onClick={() => setShowOrders(!showOrders)}
+//         className="btn btn-secondary"
+//       >
+//         Orders
+//       </button>
+//       {showOrders && <Orders />}
+//     </div>
+//   );
+// };
+// import React, { useState, useEffect } from "react";
+// import axios from "axios";
 
-//   // Fetch profile data on component mount
+// export const UserProfile = () => {
+//   const [user, setUser] = useState(null);
+//   const [orders, setOrders] = useState([]); // Initialize as an empty array
+//   const [loading, setLoading] = useState(true);
+//   const [error, setError] = useState(null);
+//   const [selectedOrder, setSelectedOrder] = useState(null);
+//   const [isModalOpen, setIsModalOpen] = useState(false);
+
 //   useEffect(() => {
-//     fetchUserProfile();
+//     const fetchUserData = async () => {
+//       try {
+//         const userResponse = await axios.get("/api/user/profile");
+//         const ordersResponse = await axios.get("/api/orders");
+
+//         setUser(userResponse.data.data || {});
+//         setOrders(ordersResponse.data.orders || []);
+//       } catch (error) {
+//         console.error("Error fetching data:", error);
+//         setError(error);
+//       } finally {
+//         setLoading(false);
+//       }
+//     };
+
+//     fetchUserData();
 //   }, []);
 
-//   if (!user) {
-//     return <div className="text-center text-gray-600">Loading...</div>;
+//   if (loading) {
+//     return <div className="text-center p-4">Loading...</div>;
+//   }
+
+//   if (error) {
+//     return (
+//       <div className="text-center p-4 text-red-500">Error: {error.message}</div>
+//     );
 //   }
 
 //   return (
-//     <div className="p-6 bg-gray-100 min-h-screen flex flex-col items-center">
-//       <div className="bg-white shadow-md rounded-lg p-6 w-full max-w-md">
-//         <div className="flex flex-col items-center">
-//           <img
-//             src={user.profilepic || "https://via.placeholder.com/150"} // Fallback if no profile pic
-//             alt="User profile"
-//             className="rounded-full w-32 h-32 mb-4 object-cover"
-//           />
-//           <h1 className="text-xl font-bold mb-2 text-gray-800">{user.name}</h1>
-//           <p className="text-sm text-gray-600 mb-4">{user.email}</p>
+//     <div className="min-h-screen bg-gray-100 py-10">
+//       <div className="container mx-auto bg-white p-6 rounded-lg shadow-md">
+//         <div className="flex items-center border-b pb-4 mb-4">
+//           {/* <img
+//             src={user?.avatar || "/default-avatar.png"} // Use a local image by default
+//             alt="User Avatar"
+//             className="w-20 h-20 rounded-full"
+//             onError={(e) => (e.target.src = "/default-avatar.png")} // Fallback in case of error
+//           /> */}
+
+//           <div className="ml-4">
+//             <h1 className="text-2xl font-bold">{user?.name}</h1>
+//             <p className="text-gray-600">{user?.email}</p>
+//           </div>
 //         </div>
 
-//         <button className="w-full mb-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
-//           Edit Profile
-//         </button>
-
-//         <button
-//           onClick={handleLogout}
-//           className="w-full py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
-//         >
-//           Log-out
-//         </button>
+//         <h2 className="text-xl font-bold mb-4">Order History</h2>
+//         {orders?.length > 0 ? (
+//           <div className="space-y-4">
+//             {orders.map((order) => (
+//               <div
+//                 key={order._id}
+//                 className="flex justify-between items-center p-4 bg-gray-50 rounded-lg shadow"
+//               >
+//                 <div>
+//                   <h3 className="font-bold">Order #{order._id}</h3>
+//                   <p>
+//                     {order.items.length} item(s) - Total: ${order.totalPrice}
+//                   </p>
+//                   <p>Status: {order.status || "Pending"}</p>
+//                 </div>
+//                 <button
+//                   onClick={() => setSelectedOrder(order)}
+//                   className="text-blue-500 hover:underline"
+//                 >
+//                   View Details
+//                 </button>
+//               </div>
+//             ))}
+//           </div>
+//         ) : (
+//           <p className="text-gray-500">No orders found.</p>
+//         )}
 //       </div>
+
+//       {isModalOpen && selectedOrder && (
+//         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+//           <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
+//             <h3 className="text-xl font-bold mb-4">Order Details</h3>
+//             <div className="space-y-2">
+//               <p>
+//                 <strong>Order ID:</strong> {selectedOrder._id}
+//               </p>
+//               <p>
+//                 <strong>Total Price:</strong> ${selectedOrder.totalPrice}
+//               </p>
+//               <p>
+//                 <strong>Status:</strong> {selectedOrder.status || "Pending"}
+//               </p>
+//               <p>
+//                 <strong>Payment Method:</strong> {selectedOrder.paymentMethod}
+//               </p>
+//               <h4 className="font-bold mt-4">Items:</h4>
+//               <ul className="list-disc ml-5">
+//                 {selectedOrder.items.map((item) => (
+//                   <li key={item.foodItem._id}>
+//                     {item.foodItem.name} - ${item.foodItem.price} x{" "}
+//                     {item.quantity}
+//                   </li>
+//                 ))}
+//               </ul>
+//             </div>
+//             <div className="mt-6 flex justify-between">
+//               <button
+//                 onClick={() => setIsModalOpen(false)}
+//                 className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
+//               >
+//                 Close
+//               </button>
+//             </div>
+//           </div>
+//         </div>
+//       )}
 //     </div>
 //   );
 // };
 
 // export default UserProfile;
-import React, { useState } from "react";
-import { useFetch } from "../../hooks/UseFetch";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-//import {userprofile} from "../../pages/user/OrderDetails"
+import axios from "axios";
 
 export const UserProfile = () => {
-  const [profileData, isLoading, error] = useFetch("/user/profile");
-  const [showOrders, setShowOrders] = useState(false);
+  const [user, setUser] = useState(null);
+  const [orders, setOrders] = useState([]); // Initialize as an empty array
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const userResponse = await axios.get("/api/user/profile");
+        const ordersResponse = await axios.get("/api/orders");
+
+        setUser(userResponse.data.data || {});
+        setOrders(ordersResponse.data.orders || []);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        setError(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserData();
+  }, []);
+
+  if (loading) {
+    return <div className="text-center p-4">Loading...</div>;
+  }
+
+  if (error) {
+    return (
+      <div className="text-center p-4 text-red-500">Error: {error.message}</div>
+    );
+  }
 
   return (
-    <div>
-      <h2>Profile page</h2>
+    <div className="min-h-screen bg-gray-100 py-10">
+      <div className="container mx-auto bg-white p-6 rounded-lg shadow-md">
+        {/* User Details Section */}
+        <div className="flex flex-col md:flex-row items-center border-b pb-4 mb-6">
+          <img
+            src={user?.avatar || "/default-avatar.png"} // Fallback to default avatar
+            alt="User Avatar"
+            className="w-24 h-24 rounded-full"
+            onError={(e) => (e.target.src = "/default-avatar.png")}
+          />
+          <div className="mt-4 md:mt-0 md:ml-6 text-center md:text-left">
+            <h1 className="text-2xl font-bold">{user?.name}</h1>
+            <p className="text-gray-600">{user?.email}</p>
+            <p className="text-gray-600">
+              {user?.address || "No address added"}
+            </p>
+            <Link to="/user/orders">
+              <button className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
+                My Orders
+              </button>
+            </Link>
+          </div>
+        </div>
 
-      <button
-        onClick={() => setShowOrders(!showOrders)}
-        className="btn btn-secondary"
-      >
-        Orders
-      </button>
-      {showOrders && <Orders />}
+        {/* Order History Section */}
+        <h2 className="text-xl font-bold mb-4">Order History</h2>
+        {orders?.length > 0 ? (
+          <div className="space-y-4">
+            {orders.map((order) => (
+              <div
+                key={order._id}
+                className="flex justify-between items-center p-4 bg-gray-50 rounded-lg shadow"
+              >
+                <div>
+                  <h3 className="font-bold">Order #{order._id}</h3>
+                  <p>
+                    {order.items.length} item(s) - Total: ${order.totalPrice}
+                  </p>
+                  <p>Status: {order.status || "Pending"}</p>
+                </div>
+                <button
+                  onClick={() => {
+                    setSelectedOrder(order);
+                    setIsModalOpen(true);
+                  }}
+                  className="text-blue-500 hover:underline"
+                >
+                  View Details
+                </button>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-gray-500">No orders found.</p>
+        )}
+      </div>
+
+      {/* Order Details Modal */}
+      {isModalOpen && selectedOrder && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
+            <h3 className="text-xl font-bold mb-4">Order Details</h3>
+            <div className="space-y-2">
+              <p>
+                <strong>Order ID:</strong> {selectedOrder._id}
+              </p>
+              <p>
+                <strong>Total Price:</strong> ${selectedOrder.totalPrice}
+              </p>
+              <p>
+                <strong>Status:</strong> {selectedOrder.status || "Pending"}
+              </p>
+              <p>
+                <strong>Payment Method:</strong>{" "}
+                {selectedOrder.paymentMethod || "Not specified"}
+              </p>
+              <h4 className="font-bold mt-4">Items:</h4>
+              <ul className="list-disc ml-5">
+                {selectedOrder.items.map((item) => (
+                  <li key={item.foodItem._id}>
+                    {item.foodItem.name} - ${item.foodItem.price} x{" "}
+                    {item.quantity}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="mt-6 flex justify-between">
+              <button
+                onClick={() => setIsModalOpen(false)}
+                className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
+
+export default UserProfile;

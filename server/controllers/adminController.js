@@ -1,7 +1,7 @@
 // controllers/adminController.js
 
 import bcrypt from 'bcryptjs';
-import Admin from '../models/adminModel.js';
+import{Admin} from '../models/adminModel.js';
 import { generateToken } from '../utils/token.js'; // Ensure this utility is correctly implemented
 import User from '../models/userModel.js';import Order from '../models/orderModel.js';
 import Restaurant from '../models/restaurantModel.js';
@@ -12,124 +12,101 @@ export const adminRegister = async (req, res) => {
         const { name, email, password } = req.body;
 
         if (!name || !email || !password) {
-            return res.status(400).json({ error: "All fields are required" });
+            return res.status(400).json({ success: false, message: 'All fields are required' });
         }
 
-        const adminAlreadyExist = await Admin.findOne({ email }).select("-password");
-
-        if (adminAlreadyExist) {
-            return res.status(400).json({ error: "Admin already exists" });
+        const existingAdmin = await Admin.findOne({ email });
+        if (existingAdmin) {
+            return res.status(400).json({ message: 'Admin already exists' });
         }
 
-        const salt = await bcrypt.genSalt();
-        const hashedPassword = await bcrypt.hash(password, salt);
+        const hashedPassword = bcrypt.hashSync(password, 10);
+        const newAdmin = new Admin({ name, email, password: hashedPassword });
+        await newAdmin.save();
 
-        const newAdmin = new Admin({
-            name,
-            email,
-            password: hashedPassword,
-            isAdmin: true, // Ensure isAdmin is set to true
+        const token = generateToken(newAdmin._id, 'admin');
+
+        res.cookie('token', token, {
+            httpOnly: true,
+            sameSite: 'None',
+            secure: process.env.NODE_ENV === 'production',
         });
 
-        const savedAdmin = await newAdmin.save();
-
-        res.status(200).json({ message: "Admin registered successfully", data: savedAdmin });
+        res.status(201).json({ success: true, message: 'Admin registered successfully', token });
     } catch (error) {
         console.error(error);
-        res.status(error.status || 500).json({ error: error.message || "Internal server error" });
+        res.status(500).json({ success: false, message: error.message || 'Internal server error' });
     }
 };
-
-
-// Admin login
-// export const adminLogin = async (req, res) => {
-//   try {
-//     const { email, password } = req.body;
-//     if (!email || !password) {
-//       return res.status(400).json({ message: "All fields are required" });
-//     }
-
-//     const admin = await Admin.findOne({ email });
-//     if (!admin || !bcrypt.compareSync(password, admin.password)) {
-//       return res.status(401).json({ message: "Invalid email or password" });
-//     }
-
-//     const token = generateToken(admin._id, 'Admin');
-//     res.cookie("token", token, { sameSite: "None", secure: true, httpOnly: true });
-
-//     res.json({ success: true, message: "Admin login successful" });
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ message: error.message || 'Internal server error' });
-//   }
-// };
 
 export const adminLogin = async (req, res) => {
     try {
         const { email, password } = req.body;
 
         if (!email || !password) {
-            return res.status(400).json({ error: "All fields are required" });
+            return res.status(400).json({ message: 'All fields are required' });
         }
 
         const admin = await Admin.findOne({ email });
-
-        if (!admin || !admin.isAdmin) {
-            return res.status(400).json({ error: "Admin not found or invalid credentials" });
+        if (!admin) {
+            return res.status(404).json({ success: false, message: 'Admin not found' });
         }
 
-        const passwordMatch = await bcrypt.compare(password, admin.password);
-
-        if (!passwordMatch) {
-            return res.status(400).json({ error: "Incorrect password" });
+        const isPasswordValid = bcrypt.compareSync(password, admin.password);
+        if (!isPasswordValid) {
+            return res.status(401).json({ success: false, message: 'Invalid credentials' });
         }
 
-        const token = generateToken(admin, "admin");
-
-        res.cookie("adminToken", token, {
-            sameSite: NODE_ENV === "production" ? "None" : "Lax",
-            secure: NODE_ENV === "production",
-            httpOnly: NODE_ENV === "production",
+        const token = generateToken(admin._id, 'admin');
+        res.cookie('token', token, {
+            httpOnly: true,
+            sameSite: 'None',
+            secure: process.env.NODE_ENV === 'production',
         });
 
-        const { password: _, ...adminWithoutPassword } = admin._doc;
-
-        res.status(200).json({ message: "Login successful", data: adminWithoutPassword });
+        res.status(200).json({ success: true, message: 'Login successful', token });
     } catch (error) {
         console.error(error);
-        res.status(error.status || 500).json({ error: error.message || "Internal server error" });
+        res.status(500).json({ success: false, message: error.message || 'Internal server error' });
     }
 };
 
-//admin profile
 export const adminProfile = async (req, res) => {
-  try {
-    const admin = await Admin.findById(req.user.id).select('-password');
-    if (!admin) return res.status(404).json({ message: 'Admin not found' });
+    try {
+        const admin = await Admin.findById(req.user.id).select('-password');
+        if (!admin) {
+            return res.status(404).json({ success: false, message: 'Admin not found' });
+        }
 
-    res.json({ success: true, admin });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: error.message || 'Internal server error' });
-  }
+        res.status(200).json({ success: true, message: 'Admin profile fetched', data: admin });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: error.message || 'Internal server error' });
+    }
 };
 
-// Logout admin
 export const adminLogout = (req, res) => {
-  try {
-    res.clearCookie('token', { sameSite: "None", secure: true, httpOnly: true });
-    res.json({ success: true, message: "Admin logged out" });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: error.message || 'Internal server error' });
-  }
+    try {
+        res.clearCookie('token', {
+            httpOnly: true,
+            sameSite: 'None',
+            secure: process.env.NODE_ENV === 'production',
+        });
+        res.status(200).json({ success: true, message: 'Admin logged out successfully' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: error.message || 'Internal server error' });
+    }
 };
 
-// Check if admin is authorized
 export const checkAdmin = (req, res) => {
-  res.json({ success: true, message: "Admin authorized" });
+    try {
+        res.status(200).json({ success: true, message: 'Admin is authorized' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: error.message || 'Internal server error' });
+    }
 };
-
 // View all users (Admin only)
 export const getAllUsers = async (req, res) => {
   try {

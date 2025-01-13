@@ -4,7 +4,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { clearUser } from "../../redux/features/UserSlice";
 import { FaUserCircle, FaShoppingCart } from "react-icons/fa";
 import logo1 from "../../assets/images/logo.png";
-
+import toast from "react-hot-toast";
+import { axiosInstance } from "../../config/axiosIntance";
 export default function UserHeader() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -19,11 +20,16 @@ export default function UserHeader() {
   }
 
   // Handle logout logic
-  const handleLogout = () => {
+  const handleLogout = async () => {
     if (window.confirm("Are you sure you want to log out?")) {
-      dispatch(clearUser()); // Clear user data from Redux
-      localStorage.removeItem("token"); // Remove authentication token (if stored)
-      navigate("/login"); // Redirect to login page
+      try {
+        await axiosInstance.post("/user/log-out");
+        dispatch(clearUser());
+        localStorage.removeItem("token");
+        navigate("/login");
+      } catch (error) {
+        console.error("Logout failed:", error);
+      }
     }
   };
 

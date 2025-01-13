@@ -10,10 +10,10 @@ import { authUser } from '../middleware/authUser.js';
 
 const router = express.Router();
 
-router.post('/add', authUser, addToCart);                // Add item to cart
-router.get('/getcart', authUser, getCart);                      // Get cart for the user
-router.put('/update', authUser, updateCartItem);         // Update quantity of a cart item
-router.delete('/remove', authUser, removeCartItem);      // Remove a specific item from the cart
-router.delete('/clear', authUser, clearCart);            // Clear all items from the cart
+router.post('/add', authUser, addToCart);                
+router.get('/getcart', authUser, getCart);                      
+router.put('/update', authUser, updateCartItem);         
+router.delete('/remove', authUser, removeCartItem);      
+router.delete('/clear', authUser, clearCart);           
 
 export default router;

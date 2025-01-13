@@ -63,7 +63,7 @@ export const addFoodItem = async (req, res) => {
             description,
             image: imageUrl,
             restaurant,
-            availability: availability === 'true', // Convert to boolean
+            availability: availability === 'true',
         });
 
         await foodItem.save();
@@ -78,9 +78,9 @@ export const update = async (req, res) => {
     try {
         const updates = req.body;
 
-        // Handle image upload if file is provided
+        
         if (req.file) {
-            updates.image = await handleImageUpload(req.file.path); // Upload to Cloudinary
+            updates.image = await handleImageUpload(req.file.path); 
         }
 
         // Validate Google or other direct URLs for image
@@ -118,7 +118,7 @@ export const remove = async (req, res) => {
 // Get food items by restaurant ID
 export const getFoodItemsByRestaurant = async (req, res) => {
     try {
-        const { restaurantId } = req.params; // Extract restaurant ID from request parameters
+        const { restaurantId } = req.params; 
 
         // Validate the restaurant ID format
         if (!restaurantId) {

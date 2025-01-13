@@ -4,9 +4,9 @@ import mongoose from 'mongoose';
 const restaurantSchema = new mongoose.Schema({
     name: {
         type: String,
-        required: [true, 'Name is required'], // Custom error message
-        trim: true, // Removes extra spaces from the name
-        unique: true, // Ensure unique restaurant names
+        required: [true, 'Name is required'], // 
+        trim: true, //
+        unique: true, // 
     },
     address: {
         street: { type: String, trim: true },
@@ -37,22 +37,22 @@ const restaurantSchema = new mongoose.Schema({
         default: 0,
     },
     cuisineType: [
-        { type: String, trim: true }, // Example: ["Italian", "Chinese"]
+        { type: String, trim: true }, // 
     ],
     openingHours: {
-        open: { type: String, trim: true }, // Example: "08:00 AM"
-        close: { type: String, trim: true }, // Example: "10:00 PM"
+        open: { type: String, trim: true }, 
+        close: { type: String, trim: true }, 
     },
     image: {
-        type: String, // URL or file path
+        type: String, 
         trim: true,
     },
     foodItems: [
-        { type: mongoose.Schema.Types.ObjectId, ref: 'FoodItem' }, // Reference to FoodItem
+        { type: mongoose.Schema.Types.ObjectId, ref: 'FoodItem' },
     ],
     isActive: {
         type: Boolean,
-        default: true, // Indicates whether the restaurant is active
+        default: true, 
     },
    //admin: {
        // type: mongoose.Schema.Types.ObjectId,

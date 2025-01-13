@@ -3,22 +3,32 @@ import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { axiosInstance } from "../../config/axiosIntance";
-
-const AdminLogin = () => {
-  // Initialize the react-hook-form
+export const AdminLogin = () => {
   const { register, handleSubmit } = useForm();
-
-  // Navigate after successful login
   const navigate = useNavigate();
 
-  // Form submission handler
+  const admin = {
+    role: "admin",
+    login_api: "/admin/login",
+    profile_route: "/admin/profile",
+  };
+
+  console.log(admin, "=====user");
+
   const onSubmit = async (data) => {
     try {
-      const response = await axiosInstance.post("/admin/login", data);
-      toast.success("Admin login successful!");
-      navigate("/admin"); // Redirect to admin dashboard or home route
+      const response = await axiosInstance({
+        method: "POST",
+        url: admin.login_api,
+        data,
+      });
+      console.log(response, "====response");
+      toast.success("Log-in success");
+      navigate("/admin/profile");
+      console.log(admin);
     } catch (error) {
-      toast.error("Login failed. Please check your credentials.");
+      toast.error("Log-in failed");
+      console.log(error);
     }
   };
 

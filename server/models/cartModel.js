@@ -4,7 +4,7 @@ const cartSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   items: [
     {
-      foodItem: { type: mongoose.Schema.Types.ObjectId, ref: 'FoodItem', required: true }, // Use 'FoodItem'
+      foodItem: { type: mongoose.Schema.Types.ObjectId, ref: 'FoodItem', required: true }, 
       quantity: { type: Number, required: true, min: 1 },
     }
   ],
@@ -15,7 +15,7 @@ const cartSchema = new mongoose.Schema({
 cartSchema.methods.calculateTotalPrice = async function () {
   let total = 0;
   for (const item of this.items) {
-    const food = await mongoose.model('FoodItem').findById(item.foodItem); // Use 'FoodItem'
+    const food = await mongoose.model('FoodItem').findById(item.foodItem);
     total += food.price * item.quantity;
   }
   this.totalPrice = total;

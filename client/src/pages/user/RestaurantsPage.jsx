@@ -15,9 +15,9 @@ export const RestaurantsPage = () => {
   const fetchRestaurants = async () => {
     try {
       const response = await axiosInstance.get("/restaurants");
-      console.log("API Response:", response); // Log the entire response for debugging
-      const data = response?.data?.data || []; // Use response.data.data based on your API response format
-      console.log("Restaurants Data:", data); // Log the extracted data for debugging
+      console.log("API Response:", response);
+      const data = response?.data?.data || [];
+      console.log("Restaurants Data:", data);
       setRestaurants(data);
       setFilteredRestaurants(data);
     } catch (error) {

@@ -4,27 +4,27 @@ import mongoose from 'mongoose';
 const foodSchema = new mongoose.Schema({  
     name: {  
         type: String,  
-        required: [true, 'Name is required'], // Custom error message  
-        trim: true // Removes extra spaces from the name  
+        required: [true, 'Name is required'], 
+        trim: true 
     },  
     description: {  
         type: String,  
-        required: [true, 'Description is required'], // Custom error message  
+        required: [true, 'Description is required'], 
         trim: true  
     },  
     price: {  
         type: Number,  
-        required: [true, 'Price is required'], // Custom error message  
-        min: [0, 'Price must be a positive number'] // Ensure positive prices  
+        required: [true, 'Price is required'], 
+        min: [0, 'Price must be a positive number'] 
     },  
     image: {  
         type: String,  
-        required: [true, 'Image URL is required'] // Custom error message  
+        required: [true, 'Image URL is required'] 
     },  
     restaurant: {  
         type: mongoose.Schema.Types.ObjectId,  
         ref: 'Restaurant',  
-        required: true // Ensure a food item is associated with a restaurant  
+        required: true 
     },  
     availability: {  
         type: Boolean,  

@@ -31,17 +31,6 @@ app.use(cors({
 
 
 
-    // origin: (origin, callback) => {
-    //     if (!origin || allowedOrigins.includes(origin)) {
-    //         callback(null, true);
-    //     } else {
-    //         callback(new Error('Request blocked by CORS policy.'));
-    //     }
-    // },
-    // credentials: true, // Enable credentials (cookies, etc.)
-    // methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    // allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept']
-
 
 // Serve static files for uploads
 app.use('/uploads', express.static(path.join(path.resolve(), '/uploads')));

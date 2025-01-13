@@ -13,7 +13,6 @@ const userSchema = new mongoose.Schema({
   isActive: { type: Boolean, default: true },
 }, { timestamps: true });
 
-// Encrypt password before saving
 
 
 const User = mongoose.model('User', userSchema);

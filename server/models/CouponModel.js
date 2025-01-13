@@ -20,12 +20,12 @@ const couponSchema = new mongoose.Schema({
     default: true,
   },
   cartId: {
-    type: mongoose.Schema.Types.ObjectId, // Referencing the Cart model
-    ref: "Cart", // Reference to the Cart model
-    required: false, // Optional: coupons can be used without a specific cart
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: "Cart", 
+    required: false, 
   },
 });
 
-// Export the Coupon model using ES Modules syntax
+
 const Coupon = mongoose.model("Coupon", couponSchema);
 export default Coupon;

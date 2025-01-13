@@ -42,36 +42,75 @@ export const validateCoupon = async (req, res) => {
 };
 
 // Apply coupon at checkout
+// export const applyCoupon = async (req, res) => {
+//   const { couponCode, cartId } = req.body;
+
+//   try {
+//     const coupon = await Coupon.findOne({ code: couponCode, isActive: true });
+
+//     if (!coupon) {
+//       return res.status(400).json({ message: "Invalid or inactive coupon code" });
+//     }
+
+//     const cart = await Cart.findById(cartId);
+
+//     if (!cart) {
+//       return res.status(400).json({ message: "Cart not found" });
+//     }
+
+//     await cart.calculateTotalPrice();
+
+//     const discount = (cart.totalPrice * coupon.discount) / 100;
+//     const finalAmount = Math.max(0, cart.totalPrice - discount);
+
+//     res.status(200).json({
+//       message: "Coupon applied successfully",
+//       finalAmount,
+//       discountAmount: discount,
+//     });
+//   } catch (error) {
+//     res.status(500).json({
+//       message: "Error applying coupon",
+//       error: error.message || "An unknown error occurred",
+//     });
+//   }
+// };
 export const applyCoupon = async (req, res) => {
-  const { couponCode, cartId } = req.body;
+    const { couponCode, cartId } = req.body;
 
-  try {
-    const coupon = await Coupon.findOne({ code: couponCode, isActive: true });
+    try {
+        const coupon = await Coupon.findOne({ code: couponCode, isActive: true });
 
-    if (!coupon) {
-      return res.status(400).json({ message: "Invalid or inactive coupon code" });
+        if (!coupon) {
+            return res.status(400).json({ message: "Invalid or inactive coupon code" });
+        }
+
+        const cart = await Cart.findById(cartId);
+
+        if (!cart) {
+            return res.status(400).json({ message: "Cart not found" });
+        }
+
+        await cart.calculateTotalPrice();
+
+        if (cart.totalPrice < 10) {
+            return res
+                .status(400)
+                .json({ message: "Coupon cannot be applied to orders less than $10." });
+        }
+
+        const discount = (cart.totalPrice * coupon.discount) / 100;
+        const finalAmount = Math.max(0, cart.totalPrice - discount);
+
+        res.status(200).json({
+            message: "Coupon applied successfully",
+            finalAmount,
+            discountAmount: discount,
+        });
+    } catch (error) {
+        res.status(500).json({
+            message: "Error applying coupon",
+            error: error.message || "An unknown error occurred",
+        });
     }
-
-    const cart = await Cart.findById(cartId);
-
-    if (!cart) {
-      return res.status(400).json({ message: "Cart not found" });
-    }
-
-    await cart.calculateTotalPrice();
-
-    const discount = (cart.totalPrice * coupon.discount) / 100;
-    const finalAmount = Math.max(0, cart.totalPrice - discount);
-
-    res.status(200).json({
-      message: "Coupon applied successfully",
-      finalAmount,
-      discountAmount: discount,
-    });
-  } catch (error) {
-    res.status(500).json({
-      message: "Error applying coupon",
-      error: error.message || "An unknown error occurred",
-    });
-  }
 };

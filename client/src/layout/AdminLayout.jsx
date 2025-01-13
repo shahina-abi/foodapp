@@ -30,6 +30,24 @@ export const Adminlayout = () => {
       dispatch(clearadmin());
     }
   };
+  // const checkAdmin = async () => {
+  //   try {
+  //     const response = await axiosInstance({
+  //       method: "GET",
+  //       url: "/admin/check-admin",
+  //     });
+
+  //     // Save admin data if it exists
+  //     if (response?.data?.data) {
+  //       dispatch(saveadmin(response.data.data));
+  //     } else {
+  //       dispatch(clearadmin());
+  //     }
+  //   } catch (error) {
+  //     console.error("Error checking admin: ", error);
+  //     dispatch(clearadmin());
+  //   }
+  // };
 
   useEffect(() => {
     checkAdmin();

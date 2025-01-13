@@ -40,7 +40,7 @@ import { saveUser } from "../../redux/features/UserSlice";
 //         error.response?.data?.message || "Login failed. Please try again later."
 //       );
 //     }
-//   };
+// };
 export const LoginPage = ({ role = "user" }) => {
   const { register, handleSubmit } = useForm();
   const navigate = useNavigate();
@@ -64,7 +64,7 @@ export const LoginPage = ({ role = "user" }) => {
         url: user.login_api,
         data,
       });
-      console.log(response, "====response");
+      console.log(response.data.user);
       toast.success("Log-in success");
       navigate(user.home_route);
     } catch (error) {
