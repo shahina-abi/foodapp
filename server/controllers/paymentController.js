@@ -1,11 +1,10 @@
-   
+
   import Stripe from "stripe";
 
 // Config stripe
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
    
- 
-export const creatCheckout = async (req, res) => {
+ console.log(process.env.STRIPE_SECRET_KEY);export const creatCheckout = async (req, res) => {
   try {
     const { cartItems } = req.body;
 

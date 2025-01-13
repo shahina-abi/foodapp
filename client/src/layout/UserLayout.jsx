@@ -5,7 +5,7 @@ import UserHeader from "../components/user/UserHeader.jsx";
 import Header from "../components/user/Header.jsx";
 import { useDispatch, useSelector } from "react-redux";
 import { axiosInstance } from "../config/axiosIntance.jsx";
-import { clearUser, saveUser } from "../redux/features/UserSlice.jsx";
+import { clearUser, saveUser } from "../redux/features/UserSlice.js";
 
 export const UserLayout = () => {
   const location = useLocation();
