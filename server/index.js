@@ -23,7 +23,7 @@ app.use(cookieParser());
 // const allowedOrigins = ['http://localhost:5173'];
 
 app.use(cors({
-  origin: ["http://localhost:5173"], // Frontend origin
+  origin: ["http://localhost:5173","https://foodapp-client-lwl6.onrender.com"], // Frontend origin
   credentials: true, // Allows cookies and authorization headers
   methods: ["GET", "POST", "PUT", "DELETE"], // Allowed HTTP methods
 }));
