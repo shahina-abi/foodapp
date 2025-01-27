@@ -29,20 +29,20 @@ import jwt from "jsonwebtoken";
 
 export const authUser = (req, res, next) => {
   try {
-    const token = req.cookies?.token;
-
+    const {token} = req.cookies;
+ console.log("Token from cookies:", token); 
     if (!token) {
       return res.status(401).json({ success: false, message: "Token not provided" });
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
-
+    console.log("Decoded token:", decoded); 
     if (!decoded) {
       return res.status(401).json({ success: false, message: "User not authorized" });
     }
 
     // Attach the user ID to the request
-    req.user = { id: decoded.id };
+    req.user = decoded;
 
     next();
   } catch (error) {

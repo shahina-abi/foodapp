@@ -6,7 +6,7 @@ import { generateToken } from '../utils/token.js'; // Ensure this utility is cor
 import User from '../models/userModel.js';import Order from '../models/orderModel.js';
 import Restaurant from '../models/restaurantModel.js';
 const NODE_ENV = process.env.NODE_ENV;
-
+import Coupon from '../models/CouponModel.js';
 export const adminRegister = async (req, res) => {
     try {
         const { name, email, password } = req.body;
@@ -208,5 +208,39 @@ export const blockUser = async (req, res) => {
       message: "Failed to update user block status.",
       error: error.message,
     });
+  }
+};
+export const createCoupon = async (req, res) => {
+  try {
+    const { code, discount, expiryDate } = req.body;
+
+    // Validate the request body
+    if (!code || !discount || !expiryDate) {
+      return res.status(400).json({ success: false, message: "All fields are required" });
+    }
+
+    // Check if the coupon already exists
+    const existingCoupon = await Coupon.findOne({ code });
+    if (existingCoupon) {
+      return res.status(400).json({ success: false, message: "Coupon code already exists" });
+    }
+
+    // Save the coupon to the database
+    const coupon = new Coupon({
+      code,
+      discount,
+      expiryDate,
+    });
+
+    await coupon.save();
+
+    res.status(201).json({
+      success: true,
+      message: "Coupon created successfully",
+      coupon,
+    });
+  } catch (error) {
+    console.error("Error creating coupon:", error.message);
+    res.status(500).json({ success: false, message: "Failed to create coupon" });
   }
 };

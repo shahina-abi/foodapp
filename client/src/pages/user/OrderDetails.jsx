@@ -1,171 +1,297 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
+// import React, { useState, useEffect } from "react";
+// import { useSelector } from "react-redux";
+// import { axiosInstance } from "../../config/axiosIntance";
+// import { Link } from "react-router-dom";
 
-export default function OrderDetails() {
-  const [user, setUser] = useState(null);
+// const UserOrders = () => {
+//   const { theme } = useSelector((state) => state.theme); // Get theme
+//   const [orders, setOrders] = useState([]); // Store order data
+
+//   useEffect(() => {
+//     const fetchOrderDetails = async () => {
+//       try {
+//         const response = await axiosInstance.get("/order/get-user-orders");
+//         const sortedOrders = response.data?.data?.sort(
+//           (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+//         );
+//         setOrders(sortedOrders);
+//       } catch (error) {
+//         console.error(error);
+//       }
+//     };
+
+//     fetchOrderDetails();
+//   }, []);
+
+//   const textColor = theme ? "text-black" : "text-white";
+
+//   return (
+//     <div className="min-h-screen p-4">
+//       {orders.length !== 0 && (
+//         <h1 className={`text-center font-bold text-2xl my-5 ${textColor}`}>
+//           Orders
+//         </h1>
+//       )}
+//       {orders.length === 0 && (
+//         <Link to="/" className="block text-center mt-10">
+//           <div className="text-center p-6 bg-gray-200 dark:bg-gray-800 rounded-lg">
+//             <p className={`font-medium ${textColor}`}>
+//               We are still waiting to take your first order!
+//             </p>
+//           </div>
+//         </Link>
+//       )}
+//       <div className="space-y-6">
+//         {orders?.map((order) => (
+//           <div key={order._id}>
+//             {order.products.map((product) => (
+//               <div
+//                 key={product._id}
+//                 className={`flex flex-wrap justify-between items-center p-4 rounded-lg shadow ${
+//                   theme ? "bg-yellow-100" : "bg-gray-300"
+//                 }`}
+//               >
+//                 <div className="w-full sm:w-1/6">
+//                   <img
+//                     src={product.productId.image}
+//                     alt={product.productId.title}
+//                     className="w-full h-auto object-contain rounded"
+//                   />
+//                 </div>
+//                 <div className="w-full sm:w-1/4 text-center">
+//                   <p className="font-medium">{product.productId.title}</p>
+//                 </div>
+//                 <div className="w-full sm:w-1/6 text-center">
+//                   <p>{product.quantity}</p>
+//                 </div>
+//                 <div className="w-full sm:w-1/6 text-center">
+//                   <p>₹{product.productId.price * product.quantity}</p>
+//                 </div>
+//                 <div className="w-full sm:w-1/6 text-center">
+//                   {order.returnApprovalStatus === "approved" ||
+//                   order.returnApprovalStatus === "rejected" ? (
+//                     <p className={theme ? "text-yellow-600" : "text-red-600"}>
+//                       {order.returnApprovalStatus === "approved"
+//                         ? `Returned (${new Date(
+//                             order.updatedAt
+//                           ).toLocaleDateString()})`
+//                         : `Rejected (${new Date(
+//                             order.updatedAt
+//                           ).toLocaleDateString()})`}
+//                     </p>
+//                   ) : (
+//                     <Link to={`/user/return/${order._id}`}>
+//                       <button
+//                         className={`py-2 px-4 rounded font-semibold ${
+//                           theme
+//                             ? "bg-yellow-500 text-white"
+//                             : "bg-black text-white"
+//                         }`}
+//                       >
+//                         Return
+//                       </button>
+//                     </Link>
+//                   )}
+//                 </div>
+//               </div>
+//             ))}
+//           </div>
+//         ))}
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default UserOrders;
+// import React, { useState, useEffect } from "react";
+// import { useSelector } from "react-redux";
+// import { axiosInstance } from "../../config/axiosIntance";
+// import { Link } from "react-router-dom";
+
+// const UserOrders = () => {
+//   const { theme } = useSelector((state) => state.theme); // Get theme
+//   const [orders, setOrders] = useState([]); // Store order data
+//   const [loading, setLoading] = useState(true);
+//   const [error, setError] = useState(null);
+
+//   useEffect(() => {
+//     const fetchOrderDetails = async () => {
+//       try {
+//         const response = await axiosInstance.get("/orders/user/orders"); // Corrected API path
+//         const sortedOrders = response.data.orders.sort(
+//           (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+//         );
+//         setOrders(sortedOrders);
+//       } catch (err) {
+//         console.error(err);
+//         setError("Failed to fetch orders. Please try again later.");
+//       } finally {
+//         setLoading(false);
+//       }
+//     };
+
+//     fetchOrderDetails();
+//   }, []);
+
+//   const textColor = theme ? "text-black" : "text-white";
+
+//   if (loading) {
+//     return <p className="text-center">Loading orders...</p>;
+//   }
+
+//   if (error) {
+//     return <p className="text-center text-red-500">{error}</p>;
+//   }
+
+//   return (
+//     <div className="min-h-screen p-4">
+//       {orders.length === 0 ? (
+//         <Link to="/" className="block text-center mt-10">
+//           <div className="text-center p-6 bg-gray-200 dark:bg-gray-800 rounded-lg">
+//             <p className={`font-medium ${textColor}`}>
+//               We are still waiting to take your first order!
+//             </p>
+//           </div>
+//         </Link>
+//       ) : (
+//         <>
+//           <h1 className={`text-center font-bold text-2xl my-5 ${textColor}`}>
+//             Orders
+//           </h1>
+//           <div className="space-y-6">
+//             {orders.map((order) => (
+//               <div key={order._id}>
+//                 {order.items.map((item) => (
+//                   <div
+//                     key={item._id}
+//                     className={`flex flex-wrap justify-between items-center p-4 rounded-lg shadow ${
+//                       theme ? "bg-yellow-100" : "bg-gray-300"
+//                     }`}
+//                   >
+//                     <div className="w-full sm:w-1/6">
+//                       <img
+//                         src={item.foodItem.image}
+//                         alt={item.foodItem.title}
+//                         className="w-full h-auto object-contain rounded"
+//                       />
+//                     </div>
+//                     <div className="w-full sm:w-1/4 text-center">
+//                       <p className="font-medium">{item.foodItem.title}</p>
+//                     </div>
+//                     <div className="w-full sm:w-1/6 text-center">
+//                       <p>{item.quantity}</p>
+//                     </div>
+//                     <div className="w-full sm:w-1/6 text-center">
+//                       <p>₹{item.foodItem.price * item.quantity}</p>
+//                     </div>
+//                   </div>
+//                 ))}
+//               </div>
+//             ))}
+//           </div>
+//         </>
+//       )}
+//     </div>
+//   );
+// };
+
+// export default UserOrders;
+import React, { useState, useEffect } from "react";
+import { useSelector } from "react-redux";
+import { axiosInstance } from "../../config/axiosIntance";
+import { Link } from "react-router-dom";
+
+const UserOrders = () => {
+  const { theme } = useSelector((state) => state.theme);
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedOrder, setSelectedOrder] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [error, setError] = useState(null);
 
-  // Fetch user and order data
   useEffect(() => {
-    const fetchUserData = async () => {
+    const fetchOrders = async () => {
       try {
-        const userRes = await axios.get("/api/user/profile");
-        setUser(userRes.data.user);
-
-        const ordersRes = await axios.get("/api/orders/user");
-        setOrders(ordersRes.data.orders);
-
-        setLoading(false);
-      } catch (error) {
-        console.error(error);
+        const response = await axiosInstance.get("/orders/user/orders");
+        const sortedOrders = response.data.orders.sort(
+          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+        );
+        setOrders(sortedOrders);
+      } catch (err) {
+        console.error("Error fetching orders:", err);
+        setError("Failed to fetch orders. Please try again later.");
+      } finally {
         setLoading(false);
       }
     };
 
-    fetchUserData();
+    fetchOrders();
   }, []);
 
-  // Open modal with order details
-  const openModal = (order) => {
-    setSelectedOrder(order);
-    setIsModalOpen(true);
-  };
-
-  // Close modal
-  const closeModal = () => {
-    setSelectedOrder(null);
-    setIsModalOpen(false);
-  };
-
-  // Cancel order
-  const cancelOrder = async (orderId) => {
-    try {
-      const res = await axios.patch(`/api/orders/${orderId}/cancel`);
-      if (res.data.success) {
-        // Update orders list
-        setOrders((prevOrders) =>
-          prevOrders.map((order) =>
-            order._id === orderId ? { ...order, status: "Canceled" } : order
-          )
-        );
-        // Update selected order in the modal
-        setSelectedOrder((prev) =>
-          prev ? { ...prev, status: "Canceled" } : null
-        );
-        alert("Order canceled successfully");
-      }
-    } catch (error) {
-      console.error("Failed to cancel order:", error);
-      alert("Failed to cancel order. Please try again.");
-    }
-  };
+  const textColor = theme ? "text-black" : "text-white";
 
   if (loading) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        Loading...
-      </div>
-    );
+    return <p className="text-center">Loading orders...</p>;
+  }
+
+  if (error) {
+    return <p className="text-center text-red-500">{error}</p>;
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 py-10">
-      <div className="container mx-auto p-6 bg-white shadow-md rounded-md">
-        {/* User Info Section */}
-        <div className="flex items-center space-x-4 border-b pb-4 mb-4">
-          <img
-            src="https://via.placeholder.com/80"
-            alt="User Avatar"
-            className="w-20 h-20 rounded-full"
-          />
-          <div>
-            <h2 className="text-2xl font-bold">{user?.name || "User Name"}</h2>
-            <p className="text-gray-600">{user?.email || "user@example.com"}</p>
+    <div className="min-h-screen p-4">
+      {orders.length === 0 ? (
+        <Link to="/" className="block text-center mt-10">
+          <div className="text-center p-6 bg-gray-200 dark:bg-gray-800 rounded-lg">
+            <p className={`font-medium ${textColor}`}>
+              We are still waiting to take your first order!
+            </p>
           </div>
-        </div>
-
-        {/* Orders List */}
-        <h3 className="text-xl font-bold mt-8 mb-4">Order History</h3>
-        {orders.length === 0 ? (
-          <p className="text-gray-600">No orders found.</p>
-        ) : (
-          <div className="space-y-4">
+        </Link>
+      ) : (
+        <>
+          <h1 className={`text-center font-bold text-2xl my-5 ${textColor}`}>
+            Your Orders
+          </h1>
+          <div className="space-y-6">
             {orders.map((order) => (
               <div
                 key={order._id}
-                className="p-4 bg-gray-50 shadow rounded-md flex justify-between items-center"
+                className={`p-4 rounded-lg shadow ${
+                  theme ? "bg-yellow-100" : "bg-gray-300"
+                }`}
               >
-                <div>
-                  <h4 className="font-bold text-lg">Order #{order._id}</h4>
-                  <p className="text-gray-600">
-                    {order.items.length} item(s) - Total: ${order.totalPrice}
-                  </p>
-                  <p className="text-sm text-gray-500">
-                    Status: {order.status || "Pending"}
-                  </p>
+                <h2 className="font-bold text-lg">Order ID: {order._id}</h2>
+                <p className="text-sm text-gray-600">
+                  Placed on: {new Date(order.createdAt).toLocaleString()}
+                </p>
+                <p className="text-sm text-gray-600">Status: {order.status}</p>
+                <div className="mt-4 space-y-2">
+                  {order.items.map((item) => (
+                    <div
+                      key={item.foodItem._id}
+                      className="flex justify-between"
+                    >
+                      <span>{item.foodItem.name}</span>
+                      <span>
+                        ₹{item.foodItem.price} x {item.quantity}
+                      </span>
+                    </div>
+                  ))}
                 </div>
-                <button
-                  onClick={() => openModal(order)}
-                  className="text-orange-500 hover:text-orange-600"
-                >
-                  View Details
-                </button>
+                <p className="mt-4 font-semibold">
+                  Total: ₹{order.finalPrice}{" "}
+                  {order.discount > 0 && (
+                    <span className="text-green-600">
+                      (-₹{order.discount} discount)
+                    </span>
+                  )}
+                </p>
               </div>
             ))}
           </div>
-        )}
-      </div>
-
-      {/* Modal */}
-      {isModalOpen && selectedOrder && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white rounded-lg shadow-lg p-6 w-4/5 max-w-lg">
-            <h3 className="text-2xl font-bold mb-4">Order Details</h3>
-            <div className="space-y-2">
-              <p>
-                <strong>Order ID:</strong> {selectedOrder._id}
-              </p>
-              <p>
-                <strong>Total Price:</strong> ${selectedOrder.totalPrice}
-              </p>
-              <p>
-                <strong>Status:</strong> {selectedOrder.status || "Pending"}
-              </p>
-              <p>
-                <strong>Payment Method:</strong> {selectedOrder.paymentMethod}
-              </p>
-              <h4 className="font-bold mt-4">Items:</h4>
-              <ul className="list-disc ml-5">
-                {selectedOrder.items.map((item, index) => (
-                  <li key={index}>
-                    {item.foodItem.name} - ${item.foodItem.price} x{" "}
-                    {item.quantity}
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div className="flex justify-between mt-6">
-              <button
-                onClick={closeModal}
-                className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md transition duration-300"
-              >
-                Close
-              </button>
-              {selectedOrder.status !== "Canceled" && (
-                <button
-                  onClick={() => cancelOrder(selectedOrder._id)}
-                  className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md transition duration-300"
-                >
-                  Cancel Order
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
+        </>
       )}
     </div>
   );
-}
+};
+
+export default UserOrders;

@@ -1,15 +1,16 @@
 import express from "express";
 import { createCoupon, validateCoupon, applyCoupon } from "../controllers/CouponController.js";
+//import { authAdmin } from "../middleware/authAdmin.js";
 
 const router = express.Router();
 
-// Route to create a new coupon (admin only)
-router.post("/create", createCoupon);
+// Admin-only route to create coupons
+router.post("/create",  createCoupon);
 
-// Route to validate a coupon
+// Validate a coupon (accessible to all users)
 router.post("/validate", validateCoupon);
 
-// Route to apply a coupon at checkout
-router.post("/checkout", applyCoupon);
+// Apply a coupon to the cart (accessible to all users)
+router.post("/apply", applyCoupon);
 
 export default router;

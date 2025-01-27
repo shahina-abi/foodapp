@@ -6,6 +6,10 @@ const orderSchema = new mongoose.Schema({
     ref: "User",
     required: true,
   },
+  sessionId:{
+    type:String,
+    required:true,
+  },
   items: [
     {
       foodItem: {
@@ -32,11 +36,11 @@ const orderSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
-  paymentMethod: {
-    type: String,
-    enum: ["Cash", "Card"],
-    required: true,
-  },
+  // paymentMethod: {
+  //   type: String,
+  //   enum: ["Cash", "Card"],
+  //   required: true,
+  // },
   couponCode: {
     type: String,
     default: null,

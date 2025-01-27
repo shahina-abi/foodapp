@@ -112,12 +112,31 @@ export const getOrder = async (req, res) => {
 };
 
 // Get all orders for the logged-in user
+// export const getUserOrders = async (req, res) => {
+//   try {
+//     console.log("Fetching orders for user:", req.user._id);
+//     const orders = await Order.find({ user: req.user._id }).populate("items.foodItem");
+//     console.log("Orders found:", orders);
+//     res.status(200).json({ success: true, orders });
+//   } catch (error) {
+//     console.error("Error fetching orders:", error);
+//     res.status(500).json({ success: false, message: "Failed to fetch orders" });
+//   }
+// };
 export const getUserOrders = async (req, res) => {
   try {
-    const orders = await Order.find({ user: req.user._id }).populate("items.foodItem");
+    const orders = await Order.find({ user: req.user.id })
+      .populate("items.foodItem")
+      .sort({ createdAt: -1 }); // Sort orders by most recent
+
+    if (!orders) {
+      return res.status(404).json({ success: false, message: "No orders found" });
+    }
+
     res.status(200).json({ success: true, orders });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error("Error fetching user orders:", error);
+    res.status(500).json({ success: false, message: "Failed to fetch orders" });
   }
 };
 

@@ -3,44 +3,8 @@ import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { Link } from "react-router-dom";
-
 import { axiosInstance } from "../../config/axiosIntance";
-import { useDispatch } from "react-redux";
-import { saveUser } from "../../redux/features/UserSlice";
-// export const LoginPage = () => {
-//   const { register, handleSubmit } = useForm();
-//   const navigate = useNavigate(); // React Router navigation
-//   const dispatch = useDispatch();
-//   const user = {
-//     login_api: "/user/login", // API endpoint for login
-//     profile_route: "/user/profile",
-//     register_route: "/register",
-//     home_route: "/",
-//   };
 
-//   // Handle form submission
-//   const onSubmit = async (data) => {
-//     try {
-//       const response = await axiosInstance.post("/user/login", data);
-
-//       if (response.data.success && response.data.user) {
-//         toast.success("Login successful!");
-
-//         // Save user data in Redux
-//         dispatch(saveUser(response.data.user));
-
-//         // Navigate to the user profile page
-//         navigate("/");
-//       } else {
-//         throw new Error("Invalid response structure from the server.");
-//       }
-//     } catch (error) {
-//       console.error("Login Error:", error);
-//       toast.error(
-//         error.response?.data?.message || "Login failed. Please try again later."
-//       );
-//     }
-// };
 export const LoginPage = ({ role = "user" }) => {
   const { register, handleSubmit } = useForm();
   const navigate = useNavigate();
@@ -64,7 +28,7 @@ export const LoginPage = ({ role = "user" }) => {
         url: user.login_api,
         data,
       });
-      console.log(response.data.user);
+      console.log(response, "=====response");
       toast.success("Log-in success");
       navigate(user.home_route);
     } catch (error) {
