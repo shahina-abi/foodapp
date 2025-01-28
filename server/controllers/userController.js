@@ -4,7 +4,7 @@ import bcrypt from "bcryptjs"; // Named export
 import { generateToken } from "../utils/token.js"; // Named export
 
 const NODE_ENV = process.env.NODE_ENV;
-
+//user register
 export const registerUser = async (req, res) => {
     try {
         const { name, email, mobile, password } = req.body;
@@ -37,48 +37,32 @@ export const registerUser = async (req, res) => {
     }
 };
 
-// export const userProfile = async (req, res) => {
-//   try {
-//     // Use the authenticated user's ID from the auth middleware
-//     const userId = req.user.id;
-
-//     // Fetch user data, excluding the password
-//     const userData = await User.findById(userId).select('-password');
-
-//     if (!userData) {
-//       return res.status(404).json({ success: false, message: "User not found" });
-//     }
-
-//     res.json({ success: true, message: "User profile fetched", data: userData });
-//   } catch (error) {
-//     console.error("Error fetching user profile:", error);
-//     res.status(500).json({ success: false, message: error.message || "Internal server error" });
-//   }
-// };
-
+//fetch user profile
 export const userProfile = async (req, res) => {
   try {
-    console.log("Request user:", req.user); // Debug if `req.user` is populated
     if (!req.user) {
-      return res.status(401).json({ success: false, message: "Unauthorized. User not authenticated." });
+      return res.status(401).json({ error: "Unauthorized" });
     }
 
-    const userId = req.user.id;
-    const userData = await User.findById(userId).select("-password");
+    console.log("Authenticated user ID:", req.user.id);
 
-    console.log("User data fetched:", userData); // Debug fetched user data
-    if (!userData) {
-      return res.status(404).json({ success: false, message: "User not found." });
+    const user = await User.findById(req.user.id).select("-password");
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
     }
 
-    res.json({ success: true, message: "User profile fetched", data: userData });
+    res.json({
+      success: true,
+      message: "User profile fetched successfully",
+      data: user,
+    });
   } catch (error) {
-    console.error("Error in userProfile route:", error); // Debug unexpected errors
-    res.status(500).json({ success: false, message: "Internal server error." });
+    console.error("Error in userProfile controller:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 };
 
-
+//user login
 export const userlogin = async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -118,7 +102,7 @@ export const userlogin = async (req, res) => {
 // Check if user is authorized
 export const checkUser = async (req, res) => {
   try {
-    const user = req.user; // Extracted via auth middleware
+    const user = req.user;
     if (!user) {
       return res.status(401).json({ success: false, message: "Unauthorized" });
     }
@@ -139,5 +123,35 @@ export const checkUser = async (req, res) => {
 export const userLogout = (req, res) => {
     res.clearCookie('token');
     res.json({ success: true, message: "User logged out" });
+};
+export const editUserProfile = async (req, res) => {
+  try {
+    const { name, email, mobile, address } = req.body;
+
+    // Validate fields
+    if (!name || !email || !mobile) {
+      return res.status(400).json({ success: false, message: "Name, email, and mobile are required" });
+    }
+
+    // Update the user's profile
+    const updatedUser = await User.findByIdAndUpdate(
+      req.user.id, // The authenticated user's ID from the middleware
+      { name, email, mobile, address }, // Fields to update
+      { new: true, runValidators: true } // Return the updated document
+    ).select("-password");
+
+    if (!updatedUser) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Profile updated successfully",
+      data: updatedUser,
+    });
+  } catch (error) {
+    console.error("Error updating user profile:", error);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
 };
 

@@ -1,14 +1,14 @@
 
 
 
-import FoodItem from '../models/foodModel.js'; // Import FoodItem model
-import { handleImageUpload } from '../utils/cloudinary.js'; // Utility for Cloudinary uploads 
+import FoodItem from '../models/foodModel.js'; 
+import { handleImageUpload } from '../utils/cloudinary.js'; 
 import restaurantSchema from "../models/restaurantModel.js"
 // Get all food items
 export const getFoodItems = async (req, res) => {
     try {
         const foodItems = await FoodItem.find().populate('restaurant'); // Populate restaurant field
-        console.log("Fetched Food Items:", foodItems); // Debugging
+        console.log("Fetched Food Items:", foodItems); // 
         res.status(200).json({ success: true, foodItems });
     } catch (error) {
         console.error("Error fetching food items:", error); // Debugging

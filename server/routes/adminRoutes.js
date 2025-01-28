@@ -12,7 +12,7 @@ import {
   updateOrderStatus,
   createRestaurant,
   deleteRestaurant,
-  blockUser,createCoupon
+  blockUser,createCoupon,editAdminProfile
 } from '../controllers/adminController.js';
 import { authAdmin } from '../middleware/authAdmin.js';
 
@@ -31,5 +31,6 @@ router.delete('/restaurants/:restaurantId', authAdmin, deleteRestaurant); // Del
 router.post('/users/block/:userId', authAdmin, blockUser); // Block/Unblock user
    // Delete a user by ID
 router.post("/coupons", authAdmin, createCoupon);
+router.put('/edit-profile', authAdmin, editAdminProfile);
 
 export default router;

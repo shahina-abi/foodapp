@@ -21,7 +21,7 @@ export const createCoupon = async (req, res) => {
       code,
       discount,
       expiryDate,
-      isActive: true, // Ensure coupons are active by default
+      isActive: true, 
     });
 
     await coupon.save();

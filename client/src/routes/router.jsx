@@ -232,7 +232,7 @@ import EditMenu from "../components/admin/EditMenu";
 import UserList from "../components/admin/UserList";
 import { ProtectRoute } from "../routes/ProtectRoute";
 import { Adminlayout } from "../layout/AdminLayout";
-import { UserProfile } from "../pages/user/UserProfile";
+import UserProfile from "../pages/user/UserProfile";
 import { CartPage } from "../pages/user/CartPage";
 import ErrorPage from "../pages/user/ErrorPage";
 import { ProtectedRouteAdmin } from "./ProtectedRouteAdmin";
@@ -326,6 +326,10 @@ export const router = createBrowserRouter([
         ),
       },
     ],
+  },
+  {
+    path: "*",
+    element: <ErrorPage />,
   },
 ]);
 

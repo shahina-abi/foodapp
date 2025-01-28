@@ -54,11 +54,7 @@ export const getCart = async (req, res) => {
       "name price image description"
     );
 
-    // If no cart exists, create an empty cart for the user
-    // if (!cart) {
-    //   cart = new Cart({ user: req.user._id, items: [], totalPrice: 0 });
-    //   await cart.save();
-    // }
+    
  if (!cart) {
             return res.status(404).json({ message: "Cart not found" });
         }

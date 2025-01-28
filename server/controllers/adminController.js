@@ -7,6 +7,8 @@ import User from '../models/userModel.js';import Order from '../models/orderMode
 import Restaurant from '../models/restaurantModel.js';
 const NODE_ENV = process.env.NODE_ENV;
 import Coupon from '../models/CouponModel.js';
+
+//admin register
 export const adminRegister = async (req, res) => {
     try {
         const { name, email, password } = req.body;
@@ -38,7 +40,7 @@ export const adminRegister = async (req, res) => {
         res.status(500).json({ success: false, message: error.message || 'Internal server error' });
     }
 };
-
+//admin login
 export const adminLogin = async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -70,6 +72,7 @@ export const adminLogin = async (req, res) => {
         res.status(500).json({ success: false, message: error.message || 'Internal server error' });
     }
 };
+//fetch admin profile
 
 export const adminProfile = async (req, res) => {
     try {
@@ -84,7 +87,7 @@ export const adminProfile = async (req, res) => {
         res.status(500).json({ success: false, message: error.message || 'Internal server error' });
     }
 };
-
+//admin logout
 export const adminLogout = (req, res) => {
     try {
         res.clearCookie('token', {
@@ -184,8 +187,7 @@ export const deleteRestaurant = async (req, res) => {
 export const blockUser = async (req, res) => {
   try {
     const { userId } = req.params;
-    const { blocked } = req.body; // Receive the new block status from the request
-
+    const { blocked } = req.body; 
     // Validate user existence
     const user = await User.findById(userId);
     if (!user) {
@@ -242,5 +244,37 @@ export const createCoupon = async (req, res) => {
   } catch (error) {
     console.error("Error creating coupon:", error.message);
     res.status(500).json({ success: false, message: "Failed to create coupon" });
+  }
+};
+
+//edit admin profile
+export const editAdminProfile = async (req, res) => {
+  try {
+    const { name, email } = req.body;
+
+    // Validate fields
+    if (!name || !email) {
+      return res.status(400).json({ success: false, message: "Name and email are required" });
+    }
+
+    // Update the admin's profile
+    const updatedAdmin = await Admin.findByIdAndUpdate(
+      req.user.id, // The authenticated admin's ID from the middleware
+      { name, email }, // Fields to update
+      { new: true, runValidators: true } // Return the updated document
+    ).select("-password");
+
+    if (!updatedAdmin) {
+      return res.status(404).json({ success: false, message: "Admin not found" });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Profile updated successfully",
+      data: updatedAdmin,
+    });
+  } catch (error) {
+    console.error("Error updating admin profile:", error);
+    res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
