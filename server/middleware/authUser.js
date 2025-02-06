@@ -25,30 +25,55 @@
 //   }
 // };
 
+// import jwt from "jsonwebtoken";
+
+// export const authUser = (req, res, next) => {
+//   try {
+//     const {token} = req.cookies;
+//  console.log("Token from cookies:", token); 
+//     if (!token) {
+//       return res.status(401).json({ success: false, message: "Token not provided" });
+//     }
+
+//     const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+//     console.log("Decoded token:", decoded); 
+//     if (!decoded) {
+//       return res.status(401).json({ success: false, message: "User not authorized" });
+//     }
+
+//     // Attach the user ID to the request
+//     req.user = decoded;
+
+//     next();
+//   } catch (error) {
+//     res.status(401).json({
+//       success: false,
+//       message: error.message || "Authentication failed",
+//     });
+//   }
+// };
+//const jwt = require("jsonwebtoken");
 import jwt from "jsonwebtoken";
+ export const authUser = (req, res, next) => {
+    try {
+        const { token } = req.cookies;
 
-export const authUser = (req, res, next) => {
-  try {
-    const {token} = req.cookies;
- console.log("Token from cookies:", token); 
-    if (!token) {
-      return res.status(401).json({ success: false, message: "Token not provided" });
+        if (!token) {
+            return res.status(401).json({ message: "token not provided" });
+        }
+
+        const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+
+
+        if (!decoded) {
+            return res.status(401).json({ message: "user not autherized" });
+        }
+
+        req.user = decoded;
+
+        next();
+    } catch (error) {
+        res.status(error.status || 500).json({ error: error.message || "Internal server Error" });
     }
-
-    const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
-    console.log("Decoded token:", decoded); 
-    if (!decoded) {
-      return res.status(401).json({ success: false, message: "User not authorized" });
-    }
-
-    // Attach the user ID to the request
-    req.user = decoded;
-
-    next();
-  } catch (error) {
-    res.status(401).json({
-      success: false,
-      message: error.message || "Authentication failed",
-    });
-  }
 };
+
