@@ -7,7 +7,7 @@ import User from '../models/userModel.js';import Order from '../models/orderMode
 import Restaurant from '../models/restaurantModel.js';
 const NODE_ENV = process.env.NODE_ENV;
 import Coupon from '../models/CouponModel.js';
-
+//import Order from '../models/orderModel.js';
 //admin register
 export const adminRegister = async (req, res) => {
     try {
@@ -27,12 +27,23 @@ export const adminRegister = async (req, res) => {
         await newAdmin.save();
 
         const token = generateToken(newAdmin._id, 'admin');
+res.cookie("token", token, {
+    httpOnly: true,  
+    secure: process.env.NODE_ENV === "production", // Must be true in production
+    sameSite: "Lax", // Change to 'None' only if using cross-origin
+    maxAge: 24 * 60 * 60 * 1000, // 1 day expiration
+});
 
-        res.cookie('token', token, {
-            httpOnly: true,
-            sameSite: 'None',
-            secure: process.env.NODE_ENV === 'production',
-        });
+        // res.cookie('token', token, {
+        //     httpOnly: true,
+        //     sameSite: 'None',
+        //     secure: process.env.NODE_ENV === 'production',
+        // });
+//         res.cookie('token', token, {
+//     httpOnly: true,
+//     sameSite: 'Lax', // Change this if needed
+//     secure: false,  // Only set to true in production
+// });
 
         res.status(201).json({ success: true, message: 'Admin registered successfully', token });
     } catch (error) {
@@ -60,10 +71,10 @@ export const adminLogin = async (req, res) => {
         }
 
         const token = generateToken(admin._id, 'admin');
-        res.cookie('token', token, {
-            httpOnly: true,
-            sameSite: 'None',
-            secure: process.env.NODE_ENV === 'production',
+        res.cookie('token', token,{
+            sameSite: NODE_ENV === "production" ? "None" : "Lax",
+            secure: NODE_ENV === "production",
+            httpOnly: NODE_ENV === "production",
         });
 
         res.status(200).json({ success: true, message: 'Login successful', token });
@@ -104,12 +115,22 @@ export const adminLogout = (req, res) => {
 
 export const checkAdmin = (req, res) => {
     try {
-        res.status(200).json({ success: true, message: 'Admin is authorized' });
+        if (!req.user || req.user.role !== 'admin') {
+            return res.status(401).json({ success: false, message: "Admin not authorized" });
+        }
+        return res.json({ success: true, message: "Admin authorized" });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ success: false, message: error.message || 'Internal server error' });
+        console.log("Error in checkadmin middleware:", error);
+        return res.status(500).json({ success: false, message: error.message || "Internal server error" });
     }
 };
+//     try {
+//         res.status(200).json({ success: true, message: 'Admin is authorized' });
+//     } catch (error) {
+//         console.error(error);
+//         res.status(500).json({ success: false, message: error.message || 'Internal server error' });
+//     }
+// };
 // View all users (Admin only)
 export const getAllUsers = async (req, res) => {
   try {
@@ -276,5 +297,47 @@ export const editAdminProfile = async (req, res) => {
   } catch (error) {
     console.error("Error updating admin profile:", error);
     res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+export const getAdminStats = async (req, res) => {
+  try {
+    const usersCount = await User.countDocuments();
+    const orders = await Order.find();
+    
+    const ordersCount = orders.length;
+    const totalRevenue = orders.reduce((sum, order) => sum + order.totalPrice, 0);
+    
+    const deliveredOrders = orders.filter(order => order.status === "Delivered").length;
+    const pendingOrders = orders.filter(order => order.status === "Pending").length;
+    const canceledOrders = orders.filter(order => order.status === "Canceled").length;
+
+    res.status(200).json({
+      usersCount,
+      ordersCount,
+      totalRevenue,
+      deliveredOrders,
+      pendingOrders,
+      canceledOrders,
+    });
+  } catch (error) {
+    console.error("Error fetching stats:", error);
+    res.status(500).json({ success: false, message: "Failed to fetch stats" });
+  }
+};
+export const deleteCoupon = async (req, res) => {
+  try {
+    const { couponId } = req.params;
+
+    // Find and delete the coupon
+    const coupon = await Coupon.findByIdAndDelete(couponId);
+    
+    if (!coupon) {
+      return res.status(404).json({ success: false, message: "Coupon not found" });
+    }
+
+    res.status(200).json({ success: true, message: "Coupon deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting coupon:", error);
+    res.status(500).json({ success: false, message: "Failed to delete coupon" });
   }
 };

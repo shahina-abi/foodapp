@@ -114,7 +114,7 @@ function Home() {
               placeholder="Search for restaurants"
               className="w-full py-3 px-5 text-gray-800 rounded-lg focus:outline-none mb-4"
             />
-            {/* Add Address Field */}
+            {/* Add Address Field
             <form onSubmit={handleAddAddress} className="space-y-4">
               <input
                 type="text"
@@ -131,7 +131,7 @@ function Home() {
               </button>
             </form>
             {/* Saved Addresses */}
-            {savedAddresses.length > 0 && (
+            {/* {savedAddresses.length > 0 && (
               <div className="mt-6">
                 <h3 className="text-lg font-bold mb-2">Saved Addresses:</h3>
                 <ul className="list-disc list-inside text-left text-gray-200">
@@ -140,7 +140,7 @@ function Home() {
                   ))}
                 </ul>
               </div>
-            )}
+            )} */}
             <div className="flex justify-center space-x-4 mt-4">
               <Link
                 to="/restaurants"

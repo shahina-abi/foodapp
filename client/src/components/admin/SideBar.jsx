@@ -1,75 +1,75 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-function SideBar() {
+const Sidebar = () => {
   return (
-    <div className="drawer">
-      <input id="admin-drawer" type="checkbox" className="drawer-toggle" />
-      <div className="drawer-content flex flex-col min-h-screen bg-gray-100">
-        {/* Main content */}
-        <label
-          htmlFor="admin-drawer"
-          className="btn btn-primary drawer-button m-4"
-        >
-          Open Sidebar
-        </label>
-      </div>
-      <div className="drawer-side">
-        <label
-          htmlFor="admin-drawer"
-          className="drawer-overlay"
-          aria-label="close sidebar"
-        ></label>
-        <ul className="menu bg-gray-800 text-white min-h-full w-80 p-4">
-          <li className="mb-2 text-lg font-semibold text-gray-300">
-            Admin Dashboard
-          </li>
-          <li className="border-b border-gray-700 mb-2"></li>
-
+    <div className="w-64 bg-gray-800 text-white h-screen p-6">
+      <h2 className="text-xl font-bold mb-6">Admin Dashboard</h2>
+      <nav>
+        <ul className="space-y-4">
           <li>
             <Link
-              to="/admin/profile"
-              className="text-gray-300 hover:text-white hover:bg-gray-700 rounded p-2"
+              to="/admin/dashboard"
+              className="block p-2 hover:bg-gray-700 rounded"
             >
-              Profile
-            </Link>
-          </li>
-          <li>
-            <Link
-              to="/admin/restaurants/create"
-              className="text-gray-300 hover:text-white hover:bg-gray-700 rounded p-2"
-            >
-              Create Restaurant
-            </Link>
-          </li>
-          <li>
-            <Link
-              to="/admin/restaurants"
-              className="text-gray-300 hover:text-white hover:bg-gray-700 rounded p-2"
-            >
-              Show Restaurants
-            </Link>
-          </li>
-          <li>
-            <Link
-              to="/admin/fooditems/allfood"
-              className="text-gray-300 hover:text-white hover:bg-gray-700 rounded p-2"
-            >
-              Show Menu
+              Dashboard
             </Link>
           </li>
           <li>
             <Link
               to="/admin/users"
-              className="text-gray-300 hover:text-white hover:bg-gray-700 rounded p-2"
+              className="block p-2 hover:bg-gray-700 rounded"
             >
               Manage Users
             </Link>
           </li>
+          <li>
+            <Link
+              to="/admin/orders"
+              className="block p-2 hover:bg-gray-700 rounded"
+            >
+              Manage Orders
+            </Link>
+          </li>
+          <li>
+            <Link
+              to="/admin/restaurants"
+              className="block p-2 hover:bg-gray-700 rounded"
+            >
+              Manage Restaurants
+            </Link>
+          </li>
+          <li>
+            <Link
+              to="/admin/coupons"
+              className="block p-2 hover:bg-gray-700 rounded"
+            >
+              Manage coupons
+            </Link>
+          </li>
+          <li>
+            <Link
+              to="/admin/profile"
+              className="block p-2 hover:bg-gray-700 rounded"
+            >
+              Profile
+            </Link>
+          </li>
+          <li>
+            <button
+              onClick={() => {
+                localStorage.removeItem("adminToken");
+                window.location.href = "/admin/login";
+              }}
+              className="w-full text-left p-2 hover:bg-gray-700 rounded"
+            >
+              Logout
+            </button>
+          </li>
         </ul>
-      </div>
+      </nav>
     </div>
   );
-}
+};
 
-export default SideBar;
+export default Sidebar;

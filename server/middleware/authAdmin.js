@@ -1,44 +1,76 @@
+
 // import jwt from 'jsonwebtoken';
+
+
+// export const authAdmin = (req, res, next) => {
+//     try {
+//         const { token } = req.cookies;
+//         if (!token) {
+//             return res.status(401).json({ success: false, message: "Unauthorized: No token provided" });
+//         }
+
+//         // Verify the token
+//         const tokenVerified = jwt.verify(token, process.env.JWT_SECRET_KEY);
+
+//         req.user = tokenVerified; // Store verified user information
+
+//         // Check user role
+//         if (tokenVerified.role !== "admin" && tokenVerified.role !== "user") {
+//             return res.status(403).json({ success: false, message: "Unauthorized: Insufficient permissions" });
+//         }
+
+//         // Proceed to the next middleware
+//         next();
+//     } catch (error) {
+//         console.error("Error in adminauth:", error); // Log error details for debugging
+//         res.status(401).json({ success: false, message: "Unauthorized: Invalid token" });
+//     }
+// // };
+// import jwt from "jsonwebtoken";
 
 // export const authAdmin = (req, res, next) => {
 //   try {
-//     const token = req.cookies.adminToken; // Use cookies or headers as needed
-//     if (!token) return res.status(401).json({ error: 'Unauthorized' });
+//     const { token } = req.cookies;
 
-//     const decoded = jwt.verify(token, process.env.JWT_SECRET-KEY);
-//     if (!decoded.isAdmin) {
-//       return res.status(403).json({ error: 'Access denied. Admins only.' });
+//     if (!token) {
+//       return res.status(401).json({ success: false, message: "Unauthorized: No token provided" });
 //     }
 
-//     req.user = decoded; // Attach the decoded token to the request
+//     const tokenVerified = jwt.verify(token, process.env.JWT_SECRET_KEY);
+//     req.user = tokenVerified; 
+
+//     // // ✅ Ensure only admins can proceed
+//     // if (tokenVerified.role !== "admin") {
+//     //   return res.status(403).json({ success: false, message: "Unauthorized: Admin access required" });
+//     // }
+// if (tokenVerified.role !== "admin" && tokenVerified.role !== "user") {
+//             return res.status(403).json({ success: false, message: "Unauthorized: Insufficient permissions" });
+//         }
 //     next();
 //   } catch (error) {
-//     res.status(401).json({ error: 'Invalid or expired token' });
-//   }import jwt from 'jsonwebtoken';
-import jwt from 'jsonwebtoken';
-
-
+//     console.error("Error in authAdmin middleware:", error);
+//     res.status(401).json({ success: false, message: "Unauthorized: Invalid token" });
+//   }
+// };
+ import jwt from "jsonwebtoken";
 export const authAdmin = (req, res, next) => {
-    try {
-        const { token } = req.cookies;
-        if (!token) {
-            return res.status(401).json({ success: false, message: "Unauthorized: No token provided" });
-        }
+  try {
+    const token = req.cookies.token || req.headers.authorization?.split(" ")[1]; // ✅ Try getting token from cookies first
 
-        // Verify the token
-        const tokenVerified = jwt.verify(token, process.env.JWT_SECRET_KEY);
-
-        req.user = tokenVerified; // Store verified user information
-
-        // Check user role
-        if (tokenVerified.role !== "admin" && tokenVerified.role !== "user") {
-            return res.status(403).json({ success: false, message: "Unauthorized: Insufficient permissions" });
-        }
-
-        // Proceed to the next middleware
-        next();
-    } catch (error) {
-        console.error("Error in adminauth:", error); // Log error details for debugging
-        res.status(401).json({ success: false, message: "Unauthorized: Invalid token" });
+    if (!token) {
+      return res.status(401).json({ success: false, message: "Unauthorized: No token provided" });
     }
+
+    const tokenVerified = jwt.verify(token, process.env.JWT_SECRET_KEY);
+    req.user = tokenVerified;
+
+    if (tokenVerified.role !== "admin" && tokenVerified.role !== "user") {
+      return res.status(403).json({ success: false, message: "Unauthorized: Insufficient permissions" });
+    }
+
+    next();
+  } catch (error) {
+    console.error("Error in authAdmin middleware:", error);
+    res.status(401).json({ success: false, message: "Unauthorized: Invalid token" });
+  }
 };

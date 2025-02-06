@@ -45,7 +45,7 @@ export const RegisterPage = ({ role = "user" }) => {
   };
 
   return (
-    <div className="hero bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 min-h-screen flex items-center justify-center">
+    <div className="hero bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 min-h-screen flex items-center justify-center">
       <div className="card w-full max-w-md p-6 bg-white shadow-xl rounded-lg">
         {/* Heading Section */}
         <h1 className="text-3xl font-bold text-center text-gray-800 mb-4">
@@ -96,7 +96,18 @@ export const RegisterPage = ({ role = "user" }) => {
               required
             />
           </div>
-
+          <div className="form-group">
+            <label className="block text-gray-600 font-medium mb-1">
+              Address
+            </label>
+            <input
+              type="text"
+              {...register("address")}
+              placeholder="Enter your address"
+              className="input input-bordered w-full"
+              required
+            />
+          </div>
           {/* Password Field */}
           <div className="form-group">
             <label className="block text-gray-600 font-medium mb-1">

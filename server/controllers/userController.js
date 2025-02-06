@@ -7,9 +7,9 @@ const NODE_ENV = process.env.NODE_ENV;
 //user register
 export const registerUser = async (req, res) => {
     try {
-        const { name, email, mobile, password } = req.body;
+        const { name, email, mobile, password , address} = req.body;
 
-        if (!name || !email || !mobile || !password) {
+        if (!name || !email || !mobile || !password || !address) {
             return res.status(400).json({ error: "All fields are required" });
         }
 
@@ -26,6 +26,7 @@ export const registerUser = async (req, res) => {
             email,
             password: hashedPassword,
             mobile,
+            address
         });
 
         const savedUser = await newUser.save();
@@ -89,7 +90,11 @@ export const userlogin = async (req, res) => {
         }
         const token = generateToken(user, "user",res);
 
-        res.cookie("token",token) ;
+        res.cookie("token",token,{
+            sameSite: NODE_ENV === "production" ? "None" : "Lax",
+            secure: NODE_ENV === "production",
+            httpOnly: NODE_ENV === "production",
+        }); 
 
         const { password: _, ...userWithOutPassword } = user._doc;
 
@@ -100,30 +105,62 @@ export const userlogin = async (req, res) => {
     }
 };
 // Check if user is authorized
+// export const checkUser = async (req, res) => {
+//   try {
+//     const user = req.user;
+//     if (!user) {
+//       return res.status(401).json({ success: false, message: "Unauthorized" });
+//     }
+
+//     // Fetch full user details from the database
+//     const userData = await User.findById(user.id).select("-password"); // Exclude password
+//     if (!userData) {
+//       return res.status(404).json({ success: false, message: "User not found" });
+//     }
+
+//     res.status(200).json({ success: true, message: "User is authenticated", user: userData });
+//   } catch (error) {
+//     res.status(500).json({ success: false, message: "Internal Server Error" });
+//   }
+// };
 export const checkUser = async (req, res) => {
-  try {
-    const user = req.user;
-    if (!user) {
-      return res.status(401).json({ success: false, message: "Unauthorized" });
+    try {
+        res.status(200).json({ message: "autherized user" });
+    } catch (error) {
+        console.log(error);
+        res.status(error.status || 500).json({ error: error.message || "Internal server Error" });
     }
-
-    // Fetch full user details from the database
-    const userData = await User.findById(user.id).select("-password"); // Exclude password
-    if (!userData) {
-      return res.status(404).json({ success: false, message: "User not found" });
-    }
-
-    res.status(200).json({ success: true, message: "User is authenticated", user: userData });
-  } catch (error) {
-    res.status(500).json({ success: false, message: "Internal Server Error" });
-  }
 };
-
 // Logout user
+// export const userLogout = (req, res) => {
+//     try{
+//       res.clearCookie('token', {
+//             sameSite: "None",
+//             secure: true,
+//             httpOnly: true,
+//         });
+    
+//         res.status(200).json({ message: "user logout success" });
+//     } catch (error) {
+//         console.log(error);
+//         res.status(error.status || 500).json({ error: error.message || "Internal server Error" });
+//     }
+// };
 export const userLogout = (req, res) => {
-    res.clearCookie('token');
-    res.json({ success: true, message: "User logged out" });
+    try {
+        res.clearCookie("token", {
+            sameSite: "None",
+            secure: true,
+            httpOnly: true,
+        });
+
+        return res.status(200).json({ success: true, message: "User logged out successfully" });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ success: false, message: "Internal server error" });
+    }
 };
+
 export const editUserProfile = async (req, res) => {
   try {
     const { name, email, mobile, address } = req.body;

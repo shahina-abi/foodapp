@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { axiosInstance } from "../../config/axiosInstance";
+import { axiosInstance } from "../../config/axiosIntance";
 import { toast } from "react-toastify";
 
 const CreateCouponForm = () => {
