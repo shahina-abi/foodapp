@@ -23,9 +23,13 @@ app.use(cookieParser());
 // const allowedOrigins = ['http://localhost:5173'];
 
 app.use(cors({
-  origin: ["http://localhost:5173","https://foodapp-client-lwl6.onrender.com","https://foodapp-client-zeta.vercel.app"], // Frontend origin
-  credentials: true, // Allows cookies and authorization headers
-  methods: ["GET", "POST", "PUT", "DELETE"], // Allowed HTTP methods
+  origin: [
+    "http://localhost:5173","https://food-delivery-app-eight-self.vercel.app",
+    "https://foodapp-client-lwl6.onrender.com",
+    
+  ],
+  credentials: true,  // ✅ Required for cookies
+  methods: ["GET", "POST", "PUT", "DELETE"],
 }));
 
 
