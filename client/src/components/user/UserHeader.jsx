@@ -6,6 +6,7 @@
 // import logo1 from "../../assets/images/logo.png";
 // import toast from "react-hot-toast";
 // import { axiosInstance } from "../../config/axiosIntance";
+
 // export default function UserHeader() {
 //   const dispatch = useDispatch();
 //   const navigate = useNavigate();
@@ -14,21 +15,21 @@
 //   console.log("UserHeader - isUserAuth:", isUserAuth);
 //   console.log("UserHeader - userData:", userData);
 
-//   // Prevent rendering if the user is not authenticated
 //   if (!isUserAuth) {
 //     return null;
 //   }
 
-//   // Handle logout logic
 //   const handleLogout = async () => {
 //     if (window.confirm("Are you sure you want to log out?")) {
 //       try {
 //         await axiosInstance.post("/user/log-out");
 //         dispatch(clearUser());
 //         localStorage.removeItem("token");
+//         toast.success("Logged out successfully!");
 //         navigate("/login");
 //       } catch (error) {
 //         console.error("Logout failed:", error);
+//         toast.error("Logout failed. Please try again.");
 //       }
 //     }
 //   };
@@ -38,11 +39,7 @@
 //       <div className="container mx-auto flex justify-between items-center py-4 px-6">
 //         {/* Logo */}
 //         <div className="flex items-center space-x-4">
-//           <img
-//             src={logo1} // Replace with your actual logo path
-//             alt="FoodBae Logo"
-//             className="w-12 h-auto" // Adjust dimensions for responsiveness
-//           />
+//           <img src={logo1} alt="FoodBae Logo" className="w-12 h-auto" />
 //           <div className="text-2xl font-bold text-orange-500">
 //             <Link to="/">FoodBae</Link>
 //           </div>
@@ -70,31 +67,29 @@
 //           </ul>
 //         </nav>
 
-//         {/* User-Specific Options */}
-//         <div className="flex space-x-4 items-center">
-//           {/* Show logged-in user's name */}
+//         {/* User Section */}
+//         <div className="flex space-x-6 items-center">
+//           {/* Display User Name */}
 //           {userData?.name && (
 //             <span className="text-sm text-gray-300">
 //               Hello, <span className="font-bold">{userData.name}</span>
 //             </span>
 //           )}
 
-//           {/* Profile Link with Icon */}
+//           {/* Profile Link */}
 //           <Link
 //             to={"/user/profile"}
-//             className="hover:text-orange-400 transition duration-300 flex items-center space-x-2"
-//             aria-label="Profile"
+//             className="hover:text-orange-400 transition duration-300"
 //           >
-//             <FaUserCircle size={20} />
+//             <FaUserCircle size={22} />
 //           </Link>
 
-//           {/* Cart Link with Icon */}
+//           {/* Cart Link */}
 //           <Link
-//             to={"user/cart"}
-//             className="hover:text-orange-400 transition duration-300 flex items-center space-x-2"
-//             aria-label="Cart"
+//             to={"/user/cart"}
+//             className="hover:text-orange-400 transition duration-300"
 //           >
-//             <FaShoppingCart size={20} />
+//             <FaShoppingCart size={22} />
 //           </Link>
 
 //           {/* Logout Button */}
@@ -125,10 +120,6 @@ export default function UserHeader() {
 
   console.log("UserHeader - isUserAuth:", isUserAuth);
   console.log("UserHeader - userData:", userData);
-
-  if (!isUserAuth) {
-    return null;
-  }
 
   const handleLogout = async () => {
     if (window.confirm("Are you sure you want to log out?")) {
@@ -181,11 +172,10 @@ export default function UserHeader() {
         {/* User Section */}
         <div className="flex space-x-6 items-center">
           {/* Display User Name */}
-          {userData?.name && (
-            <span className="text-sm text-gray-300">
-              Hello, <span className="font-bold">{userData.name}</span>
-            </span>
-          )}
+          <span className="text-sm text-gray-300">
+            Hello,{" "}
+            <span className="font-bold">{userData?.name || "Guest"}</span>
+          </span>
 
           {/* Profile Link */}
           <Link
@@ -203,13 +193,15 @@ export default function UserHeader() {
             <FaShoppingCart size={22} />
           </Link>
 
-          {/* Logout Button */}
-          <button
-            onClick={handleLogout}
-            className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md transition duration-300"
-          >
-            Logout
-          </button>
+          {/* Logout Button (Only if logged in) */}
+          {isUserAuth && (
+            <button
+              onClick={handleLogout}
+              className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md transition duration-300"
+            >
+              Logout
+            </button>
+          )}
         </div>
       </div>
     </header>

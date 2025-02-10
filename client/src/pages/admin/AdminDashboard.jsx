@@ -8,33 +8,7 @@ const AdminDashboard = () => {
   const [orderStatus, setOrderStatus] = useState([0, 0, 0]); // Delivered, Pending, Canceled
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  // useEffect(() => {
-  //   const fetchStats = async () => {
-  //     try {
-  //       const { data } = await axiosInstance.get("/admin/stats", {
-  //         withCredentials: true,
-  //       });
-  //       console.log("Fetched Stats:", data);
-  //       setStats({
-  //         users: data.usersCount,
-  //         orders: data.ordersCount,
-  //         revenue: data.totalRevenue,
-  //       });
-  //       setOrderStatus([
-  //         data.deliveredOrders,
-  //         data.pendingOrders,
-  //         data.canceledOrders,
-  //       ]);
-  //     } catch (err) {
-  //       console.error("Error fetching stats:", err.response?.data?.message);
-  //       setError(err.response?.data?.message || "Failed to load data");
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
 
-  //   fetchStats();
-  // }, []);
   useEffect(() => {
     const fetchStats = async () => {
       try {
@@ -67,32 +41,6 @@ const AdminDashboard = () => {
 
     fetchStats();
   }, []);
-
-  // useEffect(() => {
-  //   const fetchStats = async () => {
-  //     try {
-  //       const { data } = await axiosInstance.get("/admin/stats"); // Uses axiosInstance
-
-  //       setStats({
-  //         users: data.usersCount,
-  //         orders: data.ordersCount,
-  //         revenue: data.totalRevenue,
-  //       });
-
-  //       setOrderStatus([
-  //         data.deliveredOrders,
-  //         data.pendingOrders,
-  //         data.canceledOrders,
-  //       ]);
-  //     } catch (err) {
-  //       setError(err.response?.data?.message || "Failed to load data");
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-
-  //   fetchStats();
-  // }, []);
 
   return (
     <div className="flex">

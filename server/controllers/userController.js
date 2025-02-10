@@ -98,7 +98,8 @@ export const userlogin = async (req, res) => {
 
         const { password: _, ...userWithOutPassword } = user._doc;
 
-        res.status(200).json({ message: "login successfull", data: userWithOutPassword });
+        res.status(200).json({ message: "login successfull", data: userWithOutPassword
+            });
     } catch (error) {
         console.log(error);
         res.status(error.status || 500).json({ error: error.message || "Internal server Error" });
@@ -123,29 +124,42 @@ export const userlogin = async (req, res) => {
 //     res.status(500).json({ success: false, message: "Internal Server Error" });
 //   }
 // };
-export const checkUser = async (req, res) => {
-    try {
-        res.status(200).json({ message: "autherized user" });
-    } catch (error) {
-        console.log(error);
-        res.status(error.status || 500).json({ error: error.message || "Internal server Error" });
-    }
-};
-// Logout user
-// export const userLogout = (req, res) => {
-//     try{
-//       res.clearCookie('token', {
-//             sameSite: "None",
-//             secure: true,
-//             httpOnly: true,
-//         });
-    
-//         res.status(200).json({ message: "user logout success" });
+// export const checkUser = async (req, res) => {
+//     try {
+//         res.status(200).json({ message: "autherized user" });
 //     } catch (error) {
 //         console.log(error);
 //         res.status(error.status || 500).json({ error: error.message || "Internal server Error" });
 //     }
 // };
+export const checkUser = async (req, res) => {
+  try {
+    const user = req.user;
+    if (!user) {
+      return res.status(401).json({ success: false, message: "Unauthorized" });
+    }
+
+    const userData = await User.findById(user.id).select("-password");
+
+    if (!userData) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "User is authenticated",
+      data: {
+        id: userData._id,
+        name: userData.name, // Ensure this is included!
+        email: userData.email,
+        role: userData.role,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+};
+
 export const userLogout = (req, res) => {
     try {
         res.clearCookie("token", {

@@ -361,7 +361,7 @@ import ProtectedRouteAdmin from "./ProtectedRouteAdmin";
 import PaymentSuccess from "../pages/user/PaymentSuccess";
 import PaymentCancel from "../pages/user/PaymentCancel";
 import UserOrders from "../pages/user/OrderDetails";
-
+import AdminRegister from "../components/admin/AdminRegister";
 export const router = createBrowserRouter([
   // User Layout
   {
@@ -395,6 +395,8 @@ export const router = createBrowserRouter([
     path: "admin",
     children: [
       { path: "login", element: <AdminLogin /> },
+      { path: "register", element: <AdminRegister /> },
+
       {
         element: (
           <ProtectedRouteAdmin>
