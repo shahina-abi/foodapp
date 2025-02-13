@@ -120,7 +120,7 @@ export default function UserHeader() {
 
   console.log("UserHeader - isUserAuth:", isUserAuth);
   console.log("UserHeader - userData:", userData);
-
+  console.log("UserHeader - Redux State:", { isUserAuth, userData });
   const handleLogout = async () => {
     if (window.confirm("Are you sure you want to log out?")) {
       try {
@@ -172,6 +172,7 @@ export default function UserHeader() {
         {/* User Section */}
         <div className="flex space-x-6 items-center">
           {/* Display User Name */}
+
           <span className="text-sm text-gray-300">
             Hello,{" "}
             <span className="font-bold">{userData?.name || "Guest"}</span>

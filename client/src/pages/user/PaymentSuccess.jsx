@@ -142,7 +142,20 @@ const PaymentSuccess = () => {
   // Extract the session ID from the query parameters
   const queryParams = new URLSearchParams(location.search);
   const sessionId = queryParams.get("session_id");
-
+  // clear cart
+  const clearCart = async () => {
+    try {
+      const response = await axiosInstance.post("/cart/clear");
+      if (response.data.success) {
+        toast.success("Cart cleared successfully!");
+      } else {
+        toast.error("Failed to clear cart.");
+      }
+    } catch (error) {
+      console.error("Error clearing cart:", error.message);
+      toast.error("Could not clear cart.");
+    }
+  };
   // Fetch session status
   const fetchSessionStatus = async (sessionId) => {
     try {
@@ -153,6 +166,8 @@ const PaymentSuccess = () => {
         console.log("Payment Details:", response.data);
         setOrderDetails(response.data.order); // Save the order details to state
         toast.success("Payment confirmed! Your order is being processed.");
+        // ✅ Clear cart after successful payment
+        clearCart();
       } else {
         toast.error(response.data.message || "Failed to confirm payment.");
         setError(response.data.message);

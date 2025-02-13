@@ -22,12 +22,12 @@
 
 // export const { saveUser, clearUser } = userSlice.actions;
 // export default userSlice.reducer;
-// import { createSlice } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
 
-// const initialState = {
-//   isUserAuth: false,
-//   userData: {},
-// };
+const initialState = {
+  isUserAuth: false,
+  userData: {},
+};
 
 // export const userSlice = createSlice({
 //   name: "user",
@@ -43,28 +43,18 @@
 //     },
 //   },
 // });
-
-// // Action creators are generated for each case reducer function
-// export const { saveUser, clearUser } = userSlice.actions;
-
-// export default userSlice.reducer;
-import { createSlice } from "@reduxjs/toolkit";
-
-const initialState = {
-  isUserAuth: false,
-  userData: {},
-};
-
 const userSlice = createSlice({
   name: "user",
   initialState,
   reducers: {
-    saveUser: (state, action) => {
-      return { isUserAuth: true, userData: action.payload };
-    },
-    clearUser: () => initialState, // Reset to initial state
+   saveUser: (state, action) => {
+  return { isUserAuth: true, userData: action.payload.data }; // Store data directly
+},
+    clearUser: () => initialState,
   },
 });
 
+// Action creators are generated for each case reducer function
 export const { saveUser, clearUser } = userSlice.actions;
+
 export default userSlice.reducer;

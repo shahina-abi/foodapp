@@ -555,18 +555,39 @@ export const CartPage = () => {
   };
 
   // Remove an item from the cart
+  // const handleRemoveItem = async (foodItemId) => {
+  //   try {
+  //     const response = await axiosInstance.delete("/cart/remove", {
+  //       data: { foodItemId },
+  //     });
+  //     if (response.data.success) {
+  //       toast.success("Item removed successfully!");
+  //       fetchCartItems();
+  //     } else {
+  //       toast.error("Failed to remove item.");
+  //     }
+  //   } catch (err) {
+  //     toast.error("Error removing item from cart.");
+  //   }
+  // };
   const handleRemoveItem = async (foodItemId) => {
     try {
       const response = await axiosInstance.delete("/cart/remove", {
         data: { foodItemId },
       });
+
+      console.log("Delete response:", response.data); // ✅ Debugging log
+
       if (response.data.success) {
         toast.success("Item removed successfully!");
-        fetchCartItems();
+        setCartItems((prevItems) =>
+          prevItems.filter((item) => item.foodItem._id !== foodItemId)
+        );
       } else {
         toast.error("Failed to remove item.");
       }
     } catch (err) {
+      console.error("Error deleting item:", err); // ✅ Check for errors
       toast.error("Error removing item from cart.");
     }
   };

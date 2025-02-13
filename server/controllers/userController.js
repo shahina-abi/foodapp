@@ -64,18 +64,59 @@ export const userProfile = async (req, res) => {
 };
 
 //user login
+// export const userlogin = async (req, res) => {
+//     try {
+//         const { email, password } = req.body;
+
+//         if (!email || !password) {
+//             return res.status(400).json({ error: "All feilds are required" });
+//         }
+
+//         const user = await User.findOne({ email });
+
+//         if (!user) {
+//             return res.status(400).json({ error: "User not exist" });
+//         }
+
+//         const passwordMatch = await bcrypt.compare(password, user.password);
+//         console.log(passwordMatch, "passwordMatch");
+
+//         if (!passwordMatch) {
+//             return res.status(400).json({ error: "Incorrect password" });
+//         }
+
+//         if (!user.isActive) {
+//             return res.status(400).json({ error: "User profile has deactivated" });
+//         }
+//         const token = generateToken(user, "user",res);
+
+//         res.cookie("token",token,{
+//             sameSite: NODE_ENV === "production" ? "None" : "Lax",
+//             secure: NODE_ENV === "production",
+//             httpOnly: NODE_ENV === "production",
+//         }); 
+
+//         const { password: _, ...userWithOutPassword } = user._doc;
+
+//         res.status(200).json({ message: "login successfull", data: userWithOutPassword
+//             });
+//     } catch (error) {
+//         console.log(error);
+//         res.status(error.status || 500).json({ error: error.message || "Internal server Error" });
+//     }
+// };
 export const userlogin = async (req, res) => {
     try {
         const { email, password } = req.body;
 
         if (!email || !password) {
-            return res.status(400).json({ error: "All feilds are required" });
+            return res.status(400).json({ error: "All fields are required" });
         }
 
         const user = await User.findOne({ email });
 
         if (!user) {
-            return res.status(400).json({ error: "User not exist" });
+            return res.status(400).json({ error: "User does not exist" });
         }
 
         const passwordMatch = await bcrypt.compare(password, user.password);
@@ -86,25 +127,38 @@ export const userlogin = async (req, res) => {
         }
 
         if (!user.isActive) {
-            return res.status(400).json({ error: "User profile has deactivated" });
+            return res.status(400).json({ error: "User profile has been deactivated" });
         }
-        const token = generateToken(user, "user",res);
 
-        res.cookie("token",token,{
+        const token = generateToken(user, "user", res);
+
+        res.cookie("token", token, {
             sameSite: NODE_ENV === "production" ? "None" : "Lax",
             secure: NODE_ENV === "production",
             httpOnly: NODE_ENV === "production",
-        }); 
+        });
 
-        const { password: _, ...userWithOutPassword } = user._doc;
+        console.log("Login successful - User Data:", user); // Debugging Line
 
-        res.status(200).json({ message: "login successfull", data: userWithOutPassword
-            });
+        const { password: _, ...userWithoutPassword } = user._doc;
+
+        res.status(200).json({
+            message: "Login successful",
+            data: {
+                id: userWithoutPassword._id,
+                name: userWithoutPassword.name,  // Ensure 'name' is included!
+                email: userWithoutPassword.email,
+                mobile: userWithoutPassword.mobile,
+                address: userWithoutPassword.address,
+                role: userWithoutPassword.role,
+            },
+        });
     } catch (error) {
         console.log(error);
-        res.status(error.status || 500).json({ error: error.message || "Internal server Error" });
+        res.status(error.status || 500).json({ error: error.message || "Internal server error" });
     }
 };
+
 // Check if user is authorized
 // export const checkUser = async (req, res) => {
 //   try {

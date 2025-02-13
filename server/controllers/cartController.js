@@ -69,27 +69,68 @@ export const getCart = async (req, res) => {
 
 
 // Update the quantity of a specific item in the cart
+// export const updateCartItem = async (req, res) => {
+//   try {
+//     const { foodItemId, quantity } = req.body;
+
+//     const cart = await Cart.findOne({ user: req.user._id });
+//     if (!cart) {
+//       return res.status(404).json({ success: false, message: 'Cart not found' });
+//     }
+
+//     const item = cart.items.find(item => item.foodItem.toString() === foodItemId);
+//     if (!item) {
+//       return res.status(404).json({ success: false, message: 'Item not found in cart' });
+//     }
+
+//     item.quantity = quantity;
+//     await cart.calculateTotalPrice();
+//     res.json({ success: true, message: 'Cart item updated', cart });
+//   } catch (error) {
+//     res.status(500).json({ success: false, message: error.message });
+//   }
+// };
 export const updateCartItem = async (req, res) => {
-  try {
-    const { foodItemId, quantity } = req.body;
+    try {
+        console.log("🔹 Received Request:", req.body); // ✅ Log request data
 
-    const cart = await Cart.findOne({ user: req.user._id });
-    if (!cart) {
-      return res.status(404).json({ success: false, message: 'Cart not found' });
+        const { foodItemId, quantity } = req.body;
+        const userId = req.user.id;  // ✅ Get `userId` from `req.user`, not body
+
+        if (!userId || !foodItemId || quantity <= 0) {
+            return res.status(400).json({ success: false, message: "Invalid request data" });
+        }
+
+        // ✅ Find the cart based on userId
+        const cart = await Cart.findOne({ userId });
+
+        if (!cart) {
+            console.log("🚨 Cart not found for user:", userId);
+            return res.status(404).json({ success: false, message: "Cart not found" });
+        }
+
+        console.log("✅ Cart found:", JSON.stringify(cart, null, 2));
+
+        // ✅ Find the item inside the cart
+        const itemIndex = cart.items.findIndex((item) => item.foodItem.toString() === foodItemId);
+        if (itemIndex === -1) {
+            console.log("❌ Item not found in cart:", foodItemId);
+            return res.status(404).json({ success: false, message: "Item not found in cart" });
+        }
+
+        // ✅ Update quantity and save
+        cart.items[itemIndex].quantity = quantity;
+        await cart.calculateTotalPrice();
+        await cart.save();
+
+        res.json({ success: true, message: "Cart item updated", cart });
+    } catch (error) {
+        console.error("❌ Error updating cart:", error.message);
+        res.status(500).json({ success: false, message: error.message });
     }
-
-    const item = cart.items.find(item => item.foodItem.toString() === foodItemId);
-    if (!item) {
-      return res.status(404).json({ success: false, message: 'Item not found in cart' });
-    }
-
-    item.quantity = quantity;
-    await cart.calculateTotalPrice();
-    res.json({ success: true, message: 'Cart item updated', cart });
-  } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
-  }
 };
+
+
 
 // Remove an item from the cart
 export const removeCartItem = async (req, res) => {
