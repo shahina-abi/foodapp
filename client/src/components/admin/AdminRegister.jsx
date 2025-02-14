@@ -20,13 +20,13 @@ export const AdminRegister = () => {
           "Authorization"
         ] = `Bearer ${response.data.token}`;
         dispatch(saveAdmin(response.data));
-        toast.success("✅ Registration successful!", { position: "top-right" });
+        toast.success(" Registration successful!", { position: "top-right" });
         navigate("/admin/dashboard");
       } else {
-        toast.error("❌ Registration failed", { position: "top-right" });
+        toast.error(" Registration failed", { position: "top-right" });
       }
     } catch (error) {
-      toast.error("❌ Registration failed. Please try again.", {
+      toast.error("Registration failed. Please try again.", {
         position: "top-right",
       });
       console.error("Registration Error:", error);

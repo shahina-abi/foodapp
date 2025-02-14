@@ -9,7 +9,7 @@ router.post('/register', registerUser);
 router.post('/login', userlogin);
 router.get('/profile', authUser, userProfile);
 
-router.get('/check', authUser, checkUser); // This should match /api/auth/check
+router.get('/check', authUser, checkUser); 
 router.post('/log-out', authUser, userLogout);
 router.put('/edit-profile', authUser, editUserProfile);
 

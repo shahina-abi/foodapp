@@ -63,48 +63,7 @@ export const userProfile = async (req, res) => {
   }
 };
 
-//user login
-// export const userlogin = async (req, res) => {
-//     try {
-//         const { email, password } = req.body;
-
-//         if (!email || !password) {
-//             return res.status(400).json({ error: "All feilds are required" });
-//         }
-
-//         const user = await User.findOne({ email });
-
-//         if (!user) {
-//             return res.status(400).json({ error: "User not exist" });
-//         }
-
-//         const passwordMatch = await bcrypt.compare(password, user.password);
-//         console.log(passwordMatch, "passwordMatch");
-
-//         if (!passwordMatch) {
-//             return res.status(400).json({ error: "Incorrect password" });
-//         }
-
-//         if (!user.isActive) {
-//             return res.status(400).json({ error: "User profile has deactivated" });
-//         }
-//         const token = generateToken(user, "user",res);
-
-//         res.cookie("token",token,{
-//             sameSite: NODE_ENV === "production" ? "None" : "Lax",
-//             secure: NODE_ENV === "production",
-//             httpOnly: NODE_ENV === "production",
-//         }); 
-
-//         const { password: _, ...userWithOutPassword } = user._doc;
-
-//         res.status(200).json({ message: "login successfull", data: userWithOutPassword
-//             });
-//     } catch (error) {
-//         console.log(error);
-//         res.status(error.status || 500).json({ error: error.message || "Internal server Error" });
-//     }
-// };
+// user login
 export const userlogin = async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -159,33 +118,7 @@ export const userlogin = async (req, res) => {
     }
 };
 
-// Check if user is authorized
-// export const checkUser = async (req, res) => {
-//   try {
-//     const user = req.user;
-//     if (!user) {
-//       return res.status(401).json({ success: false, message: "Unauthorized" });
-//     }
-
-//     // Fetch full user details from the database
-//     const userData = await User.findById(user.id).select("-password"); // Exclude password
-//     if (!userData) {
-//       return res.status(404).json({ success: false, message: "User not found" });
-//     }
-
-//     res.status(200).json({ success: true, message: "User is authenticated", user: userData });
-//   } catch (error) {
-//     res.status(500).json({ success: false, message: "Internal Server Error" });
-//   }
-// };
-// export const checkUser = async (req, res) => {
-//     try {
-//         res.status(200).json({ message: "autherized user" });
-//     } catch (error) {
-//         console.log(error);
-//         res.status(error.status || 500).json({ error: error.message || "Internal server Error" });
-//     }
-// };
+// check user
 export const checkUser = async (req, res) => {
   try {
     const user = req.user;

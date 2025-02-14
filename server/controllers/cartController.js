@@ -68,40 +68,18 @@ export const getCart = async (req, res) => {
 
 
 
-// Update the quantity of a specific item in the cart
-// export const updateCartItem = async (req, res) => {
-//   try {
-//     const { foodItemId, quantity } = req.body;
-
-//     const cart = await Cart.findOne({ user: req.user._id });
-//     if (!cart) {
-//       return res.status(404).json({ success: false, message: 'Cart not found' });
-//     }
-
-//     const item = cart.items.find(item => item.foodItem.toString() === foodItemId);
-//     if (!item) {
-//       return res.status(404).json({ success: false, message: 'Item not found in cart' });
-//     }
-
-//     item.quantity = quantity;
-//     await cart.calculateTotalPrice();
-//     res.json({ success: true, message: 'Cart item updated', cart });
-//   } catch (error) {
-//     res.status(500).json({ success: false, message: error.message });
-//   }
-// };
 export const updateCartItem = async (req, res) => {
     try {
-        console.log("🔹 Received Request:", req.body); // ✅ Log request data
+        console.log("🔹 Received Request:", req.body); //  Log request data
 
         const { foodItemId, quantity } = req.body;
-        const userId = req.user.id;  // ✅ Get `userId` from `req.user`, not body
+        const userId = req.user.id;  // Get `userId` from `req.user`, not body
 
         if (!userId || !foodItemId || quantity <= 0) {
             return res.status(400).json({ success: false, message: "Invalid request data" });
         }
 
-        // ✅ Find the cart based on userId
+        //  Find the cart based on userId
         const cart = await Cart.findOne({ userId });
 
         if (!cart) {
@@ -109,23 +87,23 @@ export const updateCartItem = async (req, res) => {
             return res.status(404).json({ success: false, message: "Cart not found" });
         }
 
-        console.log("✅ Cart found:", JSON.stringify(cart, null, 2));
+        console.log("Cart found:", JSON.stringify(cart, null, 2));
 
-        // ✅ Find the item inside the cart
+        // Find the item inside the cart
         const itemIndex = cart.items.findIndex((item) => item.foodItem.toString() === foodItemId);
         if (itemIndex === -1) {
-            console.log("❌ Item not found in cart:", foodItemId);
+            console.log(" Item not found in cart:", foodItemId);
             return res.status(404).json({ success: false, message: "Item not found in cart" });
         }
 
-        // ✅ Update quantity and save
+        // Update quantity and save
         cart.items[itemIndex].quantity = quantity;
         await cart.calculateTotalPrice();
         await cart.save();
 
         res.json({ success: true, message: "Cart item updated", cart });
     } catch (error) {
-        console.error("❌ Error updating cart:", error.message);
+        console.error(" Error updating cart:", error.message);
         res.status(500).json({ success: false, message: error.message });
     }
 };
@@ -152,27 +130,25 @@ export const removeCartItem = async (req, res) => {
 };
 
 // Clear all items from the cart
+
+
 export const clearCart = async (req, res) => {
   try {
-    const cart = await Cart.findOne({ user: req.user._id });
+    const userId = req.user.id;
+    const cart = await Cart.findOne({ userId });
 
     if (!cart) {
-      // Create a new empty cart for the user if none exists
-      const newCart = new Cart({ user: req.user._id, items: [], totalPrice: 0 });
-      await newCart.save();
-      return res.status(200).json({ success: true, message: "Cart cleared successfully", cart: newCart });
+      return res.status(200).json({ success: true, message: "Cart already empty" });
     }
 
-    // Clear existing cart
     cart.items = [];
     cart.totalPrice = 0;
     await cart.save();
 
-    res.status(200).json({ success: true, message: "Cart cleared successfully", cart });
+    res.status(200).json({ success: true, message: "Cart cleared successfully" });
   } catch (error) {
     console.error("Error clearing cart:", error.message);
     res.status(500).json({ success: false, message: error.message });
   }
 };
-
 
