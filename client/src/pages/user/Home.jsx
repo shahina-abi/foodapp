@@ -77,7 +77,7 @@ function Home() {
               to="/admin/login"
               className="bg-gray-800 hover:bg-gray-900 text-white px-6 py-3 rounded-lg font-medium transition duration-300"
             >
-              Login as Admin
+              Partner With Us
             </Link>
           </div>
         </div>

@@ -109,7 +109,7 @@ export const RestaurantsPage = () => {
                 <p className="text-gray-600 mt-1">
                   <strong>Rating:</strong> {restaurant.rating}
                 </p>
-                <div className="mt-4 text-center">
+                <div className="mt-4 text-left">
                   <Link
                     to={`/restaurants/${restaurant._id}`}
                     className="px-4 py-2 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 transition"

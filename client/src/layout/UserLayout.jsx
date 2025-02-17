@@ -33,7 +33,17 @@ export const UserLayout = () => {
   }, [location.pathname]);
 
   return (
-    <>
+    <div
+      style={{
+        backgroundImage:
+          "url('https://img.freepik.com/free-photo/top-view-assortment-with-food-frame-tableware_23-2148247890.jpg')",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+        minHeight: "100vh",
+        width: "100%",
+      }}
+    >
       <header>{isUserAuth ? <UserHeader /> : <Header />}</header>
 
       <main>
@@ -43,6 +53,6 @@ export const UserLayout = () => {
       <footer>
         <Footer />
       </footer>
-    </>
+    </div>
   );
 };

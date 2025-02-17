@@ -138,7 +138,7 @@ export default function UserHeader() {
 
   return (
     <header className="bg-gray-900 text-white shadow-md">
-      <div className="container mx-auto flex justify-between items-center py-4 px-6">
+      <div className="container mx-auto flex justify-between items-center py-4 px-6 flex-col md:flex-row">
         {/* Logo */}
         <div className="flex items-center space-x-4">
           <img src={logo1} alt="FoodBae Logo" className="w-12 h-auto" />

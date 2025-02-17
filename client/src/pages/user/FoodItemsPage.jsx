@@ -99,12 +99,12 @@ const FoodItemsPage = () => {
                 onChange={handleSearch}
                 className="w-full md:w-1/3 px-4 py-2 border rounded-lg focus:outline-none"
               />
-              <div className="flex space-x-2">
+              <div className="flex space-x-2  flex-wrap  gap-2">
                 {categories.map((category) => (
                   <button
                     key={category}
                     onClick={() => handleCategoryChange(category)}
-                    className={`px-4 py-2 rounded-lg ${
+                    className={`px-4 py-2 rounded-lg  ${
                       selectedCategory === category
                         ? "bg-blue-600 text-white"
                         : "bg-gray-200"
@@ -119,27 +119,32 @@ const FoodItemsPage = () => {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredItems.map((item) => (
-              <div key={item._id} className="border rounded-lg shadow-md p-4">
+              <div
+                key={item._id}
+                className="border rounded-lg bg-white shadow-md overflow-hidden "
+              >
                 <img
                   src={item.image || "https://via.placeholder.com/300"}
                   alt={item.name}
                   className="w-full h-48 object-cover"
                 />
-                <h3 className="text-lg font-bold">{item.name}</h3>
-                <p className="text-gray-600 my-2">
-                  {item.description.length > 80
-                    ? `${item.description.substring(0, 80)}...`
-                    : item.description}
-                </p>
-                <p className="text-lg font-semibold">
-                  ${item.price.toFixed(2)}
-                </p>
-                <button
-                  onClick={() => handleAddToCart(item._id)}
-                  className="mt-4 w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700"
-                >
-                  Add to Cart
-                </button>
+                <div className="p-4">
+                  <h3 className="text-lg font-bold">{item.name}</h3>
+                  <p className="text-gray-600 my-2">
+                    {item.description.length > 80
+                      ? `${item.description.substring(0, 80)}...`
+                      : item.description}
+                  </p>
+                  <p className="text-lg font-semibold">
+                    ${item.price.toFixed(2)}
+                  </p>
+                  <button
+                    onClick={() => handleAddToCart(item._id)}
+                    className="mt-4 w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700"
+                  >
+                    Add to Cart
+                  </button>
+                </div>
               </div>
             ))}
           </div>

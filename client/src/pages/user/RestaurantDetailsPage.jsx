@@ -74,7 +74,7 @@ const RestaurantDetailsPage = () => {
     <div className="container mx-auto my-10 px-4">
       {/* Restaurant Details Section */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="col-span-2">
+        <div className="col-span-1">
           <h1 className="text-4xl font-bold text-gray-800 mb-4">
             {restaurant.name || "Restaurant Name Unavailable"}
           </h1>
@@ -123,7 +123,7 @@ const RestaurantDetailsPage = () => {
             View Menu
           </button>
         </div>
-        <div className="text-center">
+        <div className="text-center col-span-2">
           <img
             src={restaurant.image || "https://via.placeholder.com/300"}
             alt="Restaurant"
@@ -141,14 +141,14 @@ const RestaurantDetailsPage = () => {
           {offers.map((offer) => (
             <div
               key={offer._id}
-              className="border border-gray-300 rounded-lg overflow-hidden shadow-md hover:shadow-lg transition"
+              className="border border-gray-300 bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition"
             >
               <img
                 src={offer.image}
                 alt={offer.title}
                 className="w-full h-48 object-cover"
               />
-              <div className="p-4">
+              <div className="p-4 ">
                 <h3 className="text-xl font-semibold text-gray-700 mb-2">
                   {offer.title}
                 </h3>
