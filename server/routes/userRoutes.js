@@ -11,6 +11,6 @@ router.get('/profile', authUser, userProfile);
 
 router.get('/check', authUser, checkUser); 
 router.post('/log-out', authUser, userLogout);
-router.put('/edit-profile', authUser, editUserProfile);
+router.put('/edit', authUser, editUserProfile);
 
 export default router;
