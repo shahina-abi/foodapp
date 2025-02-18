@@ -18,7 +18,7 @@ import { ProtectRoute } from "../routes/ProtectRoute";
 import { Adminlayout } from "../layout/AdminLayout";
 import UserProfile from "../pages/user/UserProfile";
 import { CartPage } from "../pages/user/CartPage";
-import ErrorPage from "../pages/shared/ErrorPage";
+import ErrorPage from "../pages/user/ErrorPage";
 import ProtectedRouteAdmin from "./ProtectedRouteAdmin";
 import PaymentSuccess from "../pages/user/PaymentSuccess";
 import PaymentCancel from "../pages/user/PaymentCancel";
