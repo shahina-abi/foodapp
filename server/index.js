@@ -23,7 +23,7 @@ app.use(cookieParser());
 
 app.use(cors({
   origin: [
-    "http://localhost:5173","https://foodapp-tan-ten.vercel.app/",
+    "http://localhost:5173",
     "https://foodapp-client-lwl6.onrender.com",
     
   ],
