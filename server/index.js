@@ -17,7 +17,7 @@ connectDB();
 
 // Middleware
 app.use(express.json());
-app.use(cookieParser());
+
 
 
 
@@ -30,7 +30,7 @@ app.use(cors({
   credentials: true,  // ✅ Required for cookies
   methods: ["GET", "POST", "PUT", "DELETE"],
 }));
-
+app.use(cookieParser());
 
 
 
