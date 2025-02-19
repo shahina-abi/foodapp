@@ -24,7 +24,7 @@ app.use(cookieParser());
 app.use(cors({
   origin: [
        "https://food-ordering-olive-five.vercel.app","http://localhost:5173",
-    // "https://foodapp-client-lwl6.onrender.com",
+     "https://foodapp-client-lwl6.onrender.com",
     
   ],
   credentials: true,  // ✅ Required for cookies
