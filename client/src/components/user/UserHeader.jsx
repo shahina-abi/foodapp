@@ -20,6 +20,7 @@ export default function UserHeader() {
       try {
         await axiosInstance.post("/user/log-out");
         dispatch(clearUser());
+
         localStorage.removeItem("token");
         toast.success("Logged out successfully!");
         navigate("/login");

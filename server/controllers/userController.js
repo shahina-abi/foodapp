@@ -91,11 +91,18 @@ export const userlogin = async (req, res) => {
 
         const token = generateToken(user, "user", res);
 
-        res.cookie("token", token, {
-            sameSite: NODE_ENV === "production" ? "None" : "Lax",
-            secure: NODE_ENV === "production",
-            httpOnly: NODE_ENV === "production",
-        });
+        // res.cookie("token", token, {
+        //     sameSite: NODE_ENV === "production" ? "None" : "Lax",
+        //     secure: NODE_ENV === "production",
+        //     httpOnly: NODE_ENV === "production",
+        // });
+         res.cookie("token", token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production", // Change for local testing
+    sameSite: "Lax", // Prevents it from being deleted on cross-site requests
+    maxAge: 24 * 60 * 60 * 1000, // 1-day expiration
+  });
+
 
         console.log("Login successful - User Data:", user); // Debugging Line
 
@@ -147,17 +154,39 @@ export const checkUser = async (req, res) => {
   }
 };
 
+// export const userLogout = (req, res) => {
+//     try {
+//         res.clearCookie("token", {
+//             sameSite: "None",
+//             secure: true,
+//             httpOnly: true,
+//         });
+
+//         return res.status(200).json({ success: true, message: "User logged out successfully" });
+//     } catch (error) {
+//         console.log(error);
+//         res.status(500).json({ success: false, message: "Internal server error" });
+//     }
+// };
 export const userLogout = (req, res) => {
     try {
+        console.log("Logout request received"); // Debugging step
+
+        // Ensure token exists in cookies before clearing
+        if (!req.cookies.token) {
+            return res.status(400).json({ success: false, message: "No token found" });
+        }
+
         res.clearCookie("token", {
             sameSite: "None",
             secure: true,
             httpOnly: true,
         });
 
+        console.log("Cookie cleared successfully"); // Debugging step
         return res.status(200).json({ success: true, message: "User logged out successfully" });
     } catch (error) {
-        console.log(error);
+        console.error("Logout error:", error);
         res.status(500).json({ success: false, message: "Internal server error" });
     }
 };
