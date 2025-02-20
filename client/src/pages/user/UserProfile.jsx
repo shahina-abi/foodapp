@@ -13,21 +13,39 @@ const UserProfile = () => {
   const navigate = useNavigate();
 
   // Fetch user details on component mount
+  // const fetchUserDetails = async () => {
+  //   try {
+  //     setLoading(true);
+
+  //     const response = await axiosInstance({
+  //       url: "/user/profile",
+  //       method: "GET",
+  //       withCredentials: true, // Include cookies for authentication
+  //     });
+
+  //     console.log("User profile response:", response.data);
+  //     setUser(response.data.data);
+  //   } catch (error) {
+  //     console.error("Error fetching user profile:", error);
+  //     toast.error("Failed to fetch user profile. Please try again.");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
   const fetchUserDetails = async () => {
     try {
       setLoading(true);
 
-      const response = await axiosInstance({
-        url: "/user/profile",
-        method: "GET",
-        withCredentials: true, // Include cookies for authentication
-      });
+      console.log("🔍 Checking authentication...");
 
-      console.log("User profile response:", response.data);
+      const response = await axiosInstance.get("/user/check"); // ✅ Ensure this is correct
+
+      console.log("✅ User authenticated:", response.data);
       setUser(response.data.data);
     } catch (error) {
-      console.error("Error fetching user profile:", error);
-      toast.error("Failed to fetch user profile. Please try again.");
+      console.error("❌ Authentication failed:", error.response?.data || error);
+      toast.error("Session expired, please log in again.");
+      navigate("/login");
     } finally {
       setLoading(false);
     }
@@ -38,13 +56,27 @@ const UserProfile = () => {
   }, []); // Fetch only on mount
 
   // Logout Function
+  // const handleLogout = async () => {
+  //   try {
+  //     await axiosInstance({
+  //       url: "/user/log-out",
+  //       method: "POST",
+  //       withCredentials: true,
+  //     });
+
+  //     toast.success("User logged out successfully");
+  //     navigate("/login");
+  //   } catch (error) {
+  //     console.error("Error logging out:", error);
+  //     toast.error("Failed to log out. Please try again.");
+  //   }
+  // };
   const handleLogout = async () => {
     try {
-      await axiosInstance({
-        url: "/user/log-out",
-        method: "POST",
-        withCredentials: true,
-      });
+      await axiosInstance.post("/user/log-out", {}, { withCredentials: true });
+
+      document.cookie =
+        "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
 
       toast.success("User logged out successfully");
       navigate("/login");

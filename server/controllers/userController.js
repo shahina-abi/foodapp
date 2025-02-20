@@ -91,18 +91,12 @@ export const userlogin = async (req, res) => {
 
         const token = generateToken(user, "user", res);
 
-        // res.cookie("token", token, {
-        //     sameSite: NODE_ENV === "production" ? "None" : "Lax",
-        //     secure: NODE_ENV === "production",
-        //     httpOnly: NODE_ENV === "production",
-        // });
-         res.cookie("token", token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production", // Change for local testing
-    sameSite: "Lax", // Prevents it from being deleted on cross-site requests
-    maxAge: 24 * 60 * 60 * 1000, // 1-day expiration
-  });
-
+        res.cookie("token", token, {
+            sameSite: NODE_ENV === "production" ? "None" : "Lax",
+            secure: NODE_ENV === "production",
+            httpOnly: NODE_ENV === "production",
+        });
+       
 
         console.log("Login successful - User Data:", user); // Debugging Line
 
