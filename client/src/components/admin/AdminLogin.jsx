@@ -2,8 +2,8 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-//import toast from "react-hot-toast";
-import { toast } from "react-toastify";
+import toast from "react-hot-toast";
+//import { toast } from "react-toastify";
 import { useDispatch } from "react-redux";
 import { saveAdmin } from "../../redux/features/AdminSlice.js";
 import { axiosInstance } from "../../config/axiosIntance.jsx"; // Fixed spelling

@@ -2,8 +2,14 @@ import React from "react";
 
 const About = () => {
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center">
-      <div className="max-w-4xl bg-white rounded-lg shadow-lg p-8 m-4">
+    <div
+      className="min-h-screen bg-cover bg-center flex flex-col items-center justify-center"
+      style={{
+        backgroundImage:
+          "url('https://plus.unsplash.com/premium_photo-1683892034683-b6896f6245f9?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8Zm9vZCUyMGJhY2tncm91bmR8ZW58MHx8MHx8fDA%3D')",
+      }}
+    >
+      <div className="max-w-4xl bg-white bg-opacity-90 backdrop-blur-md rounded-lg shadow-lg p-8 m-4">
         <h1 className="text-4xl font-bold text-center text-teal-600 mb-6">
           About FoodBae
         </h1>
@@ -62,8 +68,8 @@ const About = () => {
         </div>
         <div className="flex justify-center mt-10">
           <img
-            src="https://via.placeholder.com/300"
-            alt="About FoodBae"
+            src="https://cdn.prod.website-files.com/637d6390b70424b49c14ff1e/6452eb41efd9041db4444b33_how-to-start-a-food-delivery-service-THUMBNAIL.webp"
+            alt="Food Delivery"
             className="rounded-lg shadow-lg w-80"
           />
         </div>
