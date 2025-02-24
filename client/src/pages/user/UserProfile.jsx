@@ -560,17 +560,21 @@ const UserProfile = () => {
 
   const handleProfileUpdate = async () => {
     try {
-      const response = await axiosInstance.put(
-        "/user/edit-profile",
-        updatedUser,
-        { withCredentials: true }
-      );
+      console.log("Sending data:", updatedUser); // Debugging step
+      const response = await axiosInstance.put("/user/edit", updatedUser, {
+        withCredentials: true,
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`, // Ensure token is included
+          "Content-Type": "application/json",
+        },
+      });
       if (response.status === 200) {
         toast.success("Profile updated successfully");
-        setUser(updatedUser);
+        setUser(response.data.data); // Ensure we update with backend response
         setEditMode(false);
       }
     } catch (error) {
+      console.error("Update error:", error.response?.data || error);
       toast.error("Failed to update profile. Please try again.");
     }
   };
