@@ -12,6 +12,7 @@ import {
   updateOrderStatus,
   createRestaurant,
   deleteRestaurant,
+  getAllCoupons,
   blockUser,createCoupon,editAdminProfile, getAdminStats,deleteCoupon
 } from '../controllers/adminController.js';
 import { authAdmin } from '../middleware/authAdmin.js';
@@ -31,6 +32,7 @@ router.delete('/restaurants/:restaurantId', authAdmin, deleteRestaurant); // Del
 router.post('/users/block/:userId', authAdmin, blockUser); // Block/Unblock user
    // Delete a user by ID
    
+  router.get("/coupons", authAdmin, getAllCoupons);  
 router.post("/coupons", authAdmin, createCoupon);
 router.put('/edit-profile', authAdmin, editAdminProfile);
 router.get("/stats", authAdmin, getAdminStats);

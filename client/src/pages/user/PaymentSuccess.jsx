@@ -24,7 +24,7 @@ const PaymentSuccess = () => {
       }
     } catch (error) {
       console.error("Error clearing cart:", error.message);
-      toast.error("Could not clear cart.");
+      // toast.error("Could not clear cart.");
     }
   };
   // Fetch session status

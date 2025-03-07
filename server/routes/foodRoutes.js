@@ -5,8 +5,8 @@ import {
     getFoodItems,
     getById,
     addFoodItem,
-    update,
-    remove,
+    updateFoodItem,
+    removeFoodItem,
     getFoodItemsByRestaurant ,
     searchFoodItems,
 } from '../controllers/foodController.js'; // Import updated controller functions
@@ -25,10 +25,10 @@ router.get('/:id', getById);
 router.post('/create', authAdmin, upload.single('image'), addFoodItem);
 
 // Route to update a food item by ID
-router.put('/:id', authAdmin, upload.single('image'), update); // Handle image in updates
+router.put('/:id', authAdmin, upload.single('image'), updateFoodItem); // Handle image in updates
 
 // Route to delete a food item by ID
-router.delete('/:id', authAdmin, remove);
+router.delete('/:id', authAdmin, removeFoodItem);
 
 // Route to get food items by restaurant ID
 router.get('/restaurant/:restaurantId',getFoodItemsByRestaurant );

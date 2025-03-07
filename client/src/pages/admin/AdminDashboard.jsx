@@ -1,8 +1,11 @@
+// export default AdminDashboard;
 import React, { useEffect, useState } from "react";
 import { axiosInstance } from "../../config/axiosIntance"; // Import axios instance
 import Sidebar from "../../components/admin/SideBar";
 import Chart from "../../components/admin/Chart";
 import StatsCard from "../../components/admin/ StatsCard";
+import { toast } from "react-toastify";
+
 const AdminDashboard = () => {
   const [stats, setStats] = useState({ users: 0, orders: 0, revenue: 0 });
   const [orderStatus, setOrderStatus] = useState([0, 0, 0]); // Delivered, Pending, Canceled
@@ -12,13 +15,20 @@ const AdminDashboard = () => {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const token = localStorage.getItem("adminToken"); // ✅ Get token from storage
-        if (!token) throw new Error("Unauthorized: No token found");
+        const token = localStorage.getItem("adminToken");
+        const restaurantId = localStorage.getItem("restaurantId");
 
-        const { data } = await axiosInstance.get("/admin/stats", {
-          headers: { Authorization: `Bearer ${token}` },
-          withCredentials: true,
-        });
+        if (!token || !restaurantId) {
+          throw new Error("Unauthorized or missing restaurant ID.");
+        }
+
+        const { data } = await axiosInstance.get(
+          `/admin/stats?restaurantId=${restaurantId}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+            withCredentials: true,
+          }
+        );
 
         setStats({
           users: data.usersCount,
@@ -33,7 +43,8 @@ const AdminDashboard = () => {
         ]);
       } catch (err) {
         console.error("Error fetching stats:", err.response?.data?.message);
-        setError(err.response?.data?.message || "Failed to load data");
+        setError(err.response?.data?.message || "Failed to load data.");
+        toast.error(err.response?.data?.message || "Failed to fetch data.");
       } finally {
         setLoading(false);
       }
@@ -49,7 +60,7 @@ const AdminDashboard = () => {
 
       {/* Main Content */}
       <div className="flex-1 p-6 bg-gray-100 min-h-screen">
-        <h1 className="text-3xl font-bold mb-6">Admin Dashboard</h1>
+        <h1 className="text-3xl font-bold mb-6">Restaurant Dashboard</h1>
 
         {loading ? (
           <p>Loading data...</p>
@@ -60,7 +71,7 @@ const AdminDashboard = () => {
             {/* Stats Section */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <StatsCard
-                title="Total Users"
+                title="Total Customers"
                 value={stats.users}
                 color="bg-blue-500"
               />

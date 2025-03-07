@@ -89,15 +89,15 @@
 import Order from "../models/orderModel.js";
 import Coupon from "../models/CouponModel.js";
 import sendEmail from "../utils/emailService.js"; // Import email service
+import FoodItem from "../models/foodModel.js";
 
-// ✅ Place a new order
 export const placeOrder = async (req, res) => {
-  const { items, totalPrice, paymentMethod, couponCode } = req.body;
+  const { items, totalPrice, paymentMethod, couponCode, restaurant } = req.body;
 
   try {
     let discount = 0;
 
-    // ✅ Validate coupon code if provided
+    // Validate coupon code if provided
     if (couponCode) {
       const coupon = await Coupon.findOne({ code: couponCode, isActive: true });
       if (!coupon || new Date(coupon.expiryDate) < Date.now()) {
@@ -108,7 +108,7 @@ export const placeOrder = async (req, res) => {
 
     const finalPrice = Math.max(0, totalPrice - discount);
 
-    // ✅ Create new order
+    // Create new order
     const order = new Order({
       user: req.user._id,
       items,
@@ -117,12 +117,13 @@ export const placeOrder = async (req, res) => {
       finalPrice,
       paymentMethod,
       couponCode,
-      status: "Confirmed", // Default status
+      restaurant, // Include the restaurant field
+      status: "Pending", // Default status
     });
 
     await order.save();
 
-    // ✅ Send order confirmation email
+    // Send order confirmation email
     const emailSubject = `Order Confirmation - #${order._id}`;
     const emailBody = `
       <h2>Thank you for your order!</h2>
@@ -145,7 +146,6 @@ export const placeOrder = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
-
 // ✅ Get specific order details
 export const getOrder = async (req, res) => {
   try {
@@ -203,5 +203,61 @@ export const cancelOrder = async (req, res) => {
     res.status(200).json({ success: true, message: "Order canceled successfully", order });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
+  }
+};
+export const getOrdersByRestaurant = async (req, res) => {
+  try {
+    const { restaurantId } = req.params;
+
+    // Validate restaurantId
+    if (!mongoose.isValidObjectId(restaurantId)) {
+      return res.status(400).json({ success: false, message: "Invalid restaurant ID." });
+    }
+
+    // Find all orders that contain food items from the specified restaurant
+    const orders = await Order.aggregate([
+      {
+        $unwind: "$items", // Unwind the items array
+      },
+      {
+        $lookup: {
+          from: "fooditems", // Collection name for FoodItem model
+          localField: "items.foodItem",
+          foreignField: "_id",
+          as: "foodItemDetails",
+        },
+      },
+      {
+        $unwind: "$foodItemDetails", // Unwind the foodItemDetails array
+      },
+      {
+        $match: {
+          "foodItemDetails.restaurant": new mongoose.Types.ObjectId(restaurantId), // Filter by restaurant
+        },
+      },
+      {
+        $group: {
+          _id: "$_id", // Group by order ID
+          items: { $push: "$items" }, // Rebuild the items array
+          totalPrice: { $first: "$totalPrice" },
+          discount: { $first: "$discount" },
+          finalPrice: { $first: "$finalPrice" },
+          status: { $first: "$status" },
+          createdAt: { $first: "$createdAt" },
+        },
+      },
+      {
+        $sort: { createdAt: -1 }, // Sort by creation date (newest first)
+      },
+    ]);
+
+    if (!orders.length) {
+      return res.status(404).json({ success: false, message: "No orders found for this restaurant." });
+    }
+
+    res.status(200).json({ success: true, orders });
+  } catch (error) {
+    console.error("Error fetching orders by restaurant:", error);
+    res.status(500).json({ success: false, message: "Failed to fetch orders." });
   }
 };

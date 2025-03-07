@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 
 import { axiosInstance } from "../../config/axiosIntance";
 import { toast } from "react-toastify";
-
+import Sidebar from "../../components/admin/SideBar";
 const AdminProfile = () => {
   const [admin, setAdmin] = useState({ name: "", email: "" });
   const [loading, setLoading] = useState(true);
@@ -70,70 +70,74 @@ const AdminProfile = () => {
   if (error) return <p className="text-center text-red-500">{error}</p>;
 
   return (
-    <div className="max-w-3xl mx-auto p-6 bg-white rounded-lg shadow">
-      <h1 className="text-2xl font-bold mb-4">Admin Profile</h1>
+    <div className="flex">
+      {/* Sidebar */}
+      <Sidebar />
+      <div className="max-w-3xl mx-auto p-6 bg-white rounded-lg shadow">
+        <h1 className="text-2xl font-bold mb-4">Admin Profile</h1>
 
-      {!editMode ? (
-        <div>
-          <p className="mb-2">
-            <strong>Name:</strong> {admin.name}
-          </p>
-          <p className="mb-2">
-            <strong>Email:</strong> {admin.email}
-          </p>
-          <p className="mb-2">
-            <strong>Role:</strong> Admin
-          </p>
-          <button
-            onClick={() => setEditMode(true)}
-            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-          >
-            Edit Profile
-          </button>
-        </div>
-      ) : (
-        <form onSubmit={handleUpdateProfile} className="space-y-4">
+        {!editMode ? (
           <div>
-            <label className="block font-medium">Name</label>
-            <input
-              type="text"
-              value={updatedAdmin.name}
-              onChange={(e) =>
-                setUpdatedAdmin({ ...updatedAdmin, name: e.target.value })
-              }
-              className="w-full border rounded p-2"
-              required
-            />
-          </div>
-          <div>
-            <label className="block font-medium">Email</label>
-            <input
-              type="email"
-              value={updatedAdmin.email}
-              onChange={(e) =>
-                setUpdatedAdmin({ ...updatedAdmin, email: e.target.value })
-              }
-              className="w-full border rounded p-2"
-              required
-            />
-          </div>
-          <div className="flex space-x-4">
+            <p className="mb-2">
+              <strong>Name:</strong> {admin.name}
+            </p>
+            <p className="mb-2">
+              <strong>Email:</strong> {admin.email}
+            </p>
+            <p className="mb-2">
+              <strong>Role:</strong> Admin
+            </p>
             <button
-              type="submit"
-              className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+              onClick={() => setEditMode(true)}
+              className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
             >
-              Save Changes
-            </button>
-            <button
-              type="button"
-              onClick={() => setEditMode(false)}
-              className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
-            >
-              Cancel
+              Edit Profile
             </button>
           </div>
-        </form>
-      )}
+        ) : (
+          <form onSubmit={handleUpdateProfile} className="space-y-4">
+            <div>
+              <label className="block font-medium">Name</label>
+              <input
+                type="text"
+                value={updatedAdmin.name}
+                onChange={(e) =>
+                  setUpdatedAdmin({ ...updatedAdmin, name: e.target.value })
+                }
+                className="w-full border rounded p-2"
+                required
+              />
+            </div>
+            <div>
+              <label className="block font-medium">Email</label>
+              <input
+                type="email"
+                value={updatedAdmin.email}
+                onChange={(e) =>
+                  setUpdatedAdmin({ ...updatedAdmin, email: e.target.value })
+                }
+                className="w-full border rounded p-2"
+                required
+              />
+            </div>
+            <div className="flex space-x-4">
+              <button
+                type="submit"
+                className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+              >
+                Save Changes
+              </button>
+              <button
+                type="button"
+                onClick={() => setEditMode(false)}
+                className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
+        )}
+      </div>
     </div>
   );
 };

@@ -1,27 +1,27 @@
 import Coupon from "../models/CouponModel.js";
 
-/**
- * Create a new coupon
- */
-export const createCoupon = async (req, res) => {
-  console.log("Request Body:", req.body); // Log input
-  try {
-    const { code, discount, expiryDate } = req.body;
 
-    if (!code || !discount || !expiryDate) {
+export const createCoupon = async (req, res) => {
+  try {
+    const { code, discount, expiryDate, restaurantId } = req.body;
+
+    // Validate the request body
+    if (!code || !discount || !expiryDate || !restaurantId) {
       return res.status(400).json({ success: false, message: "All fields are required" });
     }
 
-    const existingCoupon = await Coupon.findOne({ code });
+    // Check if the coupon already exists for this restaurant
+    const existingCoupon = await Coupon.findOne({ code, restaurant: restaurantId });
     if (existingCoupon) {
-      return res.status(400).json({ success: false, message: "Coupon code already exists" });
+      return res.status(400).json({ success: false, message: "Coupon code already exists for this restaurant" });
     }
 
+    // Save the coupon to the database
     const coupon = new Coupon({
       code,
       discount,
       expiryDate,
-      isActive: true, 
+      restaurant: restaurantId, // Associate coupon with the restaurant
     });
 
     await coupon.save();
@@ -36,7 +36,6 @@ export const createCoupon = async (req, res) => {
     res.status(500).json({ success: false, message: "Failed to create coupon" });
   }
 };
-
 /**
  * Validate a coupon
  */
@@ -123,5 +122,22 @@ export const applyCoupon = async (req, res) => {
       success: false,
       message: error.message || "Failed to apply coupon.",
     });
+  }
+};
+export const getAllCoupons = async (req, res) => {
+  try {
+    const { restaurantId } = req.query; // Get restaurantId from query
+
+    if (!restaurantId) {
+      return res.status(400).json({ success: false, message: "Restaurant ID is required" });
+    }
+
+    // Fetch coupons for the given restaurantId
+    const coupons = await Coupon.find({ restaurant: restaurantId });
+
+    res.json({ success: true, coupons });
+  } catch (error) {
+    console.error("Error fetching coupons:", error.message);
+    res.status(500).json({ success: false, message: "Failed to fetch coupons" });
   }
 };

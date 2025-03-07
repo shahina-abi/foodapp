@@ -147,21 +147,6 @@ export const checkUser = async (req, res) => {
     res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 };
-
-// export const userLogout = (req, res) => {
-//     try {
-//         res.clearCookie("token", {
-//             sameSite: "None",
-//             secure: true,
-//             httpOnly: true,
-//         });
-
-//         return res.status(200).json({ success: true, message: "User logged out successfully" });
-//     } catch (error) {
-//         console.log(error);
-//         res.status(500).json({ success: false, message: "Internal server error" });
-//     }
-// };
 export const userLogout = (req, res) => {
     try {
         console.log("Logout request received"); // Debugging step

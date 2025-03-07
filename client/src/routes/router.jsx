@@ -11,11 +11,11 @@ import AdminLogin from "../components/admin/AdminLogin";
 import AdminProfile from "../pages/admin/AdminProfile";
 import ManageUsers from "../pages/admin/ ManageUsers";
 import ManageOrders from "../pages/admin/ManageOrders";
-import ManageRestaurants from "../pages/admin/ManageRestaurants";
+import ManageRestaurant from "../pages/admin/ManageRestaurant";
 import ManageCoupons from "../pages/admin/ManageCoupons";
 import AdminDashboard from "../pages/admin/AdminDashboard";
 import { ProtectRoute } from "../routes/ProtectRoute";
-import { Adminlayout } from "../layout/AdminLayout";
+import { AdminLayout } from "../layout/AdminLayout";
 import UserProfile from "../pages/user/UserProfile";
 import { CartPage } from "../pages/user/CartPage";
 import ErrorPage from "../pages/user/ErrorPage";
@@ -24,6 +24,9 @@ import PaymentSuccess from "../pages/user/PaymentSuccess";
 import PaymentCancel from "../pages/user/PaymentCancel";
 import UserOrders from "../pages/user/OrderDetails";
 import AdminRegister from "../components/admin/AdminRegister";
+import ManageMenu from "../pages/admin/ManageMenu";
+import EditFoodItem from "../pages/admin/EditFoodItem";
+import AddFoodItem from "../pages/admin/AddFoodItem";
 export const router = createBrowserRouter([
   // User Layout
   {
@@ -62,7 +65,7 @@ export const router = createBrowserRouter([
       {
         element: (
           <ProtectedRouteAdmin>
-            <Adminlayout />
+            <AdminLayout /> {/* Wrap all admin routes with AdminLayout */}
           </ProtectedRouteAdmin>
         ),
         children: [
@@ -70,8 +73,11 @@ export const router = createBrowserRouter([
           { path: "profile", element: <AdminProfile /> }, // Admin Profile
           { path: "users", element: <ManageUsers /> }, // Manage Users
           { path: "orders", element: <ManageOrders /> }, // Manage Orders
-          { path: "restaurants", element: <ManageRestaurants /> }, // Manage Restaurants
+          { path: "manage-restaurant", element: <ManageRestaurant /> }, // Manage Restaurants
           { path: "coupons", element: <ManageCoupons /> }, // Manage Coupons
+          { path: "manage-menu", element: <ManageMenu /> }, // Manage Menu
+          { path: "add-food", element: <AddFoodItem /> }, // Add Food Item
+          { path: "edit-food/:id", element: <EditFoodItem /> }, // Edit Food Item
         ],
       },
     ],

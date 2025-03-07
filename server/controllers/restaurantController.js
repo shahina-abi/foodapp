@@ -1,7 +1,7 @@
 
 
 import mongoose from 'mongoose';
-import { cloudinaryInstance } from "../config/cloudinaryConfig.js"
+import  cloudinary from "../config/cloudinaryConfig.js"
 import Restaurant from '../models/restaurantModel.js'; // Updated import for Restaurant model
 import { handleImageUpload } from '../utils/cloudinary.js';
 import FoodItem from '../models/foodModel.js'; // If needed, you can import FoodItem as well
@@ -38,7 +38,7 @@ import FoodItem from '../models/foodModel.js'; // If needed, you can import Food
     // Handle image upload (if file provided)
     if (req.file) {
       try {
-        const uploadResult = await cloudinaryInstance.uploader.upload(req.file.path);
+        const uploadResult = await cloudinary.uploader.upload(req.file.path);
         imageUrl = uploadResult.secure_url; // Use secure Cloudinary URL
       } catch (error) {
         console.error("Cloudinary upload failed:", error);
@@ -98,7 +98,7 @@ export const getAllRestaurants = async (req, res) => {
   }
 };
 
-// Fetch restaurant by ID
+
 export const getRestaurantById = async (req, res) => {
   try {
     const restaurantId = req.params.id;
@@ -111,13 +111,12 @@ export const getRestaurantById = async (req, res) => {
       return res.status(404).json({ message: "Restaurant not found" });
     }
 
-    res.status(200).json({ data: restaurant });
+    res.status(200).json({ success: true, data: restaurant });
   } catch (error) {
     console.error('Error retrieving restaurant:', error);
     res.status(500).json({ message: "Failed to retrieve the restaurant", error: error.message });
   }
 };
-
 // Update a restaurant
 export const updateRestaurant = async (req, res) => {
   const { name, address, phone, email, website, cuisineType, openingHours, isActive } = req.body;
@@ -134,7 +133,7 @@ export const updateRestaurant = async (req, res) => {
     if (isActive !== undefined) updates.isActive = isActive;
 
     if (req.file) {
-      const uploadResult = await cloudinaryInstance.uploader.upload(req.file.path);
+      const uploadResult = await cloudinary.uploader.upload(req.file.path);
       updates.image = uploadResult.url;
     }
 

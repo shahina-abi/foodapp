@@ -1,12 +1,11 @@
-
 import mongoose from 'mongoose';
 
 const restaurantSchema = new mongoose.Schema({
     name: {
         type: String,
-        required: [true, 'Name is required'], // 
-        trim: true, //
-        unique: true, // 
+        required: [true, 'Name is required'],
+        trim: true,
+        unique: true,
     },
     address: {
         street: { type: String, trim: true },
@@ -36,30 +35,26 @@ const restaurantSchema = new mongoose.Schema({
         max: 5,
         default: 0,
     },
-    cuisineType: [
-        { type: String, trim: true }, // 
-    ],
+    cuisineType: [{ type: String, trim: true }],
     openingHours: {
-        open: { type: String, trim: true }, 
-        close: { type: String, trim: true }, 
+        open: { type: String, trim: true },
+        close: { type: String, trim: true },
     },
     image: {
-        type: String, 
+        type: String,
         trim: true,
     },
-    foodItems: [
-        { type: mongoose.Schema.Types.ObjectId, ref: 'FoodItem' },
-    ],
+    foodItems: [{ type: mongoose.Schema.Types.ObjectId, ref: 'FoodItem' }],
     isActive: {
         type: Boolean,
-        default: true, 
+        default: true,
     },
-   //admin: {
-       // type: mongoose.Schema.Types.ObjectId,
-        //ref: 'Admin', // Reference to the Admin model
-        //required: true, // Ensure a restaurant is associated with an admin
+    admin: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Admin',
+        required: true,
     },
- { timestamps: true });
+}, { timestamps: true }); // ✅ Fixed misplaced comma
 
 const Restaurant = mongoose.model('Restaurant', restaurantSchema);
 export default Restaurant;

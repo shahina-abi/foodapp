@@ -21,18 +21,41 @@ export const AdminLogin = () => {
 
   console.log(admin, "=====user");
 
+  // const onSubmit = async (data) => {
+  //   try {
+  //     const response = await axiosInstance.post(admin.login_api, data);
+  //     if (response?.data?.token) {
+  //       localStorage.setItem("token", response.data.token); // ✅ Store token
+  //       axiosInstance.defaults.headers.common[
+  //         "Authorization"
+  //       ] = `Bearer ${response.data.token}`; // ✅ Attach token
+
+  //       dispatch(saveAdmin(response.data));
+  //       toast.success("✅ Log-in successful!", { position: "top-right" });
+
+  //       navigate("/admin/dashboard");
+  //     } else {
+  //       toast.error("❌ Invalid credentials", { position: "top-right" });
+  //     }
+  //   } catch (error) {
+  //     toast.error("❌ Log-in failed. Please try again.", {
+  //       position: "top-right",
+  //     });
+  //     console.error("Login Error:", error);
+  //   }
+  // };
+  // AdminLogin.jsx
   const onSubmit = async (data) => {
     try {
       const response = await axiosInstance.post(admin.login_api, data);
       if (response?.data?.token) {
-        localStorage.setItem("token", response.data.token); // ✅ Store token
+        localStorage.setItem("token", response.data.token);
+        localStorage.setItem("restaurantId", response.data.restaurantId); // ✅ Store `restaurantId`
         axiosInstance.defaults.headers.common[
           "Authorization"
-        ] = `Bearer ${response.data.token}`; // ✅ Attach token
-
+        ] = `Bearer ${response.data.token}`;
         dispatch(saveAdmin(response.data));
         toast.success("✅ Log-in successful!", { position: "top-right" });
-
         navigate("/admin/dashboard");
       } else {
         toast.error("❌ Invalid credentials", { position: "top-right" });
@@ -92,15 +115,7 @@ export const AdminLogin = () => {
             Sign Up Here
           </Link>
         </p>
-        <p className="text-center text-gray-600 mt-4">
-          Forgot your password?{" "}
-          <Link
-            to="/admin/forgot-password"
-            className="text-blue-500 font-semibold hover:underline"
-          >
-            Reset it here
-          </Link>
-        </p>
+
         <p className="text-center text-gray-600 mt-4">
           <Link to="/" className="text-blue-500 font-semibold hover:underline">
             ← Back to Home
