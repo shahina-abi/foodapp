@@ -22,30 +22,22 @@
 
 // export const upload = multer({ storage });
 import multer from "multer";
-import { CloudinaryStorage } from "multer-storage-cloudinary";
-import { v2 as cloudinary } from "cloudinary";
-import dotenv from "dotenv";
+import fs from "fs";
+import path from "path";
 
-dotenv.config();
+// Ensure 'uploads/' exists before storing files
+const uploadDir = path.join(process.cwd(), "uploads");
+if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+}
 
-// Configure Cloudinary
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, "uploads/");
+    },
+    filename: function (req, file, cb) {
+        cb(null, Date.now() + "-" + file.originalname);
+    },
 });
 
-// Cloudinary Storage Engine
-const storage = new CloudinaryStorage({
-  cloudinary,
-  params: {
-    folder: "food-ordering-images", // Folder name in Cloudinary
-    allowed_formats: ["jpeg", "jpg", "png"],
-    public_id: (req, file) => `${Date.now()}-${file.originalname}`,
-  },
-});
-
-// Multer Upload Middleware
-const upload = multer({ storage });
-
-export default upload;
+export const upload = multer({ storage });
