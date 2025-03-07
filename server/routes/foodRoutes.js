@@ -10,7 +10,7 @@ import {
     getFoodItemsByRestaurant ,
     searchFoodItems,
 } from '../controllers/foodController.js'; // Import updated controller functions
-import { upload } from '../middleware/multer.js'; // Multer middleware for image uploads
+import  upload  from '../middleware/multer.js'; // Multer middleware for image uploads
 import { authAdmin } from '../middleware/authAdmin.js'; // Middleware for admin authentication
 
 const router = express.Router();

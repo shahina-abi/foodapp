@@ -7,7 +7,7 @@ import {
   updateRestaurant,
   deleteRestaurant,
 } from "../controllers/restaurantController.js";
-import { upload } from "../middleware/multer.js";
+import  upload  from "../middleware/multer.js";
 import { authAdmin } from '../middleware/authAdmin.js';
 
 const router = express.Router();
