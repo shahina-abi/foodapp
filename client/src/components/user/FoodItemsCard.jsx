@@ -1,27 +1,47 @@
-// src/components/FoodItemsCard.jsx
 import React from "react";
+import { motion } from "framer-motion";
 
-const FoodItemsCard = ({ foodItem }) => {
+const FoodItemsCard = ({ foodItem, onAddToCart }) => {
+  const rupeePrice = (foodItem.price * 83).toFixed(2); // 1 USD ≈ ₹83
+
   return (
-    <div className="bg-white rounded-lg shadow-lg overflow-hidden hover:scale-105 transition-transform duration-300">
-      <img
-        src={foodItem.image}
-        alt={foodItem.name}
-        className="h-48 w-full object-cover"
-      />
+    <motion.div
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.98 }}
+      className="bg-white rounded-2xl shadow-lg overflow-hidden cursor-pointer transition-all duration-300 hover:shadow-2xl"
+    >
+      <div className="relative overflow-hidden">
+        <motion.img
+          src={foodItem.image || "https://via.placeholder.com/300"}
+          alt={foodItem.name}
+          className="h-56 w-full object-cover"
+          whileHover={{ scale: 1.1 }}
+          transition={{ duration: 0.4 }}
+        />
+      </div>
+
       <div className="p-4">
-        <h3 className="text-lg font-bold">{foodItem.name}</h3>
-        <p className="text-gray-600 mt-2">{foodItem.description}</p>
-        <div className="flex justify-between items-center mt-4">
-          <span className="text-xl font-semibold text-green-500">
-            ${foodItem.price}
+        <h3 className="text-xl font-semibold mb-2 text-gray-800">
+          {foodItem.name}
+        </h3>
+        <p className="text-gray-600 text-sm mb-3 line-clamp-3">
+          {foodItem.description}
+        </p>
+        <div className="flex justify-between items-center">
+          <span className="text-lg font-bold text-green-600">
+            ₹{rupeePrice}
           </span>
-          <button className="bg-yellow-400 px-4 py-2 rounded-md text-white">
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.9 }}
+            onClick={() => onAddToCart(foodItem._id)}
+            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+          >
             Add to Cart
-          </button>
+          </motion.button>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 

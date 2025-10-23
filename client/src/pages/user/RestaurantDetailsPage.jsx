@@ -1,3 +1,4 @@
+// export default RestaurantDetailsPage;
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { axiosInstance } from "../../config/axiosIntance";
@@ -10,34 +11,26 @@ const RestaurantDetailsPage = () => {
   const [restaurant, setRestaurant] = useState({});
   const [loading, setLoading] = useState(true);
 
+  // ✅ These image paths work if files are in the public folder
   const offers = [
     {
       _id: "offer1",
       title: "20% Off on All Orders",
       description: "Enjoy 20% off on all orders placed this weekend!",
-      discount: 20,
-      validTill: "2025-01-31",
-      image:
-        "https://snoonu.com/_next/image?url=https%3A%2F%2Fimages.snoonu.com%2Fbrand%2F2024-09%2Fb9d9dc35-a1ff-4c4f-844a-7246f46f5554_output.png%3Fformat%3Dwebp&w=3840&q=75",
+      image: "/offer1.jpg", // public/offer1.jpg
     },
     {
       _id: "offer2",
       title: "Free Dessert with Main Course",
       description: "Order any main course and get a free dessert.",
-      discount: 100,
-      validTill: "2025-02-15",
-      image:
-        "https://snoonu.com/_next/image?url=https%3A%2F%2Fimages.snoonu.com%2Fbrand%2F2024-01%2Fdb05b340-bc1c-45fe-b3aa-01b0c98a3057_357594733_796243608650405_862009487863062210_n.jpg%3Fformat%3Dwebp&w=3840&q=75",
+      image: "/offer2.jpg", // public/offer2.jpg
     },
     {
       _id: "offer3",
       title: "Happy Hour: 1+1 on Drinks",
       description:
         "Buy one drink and get one free during happy hours (5-7 PM).",
-      discount: 50,
-      validTill: "2025-02-28",
-      image:
-        "https://snoonu.com/_next/image?url=https%3A%2F%2Fimages.snoonu.com%2Fbrand%2F2024-12%2F287f0265-4ccc-49b4-a397-c0ba9a25e780_output.png%3Fformat%3Dwebp&w=3840&q=75",
+      image: "/offer3.jpg", // public/offer3.jpg
     },
   ];
 
@@ -123,6 +116,7 @@ const RestaurantDetailsPage = () => {
             View Menu
           </button>
         </div>
+
         <div className="text-center col-span-2">
           <img
             src={restaurant.image || "https://via.placeholder.com/300"}
@@ -148,7 +142,7 @@ const RestaurantDetailsPage = () => {
                 alt={offer.title}
                 className="w-full h-48 object-cover"
               />
-              <div className="p-4 ">
+              <div className="p-4">
                 <h3 className="text-xl font-semibold text-gray-700 mb-2">
                   {offer.title}
                 </h3>

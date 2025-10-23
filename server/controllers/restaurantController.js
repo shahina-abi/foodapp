@@ -34,20 +34,39 @@ import FoodItem from '../models/foodModel.js'; // If needed, you can import Food
     }
 
     let imageUrl = null;
+    
 
     // Handle image upload (if file provided)
     if (req.file) {
       try {
         const uploadResult = await cloudinary.uploader.upload(req.file.path);
+        console.log("Cloudinary upload result:", uploadResult);
         imageUrl = uploadResult.secure_url; // Use secure Cloudinary URL
       } catch (error) {
         console.error("Cloudinary upload failed:", error);
         return res.status(500).json({ success: false, message: "Image upload failed" });
       }
+    // } else if (req.body.image) {
+    //   // Use the image URL directly from the request body
+    //   imageUrl = req.body.image;
+    // }
     } else if (req.body.image) {
-      // Use the image URL directly from the request body
-      imageUrl = req.body.image;
+  let rawUrl = req.body.image;
+
+  // ✅ If the URL is a Next.js proxy (_next/image?url=...), extract the real one
+  if (rawUrl.includes("_next/image")) {
+    try {
+      const urlObj = new URL(rawUrl);
+      rawUrl = decodeURIComponent(urlObj.searchParams.get("url"));
+    } catch (err) {
+      console.error("Error parsing image URL:", err);
     }
+  }
+
+  imageUrl = rawUrl;
+  console.log("Image URL:", imageUrl);
+}
+
 
     let addressData = {};
     if (address) {

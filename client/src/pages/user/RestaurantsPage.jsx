@@ -86,14 +86,18 @@ export const RestaurantsPage = () => {
           {filteredRestaurants.map((restaurant) => (
             <div
               key={restaurant._id}
-              className="bg-white rounded-lg shadow-md overflow-hidden"
+              className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl hover:-translate-y-1 transform transition-all duration-300"
             >
               {restaurant.image ? (
-                <img
-                  src={restaurant.image}
-                  alt={restaurant.name}
-                  className="w-full h-48 object-cover"
-                />
+                <div className="overflow-hidden">
+                  <div className="overflow-hidden">
+                    <img
+                      src={restaurant.image}
+                      alt={restaurant.name}
+                      className="w-full h-48 object-cover transform transition-transform duration-500 hover:scale-110"
+                    />
+                  </div>
+                </div>
               ) : (
                 <div className="w-full h-48 bg-gray-200 flex items-center justify-center">
                   No Image Available
@@ -104,7 +108,12 @@ export const RestaurantsPage = () => {
                   {restaurant.name}
                 </h2>
                 <p className="text-gray-600 mt-2">
-                  <strong>Location:</strong> {restaurant.location}
+                  <strong>Location:</strong>{" "}
+                  {restaurant.address?.city
+                    ? `${restaurant.address.city}, ${
+                        restaurant.address.state || ""
+                      }, ${restaurant.address.country || ""}`
+                    : "Not specified"}
                 </p>
                 <p className="text-gray-600 mt-1">
                   <strong>Rating:</strong> {restaurant.rating}
