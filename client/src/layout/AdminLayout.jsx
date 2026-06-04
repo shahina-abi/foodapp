@@ -114,30 +114,74 @@
 //     </div>
 //   );
 // };
-import React, { useEffect, useMemo } from "react";
+// import React, { useEffect, useMemo } from "react";
+// import { Outlet, useLocation } from "react-router-dom";
+// import { useDispatch, useSelector } from "react-redux";
+// import { axiosInstance } from "../config/axiosIntance.jsx";
+// import { saveAdmin, clearAdmin } from "../redux/features/AdminSlice.js";
+// import AdminHeader from "../components/admin/AdminHeader";
+// import Sidebar from "../components/admin/SideBar";
+
+// export const AdminLayout = () => {
+//   const { isAdminAuth } = useSelector((state) => state.admin);
+//   const dispatch = useDispatch();
+//   const location = useLocation();
+
+//   const checkAdmin = async () => {
+//     try {
+//       const response = await axiosInstance.get("/admin/check-admin");
+
+//       if (response?.data?.data) {
+//         dispatch(saveAdmin(response.data.data));
+//       } else {
+//         dispatch(clearAdmin());
+//       }
+//     } catch (error) {
+//       console.error("Error checking admin: ", error);
+//       dispatch(clearAdmin());
+//     }
+//   };
+
+//   useEffect(() => {
+//     checkAdmin();
+//   }, [location.pathname]);
+
+//   // Use useMemo to avoid unnecessary Sidebar re-renders
+//   const memoizedSidebar = useMemo(() => <Sidebar />, []);
+
+//   return (
+//     <div className="flex h-screen">
+//       {memoizedSidebar}
+//       <div className="flex-1 p-6 ml-64 overflow-auto">
+//         <Outlet />
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default AdminLayout;
+import React, { useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { axiosInstance } from "../config/axiosIntance.jsx";
 import { saveAdmin, clearAdmin } from "../redux/features/AdminSlice.js";
 import AdminHeader from "../components/admin/AdminHeader";
 import Sidebar from "../components/admin/SideBar";
 
 export const AdminLayout = () => {
-  const { isAdminAuth } = useSelector((state) => state.admin);
   const dispatch = useDispatch();
   const location = useLocation();
 
   const checkAdmin = async () => {
     try {
       const response = await axiosInstance.get("/admin/check-admin");
-
       if (response?.data?.data) {
         dispatch(saveAdmin(response.data.data));
       } else {
         dispatch(clearAdmin());
       }
     } catch (error) {
-      console.error("Error checking admin: ", error);
+      console.error("Admin check failed:", error);
       dispatch(clearAdmin());
     }
   };
@@ -146,14 +190,20 @@ export const AdminLayout = () => {
     checkAdmin();
   }, [location.pathname]);
 
-  // Use useMemo to avoid unnecessary Sidebar re-renders
-  const memoizedSidebar = useMemo(() => <Sidebar />, []);
-
   return (
-    <div className="flex h-screen">
-      {memoizedSidebar}
-      <div className="flex-1 p-6 ml-64 overflow-auto">
-        <Outlet />
+    <div className="flex h-screen bg-gray-50 overflow-hidden">
+      {/* ── Fixed Sidebar */}
+      <Sidebar />
+
+      {/* ── Main area — offset by sidebar width */}
+      <div className="flex-1 flex flex-col ml-64 min-h-screen overflow-auto">
+        {/* ── Sticky top header */}
+        <AdminHeader />
+
+        {/* ── Page content */}
+        <main className="flex-1 p-6 overflow-auto">
+          <Outlet />
+        </main>
       </div>
     </div>
   );

@@ -24,7 +24,7 @@ const Carousel = ({ interval = 3000 }) => {
   useEffect(() => {
     const slideInterval = setInterval(() => {
       setCurrentIndex((prevIndex) =>
-        prevIndex === groupedImages.length - 1 ? 0 : prevIndex + 1
+        prevIndex === groupedImages.length - 1 ? 0 : prevIndex + 1,
       );
     }, interval);
     return () => clearInterval(slideInterval);
@@ -55,7 +55,7 @@ const Carousel = ({ interval = 3000 }) => {
       <button
         onClick={() =>
           setCurrentIndex((prevIndex) =>
-            prevIndex === 0 ? groupedImages.length - 1 : prevIndex - 1
+            prevIndex === 0 ? groupedImages.length - 1 : prevIndex - 1,
           )
         }
         className="absolute top-1/2 left-4 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-75 focus:outline-none"
@@ -67,7 +67,7 @@ const Carousel = ({ interval = 3000 }) => {
       <button
         onClick={() =>
           setCurrentIndex((prevIndex) =>
-            prevIndex === groupedImages.length - 1 ? 0 : prevIndex + 1
+            prevIndex === groupedImages.length - 1 ? 0 : prevIndex + 1,
           )
         }
         className="absolute top-1/2 right-4 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-75 focus:outline-none"

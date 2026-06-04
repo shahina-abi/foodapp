@@ -107,16 +107,17 @@ export const userlogin = async (req, res) => {
         const { password: _, ...userWithoutPassword } = user._doc;
 
         res.status(200).json({
-            message: "Login successful",
-            data: {
-                id: userWithoutPassword._id,
-                name: userWithoutPassword.name,  // Ensure 'name' is included!
-                email: userWithoutPassword.email,
-                mobile: userWithoutPassword.mobile,
-                address: userWithoutPassword.address,
-                role: userWithoutPassword.role,
-            },
-        });
+    message: "Login successful",
+    token: token,   // ✅ send token in response body too
+    data: {
+        id: userWithoutPassword._id,
+        name: userWithoutPassword.name,
+        email: userWithoutPassword.email,
+        mobile: userWithoutPassword.mobile,
+        address: userWithoutPassword.address,
+        role: userWithoutPassword.role,
+    },
+});
     } catch (error) {
         console.log(error);
         res.status(error.status || 500).json({ error: error.message || "Internal server error" });

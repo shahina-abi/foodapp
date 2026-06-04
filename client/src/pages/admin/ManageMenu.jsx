@@ -22,7 +22,7 @@ const ManageMenu = () => {
         const token = localStorage.getItem("token");
         const response = await axiosInstance.get(
           `/foods/restaurant/${restaurantId}`,
-          { headers: { Authorization: `Bearer ${token}` } }
+          { headers: { Authorization: `Bearer ${token}` } },
         );
 
         if (response.data.success) {

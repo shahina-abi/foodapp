@@ -172,10 +172,7 @@ export const updateFoodItem = async (req, res) => {
     if (req.file) {
       updates.image = req.file.path;
     }
-    if (updates.price) {
-      const USD_TO_INR = 83; // adjust as needed
-      updates.price = Number(updates.price) * USD_TO_INR;
-    }
+    
 
 
     const updatedFoodItem = await FoodItem.findByIdAndUpdate(req.params.id, updates, { new: true });

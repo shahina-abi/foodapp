@@ -23,7 +23,7 @@ app.use(cookieParser());
 
 app.use(cors({
   origin: [
-       "https://food-ordering-olive-five.vercel.app","http://localhost:5173",
+       "https://food-ordering-olive-five.vercel.app","http://localhost:5174",
      "https://foodapp-client-lwl6.onrender.com",
     
   ],

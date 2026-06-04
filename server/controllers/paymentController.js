@@ -16,16 +16,18 @@ export const createCheckout = async (req, res) => {
     }
 
     // ✅ Calculate total price before discount
-    const totalAmountInINR = cartItems.reduce(
-      (total, item) => total + item.foodItem.price * item.quantity,
-      0
-    );
+    // REPLACE WITH:
+const USD_TO_INR = 83;
+const totalAmountInINR = cartItems.reduce(
+  (total, item) => total + (item.foodItem.price * USD_TO_INR) * item.quantity,
+  0
+);
 
     // ✅ Apply discount correctly
     const finalAmountInINR = Math.max((totalAmountInINR - discount).toFixed(2), 0);
     const totalAmountInPaise = Math.round(finalAmountInINR * 100); // Convert to paise
 
-    if (finalAmountInINR < 41) {
+    if (finalAmountInINR < 1) {
       return res.status(400).json({
         success: false,
         message: `Minimum cart total must be ₹41 after discount. Current total: ₹${finalAmountInINR}`,
@@ -42,7 +44,8 @@ export const createCheckout = async (req, res) => {
           name: item.foodItem.name,
           images: item.foodItem.image ? [item.foodItem.image] : [],
         },
-        unit_amount: Math.round(item.foodItem.price * discountFactor * 100), // Adjust price per item
+        // REPLACE WITH:
+unit_amount: Math.round(item.foodItem.price * 83 * discountFactor * 100), // Adjust price per item
       },
       quantity: item.quantity,
     }));
