@@ -117,6 +117,18 @@ export const getAllRestaurants = async (req, res) => {
   }
 };
 
+export const getAdminRestaurants = async (req, res) => {
+  try {
+    const restaurants = await Restaurant.find({ admin: req.user.id })
+      .select("_id name image")
+      .sort({ name: 1 });
+    res.status(200).json({ success: true, data: restaurants });
+  } catch (error) {
+    console.error("Error retrieving admin restaurants:", error);
+    res.status(500).json({ success: false, message: "Failed to retrieve restaurants." });
+  }
+};
+
 
 export const getRestaurantById = async (req, res) => {
   try {
@@ -141,19 +153,41 @@ export const updateRestaurant = async (req, res) => {
   const { name, address, phone, email, website, cuisineType, openingHours, isActive } = req.body;
 
   try {
+    const restaurant = await Restaurant.findOne({ _id: req.params.id, admin: req.user.id });
+    if (!restaurant) {
+      return res.status(404).json({ success: false, message: "Restaurant not found." });
+    }
+
     const updates = {};
     if (name) updates.name = name;
-    if (address) updates.address = address;
+    if (address) {
+      if (typeof address === "string") {
+        try {
+          updates.address = JSON.parse(address);
+        } catch {
+          updates.address = { ...restaurant.address.toObject(), street: address };
+        }
+      } else {
+        updates.address = address;
+      }
+    }
     if (phone) updates.phone = phone;
     if (email) updates.email = email;
     if (website) updates.website = website;
-    if (cuisineType) updates.cuisineType = cuisineType;
-    if (openingHours) updates.openingHours = openingHours;
+    if (cuisineType) {
+      updates.cuisineType = Array.isArray(cuisineType)
+        ? cuisineType
+        : cuisineType.split(",").map((cuisine) => cuisine.trim()).filter(Boolean);
+    }
+    if (openingHours) {
+      updates.openingHours = typeof openingHours === "string"
+        ? JSON.parse(openingHours)
+        : openingHours;
+    }
     if (isActive !== undefined) updates.isActive = isActive;
 
     if (req.file) {
-      const uploadResult = await cloudinary.uploader.upload(req.file.path);
-      updates.image = uploadResult.url;
+      updates.image = req.file.path;
     }
 
     const updatedRestaurant = await Restaurant.findByIdAndUpdate(

@@ -1,8 +1,13 @@
 
 import { createSlice } from "@reduxjs/toolkit";
 
-const initialState = {
+const loggedOutState = {
   isUserAuth: false,
+  userData: {},
+};
+
+const initialState = {
+  isUserAuth: Boolean(localStorage.getItem("userToken")),
   userData: {},
 };
 
@@ -14,7 +19,7 @@ const userSlice = createSlice({
    saveUser: (state, action) => {
   return { isUserAuth: true, userData: action.payload.data }; // Store data directly
 },
-    clearUser: () => initialState,
+    clearUser: () => loggedOutState,
   },
 });
 

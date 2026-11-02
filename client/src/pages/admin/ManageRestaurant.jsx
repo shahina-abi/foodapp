@@ -5,6 +5,8 @@ import { toast } from "react-toastify";
 import Sidebar from "../../components/admin/SideBar";
 const ManageRestaurant = () => {
   const [restaurant, setRestaurant] = useState(null);
+  const [restaurants, setRestaurants] = useState([]);
+  const [restaurantId, setRestaurantId] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [formData, setFormData] = useState({
@@ -18,46 +20,77 @@ const ManageRestaurant = () => {
     image: null,
   });
 
-  // ✅ Fetch Restaurant Data
   useEffect(() => {
-    const fetchRestaurant = async () => {
+    const fetchRestaurants = async () => {
       try {
-        const token = localStorage.getItem("token");
-        const restaurantId = localStorage.getItem("restaurantId"); // Get restaurantId from localStorage
+        const token = localStorage.getItem("adminToken");
+        const { data } = await axiosInstance.get("/restaurants/mine", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const ownedRestaurants = data.data || [];
+        const savedRestaurantId = localStorage.getItem("restaurantId");
+        const selectedRestaurant = ownedRestaurants.some(
+          (item) => item._id === savedRestaurantId,
+        )
+          ? savedRestaurantId
+          : ownedRestaurants[0]?._id || "";
 
-        if (!restaurantId) {
-          throw new Error("Restaurant ID not found.");
+        setRestaurants(ownedRestaurants);
+        setRestaurantId(selectedRestaurant);
+        if (selectedRestaurant) {
+          localStorage.setItem("restaurantId", selectedRestaurant);
+        } else {
+          setError("No restaurants are linked to this admin account.");
+          setLoading(false);
         }
+      } catch (err) {
+        setError(err.response?.data?.message || "Failed to load restaurants.");
+        setLoading(false);
+      }
+    };
 
+    fetchRestaurants();
+  }, []);
+
+  useEffect(() => {
+    if (!restaurantId) return;
+
+    const fetchRestaurant = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const token = localStorage.getItem("adminToken");
         const { data } = await axiosInstance.get(
           `/restaurants/${restaurantId}`,
           {
             headers: { Authorization: `Bearer ${token}` },
-          }
+          },
         );
 
         if (data.success) {
           setRestaurant(data.data);
           setFormData({
             name: data.data.name,
-            address: data.data.address.street || "",
+            address: data.data.address?.street || "",
             phone: data.data.phone,
             email: data.data.email,
             website: data.data.website || "",
-            cuisineType: data.data.cuisineType.join(", "),
+            cuisineType: (data.data.cuisineType || []).join(", "),
             openingHours: data.data.openingHours || { open: "", close: "" },
-            image: null, // We won't populate this since it's uploaded separately
+            image: null,
           });
         }
       } catch (err) {
-        setError("Failed to fetch restaurant data.");
+        setError(
+          err.response?.data?.message || "Failed to fetch restaurant data.",
+        );
       } finally {
         setLoading(false);
       }
     };
 
     fetchRestaurant();
-  }, []);
+  }, [restaurantId]);
 
   // ✅ Handle Input Changes
   const handleChange = (e) => {
@@ -83,12 +116,7 @@ const ManageRestaurant = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const token = localStorage.getItem("token");
-      const restaurantId = localStorage.getItem("restaurantId"); // Get restaurantId from localStorage
-
-      if (!restaurantId) {
-        throw new Error("Restaurant ID not found.");
-      }
+      const token = localStorage.getItem("adminToken");
 
       const updateData = new FormData();
 
@@ -111,7 +139,7 @@ const ManageRestaurant = () => {
             Authorization: `Bearer ${token}`,
             "Content-Type": "multipart/form-data",
           },
-        }
+        },
       );
 
       toast.success("Restaurant updated successfully!");
@@ -133,6 +161,22 @@ const ManageRestaurant = () => {
           <p className="text-red-500">{error}</p>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
+            <select
+              value={restaurantId}
+              onChange={(event) => {
+                const selectedId = event.target.value;
+                setRestaurantId(selectedId);
+                localStorage.setItem("restaurantId", selectedId);
+              }}
+              className="w-full px-4 py-2 border rounded-lg"
+              required
+            >
+              {restaurants.map((item) => (
+                <option key={item._id} value={item._id}>
+                  {item.name}
+                </option>
+              ))}
+            </select>
             <input
               type="text"
               name="name"

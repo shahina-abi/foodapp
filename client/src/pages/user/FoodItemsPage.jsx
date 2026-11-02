@@ -136,6 +136,7 @@
 // export default FoodItemsPage;
 import CartPopup from "../../components/user/CartPopup";
 import React, { useEffect, useState, useRef } from "react";
+import { useSelector } from "react-redux";
 import { axiosInstance } from "../../config/axiosIntance";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -157,14 +158,22 @@ const VegBadge = ({ isVeg }) => (
 // ── Individual food card
 const FoodCard = ({ foodItem, onAddToCart }) => {
   const [adding, setAdding] = useState(false);
+  const [added, setAdded] = useState(false);
   const rupeePrice = foodItem.price
     ? `₹${(foodItem.price * 83).toFixed(0)}`
     : "Price N/A";
 
   const handleAdd = async () => {
     setAdding(true);
-    await onAddToCart(foodItem._id);
-    setTimeout(() => setAdding(false), 800);
+    try {
+      const succeeded = await onAddToCart(foodItem._id);
+      if (succeeded) {
+        setAdded(true);
+        setTimeout(() => setAdded(false), 800);
+      }
+    } finally {
+      setAdding(false);
+    }
   };
 
   return (
@@ -207,12 +216,14 @@ const FoodCard = ({ foodItem, onAddToCart }) => {
           onClick={handleAdd}
           disabled={adding}
           className={`w-full py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 active:scale-95 flex items-center justify-center gap-2 ${
-            adding
+            added
               ? "bg-green-500 text-white"
-              : "bg-orange-500 hover:bg-orange-600 text-white"
+              : adding
+                ? "bg-orange-400 text-white cursor-wait"
+                : "bg-orange-500 hover:bg-orange-600 text-white"
           }`}
         >
-          {adding ? (
+          {added ? (
             <>
               <svg
                 width="16"
@@ -230,6 +241,8 @@ const FoodCard = ({ foodItem, onAddToCart }) => {
               </svg>
               Added!
             </>
+          ) : adding ? (
+            "Adding..."
           ) : (
             <>
               <svg
@@ -277,6 +290,7 @@ const FoodItemsPage = () => {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const { restaurantId } = useParams();
   const navigate = useNavigate();
+  const isUserAuth = useSelector((state) => state.user.isUserAuth);
   const debounceRef = useRef(null);
   const [popupItem, setPopupItem] = useState(null);
 
@@ -330,12 +344,19 @@ const FoodItemsPage = () => {
   };
 
   const handleAddToCart = async (foodItemId, quantity = 1) => {
+    if (!isUserAuth) {
+      toast.info("Please log in to add items to your cart.");
+      navigate("/login");
+      return false;
+    }
+
     try {
       const response = await axiosInstance.post("/cart/add", {
         foodItemId,
         quantity,
       });
       if (response.data.success) {
+        window.dispatchEvent(new Event("cartChange"));
         // ✅ Show popup with food item details
         const item = foodItems.find((f) => f._id === foodItemId);
         if (item)
@@ -344,11 +365,19 @@ const FoodItemsPage = () => {
             image: item.image,
             price: item.price,
           });
+        return true;
       } else {
         toast.error(response.data.message || "Failed to add item.");
+        return false;
       }
     } catch (error) {
+      if (error.response?.status === 401) {
+        toast.info("Please log in to add items to your cart.");
+        navigate("/login");
+        return false;
+      }
       toast.error(error.response?.data?.message || "Error adding to cart.");
+      return false;
     }
   };
 

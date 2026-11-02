@@ -41,14 +41,14 @@ export const router = createBrowserRouter([
       { path: "restaurants", element: <RestaurantsPage /> },
       { path: "restaurants/:id", element: <RestaurantDetailsPage /> },
       { path: "restaurants/:restaurantId/foods", element: <FoodItemsPage /> },
+      { path: "user/payment/success", element: <PaymentSuccess /> },
+      { path: "user/payment/cancel", element: <PaymentCancel /> },
       {
         path: "user",
         element: <ProtectRoute />,
         children: [
           { path: "profile", element: <UserProfile /> },
           { path: "cart", element: <CartPage /> },
-          { path: "payment/success", element: <PaymentSuccess /> },
-          { path: "payment/cancel", element: <PaymentCancel /> },
           { path: "orders", element: <UserOrders /> },
         ],
       },
@@ -103,19 +103,11 @@ export const router = createBrowserRouter([
       },
       {
         path: "success",
-        element: (
-          <ProtectRoute>
-            <PaymentSuccess />
-          </ProtectRoute>
-        ),
+        element: <PaymentSuccess />,
       },
       {
         path: "cancel",
-        element: (
-          <ProtectRoute>
-            <PaymentCancel />
-          </ProtectRoute>
-        ),
+        element: <PaymentCancel />,
       },
     ],
   },

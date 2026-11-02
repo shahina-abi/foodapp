@@ -2,7 +2,6 @@
 
 import mongoose from "mongoose";
 import FoodItem from '../models/foodModel.js'; 
-import { handleImageUpload } from '../utils/cloudinary.js'; 
 import Restaurant from "../models/restaurantModel.js";
 // Get all food items
 export const getFoodItems = async (req, res) => {
@@ -34,12 +33,15 @@ export const getById = async (req, res) => {
 export const addFoodItem = async (req, res) => {
     try {
         console.log("req.user.id:", req.user.id); 
-        const { name, price, description, availability, image } = req.body;
+    const { name, price, description, availability, image, restaurant: restaurantId } = req.body;
 
-        // Ensure the admin has a restaurant
-        const adminRestaurant = await Restaurant.findOne({ admin: req.user.id });
-        if (!adminRestaurant) {
-            return res.status(403).json({ success: false, message: "Unauthorized: No restaurant found for this admin" });
+    if (!mongoose.Types.ObjectId.isValid(restaurantId)) {
+      return res.status(400).json({ success: false, message: "A valid restaurant is required." });
+    }
+
+    const restaurantRecord = await Restaurant.findOne({ _id: restaurantId, admin: req.user.id });
+    if (!restaurantRecord) {
+      return res.status(403).json({ success: false, message: "You cannot add menu items to this restaurant." });
         }
 
         // Validate required fields
@@ -61,20 +63,16 @@ export const addFoodItem = async (req, res) => {
         // } else if (image && !(image.startsWith("http") || image.startsWith("https"))) {
         //     return res.status(400).json({ success: false, message: "Invalid image URL." });
         // }
-let imageUrl = image;
+        let imageUrl = req.file?.path || image;
 
-if (req.file) {
-  imageUrl = await handleImageUpload(req.file.path);
-} else if (image) {
-  if (image.includes("_next/image")) {
-    try {
-      const urlObj = new URL(image);
-      imageUrl = decodeURIComponent(urlObj.searchParams.get("url"));
-    } catch (err) {
-      console.error("Error parsing food image URL:", err);
+        if (imageUrl?.includes("_next/image")) {
+            try {
+                const urlObj = new URL(imageUrl);
+                imageUrl = decodeURIComponent(urlObj.searchParams.get("url"));
+            } catch (err) {
+                console.error("Error parsing food image URL:", err);
+            }
     }
-  }
-}
 
         // Create and save new food item
         const foodItem = new FoodItem({
@@ -82,7 +80,7 @@ if (req.file) {
             price: parsedPrice,
             description,
             image: imageUrl || "",
-            restaurant: adminRestaurant._id,
+            restaurant: restaurantRecord._id,
             availability: availability === "true",
         });
 

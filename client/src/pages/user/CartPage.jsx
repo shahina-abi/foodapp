@@ -910,7 +910,6 @@
 import React, { useEffect, useState } from "react";
 import { axiosInstance } from "../../config/axiosIntance";
 import { toast, ToastContainer } from "react-toastify";
-import { loadStripe } from "@stripe/stripe-js";
 import { useNavigate } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -1064,6 +1063,7 @@ export const CartPage = () => {
       });
       if (!data.success) return toast.error("Failed to remove item.");
       toast.success("Item removed");
+      window.dispatchEvent(new Event("cartChange"));
       setCartItems((prev) => {
         const updated = prev.filter(
           (item) => item.foodItem?._id !== foodItemId,
@@ -1088,7 +1088,10 @@ export const CartPage = () => {
         foodItemId,
         quantity,
       });
-      if (res.data.success) fetchCartItems();
+      if (res.data.success) {
+        await fetchCartItems();
+        window.dispatchEvent(new Event("cartChange"));
+      }
       else toast.error("Failed to update cart.");
     } catch {
       toast.error("Error updating cart.");
@@ -1125,15 +1128,12 @@ export const CartPage = () => {
     }
     setPaymentLoading(true);
     try {
-      const stripe = await loadStripe(
-        import.meta.env.VITE_STRIPE_Publishable_key,
-      );
       const res = await axiosInstance.post("/payment/create-checkout-session", {
         cartItems,
         discount,
       });
-      if (res.data.success) {
-        await stripe.redirectToCheckout({ sessionId: res.data.sessionId });
+      if (res.data.success && res.data.url) {
+        window.location.assign(res.data.url);
       } else {
         toast.error(res.data.message || "Failed to start checkout.");
       }

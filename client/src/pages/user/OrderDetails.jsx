@@ -241,8 +241,8 @@ const OrderCard = ({ order, onCancel }) => {
     minute: "2-digit",
   });
 
-  const totalINR = (
-    parseFloat(order.finalPrice || order.totalPrice || 0) * 83
+  const totalINR = parseFloat(
+    order.finalPrice || order.totalPrice || 0,
   ).toFixed(0);
 
   return (
@@ -267,7 +267,7 @@ const OrderCard = ({ order, onCancel }) => {
           <p className="text-lg font-extrabold text-gray-900">₹{totalINR}</p>
           {order.discount > 0 && (
             <p className="text-xs text-green-600">
-              -₹{(order.discount * 83).toFixed(0)} off
+              -₹{Number(order.discount).toFixed(0)} off
             </p>
           )}
           <p className="text-xs text-gray-400">
@@ -385,14 +385,14 @@ const OrderCard = ({ order, onCancel }) => {
             <div className="flex justify-between text-xs text-gray-500">
               <span>Subtotal</span>
               <span>
-                ₹{(parseFloat(order.totalPrice || 0) * 83).toFixed(0)}
+                ₹{Number(order.totalPrice || 0).toFixed(0)}
               </span>
             </div>
             {order.discount > 0 && (
               <div className="flex justify-between text-xs text-green-600">
                 <span>Discount</span>
                 <span>
-                  −₹{(parseFloat(order.discount || 0) * 83).toFixed(0)}
+                  −₹{Number(order.discount || 0).toFixed(0)}
                 </span>
               </div>
             )}
@@ -485,9 +485,9 @@ const UserOrders = () => {
     );
 
   return (
-    <div className="bg-gray-50 min-h-screen">
+    <div className="bg-gray-50 min-h-screen pt-16">
       {/* Header */}
-      <div className="bg-white border-b border-gray-100 shadow-sm sticky top-16 z-10">
+      <div className="bg-white border-b border-gray-100 shadow-sm">
         <div className="max-w-3xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between mb-3">
             <h1 className="text-xl font-extrabold text-gray-900">

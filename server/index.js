@@ -12,9 +12,6 @@ dotenv.config();
 // Initialize Express app
 const app = express();
 
-// Connect to MongoDB
-connectDB();
-
 // Middleware
 app.use(express.json());
 
@@ -23,13 +20,22 @@ app.use(cookieParser());
 
 app.use(cors({
   origin: [
-       "https://food-ordering-olive-five.vercel.app","http://localhost:5174",
-     "https://foodapp-client-lwl6.onrender.com",
+      "https://food-ordering-olive-five.vercel.app","http://localhost:5173","http://localhost:5174",
+     "https://foodapp-client-lwl6.onrender.com","https://foodapp-vywk.onrender.com"
     
   ],
   credentials: true,  // ✅ Required for cookies
   methods: ["GET", "POST", "PUT", "DELETE"],
 }));
+
+app.use(async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (error) {
+    next(error);
+  }
+});
 
 
 
@@ -61,10 +67,13 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Start the server
-const PORT = process.env.PORT || 3002;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+if (!process.env.VERCEL) {
+  const PORT = process.env.PORT || 3002;
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+}
+
+export default app;
 
 

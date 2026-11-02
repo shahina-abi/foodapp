@@ -2,14 +2,31 @@
 
 import stripe from "../config/stripeconfig.js";
 import Order from "../models/orderModel.js";
+import Cart from "../models/cartModel.js";
 
-
-const client_domain = process.env.CLIENT_DOMAIN;
+const localClientDomains = new Set([
+  "http://localhost:5173",
+  "http://localhost:5174",
+]);
 
 // ✅ Updated: Create Stripe Checkout Session
 export const createCheckout = async (req, res) => {
   try {
     const { cartItems, discount = 0 } = req.body;
+    const requestOrigin = req.get("origin");
+    const clientDomain = process.env.CLIENT_DOMAIN ||
+      (process.env.VERCEL
+        ? null
+        : localClientDomains.has(requestOrigin)
+          ? requestOrigin
+          : "http://localhost:5173");
+
+    if (!clientDomain) {
+      return res.status(500).json({
+        success: false,
+        message: "CLIENT_DOMAIN must be configured for checkout redirects.",
+      });
+    }
 
     if (!cartItems || !Array.isArray(cartItems) || cartItems.length === 0) {
       return res.status(400).json({ success: false, message: "Cart items are required." });
@@ -37,26 +54,29 @@ const totalAmountInINR = cartItems.reduce(
     // ✅ Adjust item prices to include the discount proportionally
     const discountFactor = finalAmountInINR / totalAmountInINR; // Calculate proportional discount factor
 
-    const lineItems = cartItems.map((item) => ({
-      price_data: {
-        currency: "inr",
-        product_data: {
-          name: item.foodItem.name,
-          images: item.foodItem.image ? [item.foodItem.image] : [],
+    const lineItems = cartItems.map((item) => {
+      const productData = { name: item.foodItem.name };
+      if (/^https?:\/\//i.test(item.foodItem.image || "")) {
+        productData.images = [item.foodItem.image];
+      }
+
+      return {
+        price_data: {
+          currency: "inr",
+          product_data: productData,
+          unit_amount: Math.round(item.foodItem.price * 83 * discountFactor * 100),
         },
-        // REPLACE WITH:
-unit_amount: Math.round(item.foodItem.price * 83 * discountFactor * 100), // Adjust price per item
-      },
-      quantity: item.quantity,
-    }));
+        quantity: item.quantity,
+      };
+    });
 
     // ✅ Create Stripe checkout session with the correct final amount
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
       line_items: lineItems,
       mode: "payment",
-      success_url: `${client_domain}/user/payment/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${client_domain}/user/payment/cancel`,
+      success_url: `${clientDomain}/payment/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${clientDomain}/payment/cancel`,
     });
 
     console.log("Stripe Session Created:", session.id);
@@ -78,7 +98,7 @@ unit_amount: Math.round(item.foodItem.price * 83 * discountFactor * 100), // Adj
 
     await order.save();
 
-    res.status(200).json({ success: true, sessionId: session.id });
+    res.status(200).json({ success: true, sessionId: session.id, url: session.url });
   } catch (error) {
     console.error("Error creating checkout session:", error);
     res.status(400).json({
@@ -99,16 +119,30 @@ export const sectionStatus = async (req, res, next) => {
 
     const session = await stripe.checkout.sessions.retrieve(sessionId);
 
-    // Update order status to "Completed"
-    const order = await Order.findOneAndUpdate(
-      { sessionId },
-      { status: "Completed" },
-      { new: true }
-    ).populate("items.foodItem"); // Populate foodItem details for frontend
+    const order = await Order.findOne({ sessionId });
 
     if (!order) {
       return res.status(404).json({ success: false, message: "Order not found" });
     }
+
+    if (session.payment_status !== "paid") {
+      return res.status(409).json({
+        success: false,
+        message: "Payment has not been completed.",
+      });
+    }
+
+    order.status = "Completed";
+    await order.save();
+
+    const cart = await Cart.findOne({ userId: order.user });
+    if (cart) {
+      cart.items = [];
+      cart.totalPrice = 0;
+      await cart.save();
+    }
+
+    await order.populate("items.foodItem");
 
     res.status(200).json({
       success: true,

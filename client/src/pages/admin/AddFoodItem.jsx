@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { axiosInstance } from "../../config/axiosIntance";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
@@ -10,14 +10,49 @@ const AddFoodItem = () => {
     description: "",
     image: null,
   });
+  const [restaurants, setRestaurants] = useState([]);
+  const [restaurantId, setRestaurantId] = useState("");
+  const [loadingRestaurants, setLoadingRestaurants] = useState(true);
+  const [restaurantError, setRestaurantError] = useState("");
 
   const navigate = useNavigate();
-  const restaurantId = localStorage.getItem("restaurantId"); // ✅ Get Admin’s Restaurant ID
 
-  if (!restaurantId) {
-    toast.error("No restaurant linked to your account!");
-    return <p className="text-center text-red-500">Unauthorized Access</p>;
-  }
+  useEffect(() => {
+    const fetchRestaurants = async () => {
+      try {
+        const token = localStorage.getItem("adminToken");
+        const { data } = await axiosInstance.get("/restaurants/mine", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const ownedRestaurants = data.data || [];
+        const savedRestaurantId = localStorage.getItem("restaurantId");
+        const selectedRestaurant = ownedRestaurants.some(
+          (restaurant) => restaurant._id === savedRestaurantId,
+        )
+          ? savedRestaurantId
+          : ownedRestaurants[0]?._id || "";
+
+        setRestaurants(ownedRestaurants);
+        setRestaurantId(selectedRestaurant);
+        if (selectedRestaurant) {
+          localStorage.setItem("restaurantId", selectedRestaurant);
+        }
+        if (!selectedRestaurant) {
+          setRestaurantError(
+            "No restaurants are linked to this admin account.",
+          );
+        }
+      } catch (error) {
+        setRestaurantError(
+          error.response?.data?.message || "Failed to load your restaurants.",
+        );
+      } finally {
+        setLoadingRestaurants(false);
+      }
+    };
+
+    fetchRestaurants();
+  }, []);
 
   // ✅ Handle Input Change
   const handleChange = (e) => {
@@ -34,7 +69,7 @@ const AddFoodItem = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem("adminToken");
       const formData = new FormData();
       formData.append("name", foodData.name);
       formData.append("price", foodData.price);
@@ -58,10 +93,33 @@ const AddFoodItem = () => {
     }
   };
 
+  if (loadingRestaurants) {
+    return <p className="text-center">Loading restaurants...</p>;
+  }
+
+  if (restaurantError) {
+    return <p className="text-center text-red-500">{restaurantError}</p>;
+  }
+
   return (
     <div className="max-w-lg mx-auto p-6 bg-white rounded-lg shadow">
       <h1 className="text-2xl font-bold mb-4">Add Food Item</h1>
       <form onSubmit={handleSubmit} className="space-y-4">
+        <select
+          value={restaurantId}
+          onChange={(event) => {
+            setRestaurantId(event.target.value);
+            localStorage.setItem("restaurantId", event.target.value);
+          }}
+          className="w-full px-4 py-2 border rounded-lg"
+          required
+        >
+          {restaurants.map((restaurant) => (
+            <option key={restaurant._id} value={restaurant._id}>
+              {restaurant.name}
+            </option>
+          ))}
+        </select>
         <input
           type="text"
           name="name"

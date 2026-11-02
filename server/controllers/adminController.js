@@ -167,12 +167,22 @@ export const adminLogout = (req, res) => {
     }
 };
 
-export const checkAdmin = (req, res) => {
+export const checkAdmin = async (req, res) => {
     try {
         if (!req.user || req.user.role !== 'admin') {
             return res.status(401).json({ success: false, message: "Admin not authorized" });
         }
-        return res.json({ success: true, message: "Admin authorized" });
+
+    const admin = await Admin.findById(req.user.id).select("_id name email role");
+    if (!admin) {
+      return res.status(404).json({ success: false, message: "Admin not found" });
+    }
+
+    return res.json({
+      success: true,
+      message: "Admin authorized",
+      data: admin,
+    });
     } catch (error) {
         console.log("Error in checkadmin middleware:", error);
         return res.status(500).json({ success: false, message: error.message || "Internal server error" });

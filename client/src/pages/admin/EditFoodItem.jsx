@@ -19,7 +19,7 @@ const EditFoodItem = () => {
   useEffect(() => {
     const fetchFoodItem = async () => {
       try {
-        const token = localStorage.getItem("token");
+        const token = localStorage.getItem("adminToken");
         const { data } = await axiosInstance.get(`/foods/${id}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -31,7 +31,7 @@ const EditFoodItem = () => {
         });
         setPreviewImage(data.foodItem.image);
       } catch (err) {
-        toast.error("Failed to load food item.");
+        toast.error(err.response?.data?.message || "Failed to load food item.");
       }
     };
     fetchFoodItem();
@@ -46,6 +46,7 @@ const EditFoodItem = () => {
   // ✅ Handle Image Upload
   const handleFileChange = (e) => {
     const file = e.target.files[0];
+    if (!file) return;
     setFoodData({ ...foodData, image: file });
     setPreviewImage(URL.createObjectURL(file)); // Show preview
   };
@@ -54,7 +55,7 @@ const EditFoodItem = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem("adminToken");
       const formData = new FormData();
       formData.append("name", foodData.name);
       formData.append("price", foodData.price);
@@ -73,14 +74,12 @@ const EditFoodItem = () => {
       toast.success("Food item updated successfully!");
       navigate("/admin/manage-menu");
     } catch (err) {
-      toast.error("Failed to update food item.");
+      toast.error(err.response?.data?.message || "Failed to update food item.");
     }
   };
 
   return (
     <div className="flex">
-      {/* Sidebar */}
-      <Sidebar />
       <div className="max-w-lg mx-auto p-6 bg-white rounded-lg shadow">
         <h1 className="text-2xl font-bold mb-4">Edit Food Item</h1>
         <form onSubmit={handleSubmit} className="space-y-4">

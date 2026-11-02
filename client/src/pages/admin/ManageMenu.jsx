@@ -6,20 +6,55 @@ import { useNavigate } from "react-router-dom";
 import Sidebar from "../../components/admin/SideBar";
 const ManageMenu = () => {
   const [foodItems, setFoodItems] = useState([]);
+  const [restaurants, setRestaurants] = useState([]);
+  const [restaurantId, setRestaurantId] = useState("");
+  const [loadingRestaurants, setLoadingRestaurants] = useState(true);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
-  const restaurantId = localStorage.getItem("restaurantId"); // Get the admin's restaurant ID
 
-  // ✅ Fetch Food Items for Admin's Restaurant
+  useEffect(() => {
+    const fetchRestaurants = async () => {
+      try {
+        const token = localStorage.getItem("adminToken");
+        const response = await axiosInstance.get("/restaurants/mine", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const ownedRestaurants = response.data.data || [];
+        const savedRestaurantId = localStorage.getItem("restaurantId");
+        const selectedRestaurant = ownedRestaurants.some(
+          (restaurant) => restaurant._id === savedRestaurantId,
+        )
+          ? savedRestaurantId
+          : ownedRestaurants[0]?._id || "";
+
+        setRestaurants(ownedRestaurants);
+        setRestaurantId(selectedRestaurant);
+        if (selectedRestaurant) {
+          localStorage.setItem("restaurantId", selectedRestaurant);
+        } else {
+          setError("No restaurants are linked to this admin account.");
+        }
+      } catch (err) {
+        setError(err.response?.data?.message || "Failed to load restaurants.");
+      } finally {
+        setLoadingRestaurants(false);
+      }
+    };
+
+    fetchRestaurants();
+  }, []);
+
   useEffect(() => {
     const fetchFoodItems = async () => {
-      try {
-        if (!restaurantId) {
-          throw new Error("No restaurant ID found.");
-        }
+      if (!restaurantId) {
+        setLoading(false);
+        return;
+      }
 
-        const token = localStorage.getItem("token");
+      try {
+        setLoading(true);
+        const token = localStorage.getItem("adminToken");
         const response = await axiosInstance.get(
           `/foods/restaurant/${restaurantId}`,
           { headers: { Authorization: `Bearer ${token}` } },
@@ -44,7 +79,7 @@ const ManageMenu = () => {
   // ✅ Delete Food Item
   const deleteFoodItem = async (id) => {
     try {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem("adminToken");
       await axiosInstance.delete(`/foods/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -56,7 +91,7 @@ const ManageMenu = () => {
     }
   };
 
-  if (loading) {
+  if (loadingRestaurants || loading) {
     return <p className="text-center">Loading menu items...</p>;
   }
 
@@ -70,6 +105,25 @@ const ManageMenu = () => {
       <Sidebar />
       <div className="p-6">
         <h1 className="text-3xl font-bold mb-4">Manage Menu</h1>
+        <label className="block mb-4 max-w-md">
+          <span className="block text-sm font-medium mb-1">Restaurant</span>
+          <select
+            value={restaurantId}
+            onChange={(event) => {
+              const selectedId = event.target.value;
+              setRestaurantId(selectedId);
+              localStorage.setItem("restaurantId", selectedId);
+              setError(null);
+            }}
+            className="w-full px-4 py-2 border rounded-lg"
+          >
+            {restaurants.map((restaurant) => (
+              <option key={restaurant._id} value={restaurant._id}>
+                {restaurant.name}
+              </option>
+            ))}
+          </select>
+        </label>
         <button
           onClick={() => navigate("/admin/add-food")}
           className="bg-blue-600 text-white px-4 py-2 rounded-lg mb-4"

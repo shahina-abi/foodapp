@@ -11,7 +11,9 @@ const adminSlice = createSlice({
     saveAdmin: (state, action) => {
       state.isAdminAuth = true;
       state.adminData = action.payload;
-      localStorage.setItem("adminToken", action.payload.token); // ✅ Store token persistently
+      if (action.payload?.token) {
+        localStorage.setItem("adminToken", action.payload.token);
+      }
     },
     clearAdmin: (state) => {
       state.isAdminAuth = false;

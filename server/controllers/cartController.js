@@ -115,12 +115,23 @@ export const removeCartItem = async (req, res) => {
   try {
     const { foodItemId } = req.body;
 
-    const cart = await Cart.findOne({ user: req.user._id });
+    if (!foodItemId) {
+      return res.status(400).json({ success: false, message: "Food item ID is required." });
+    }
+
+    const cart = await Cart.findOne({ userId: req.user.id });
     if (!cart) {
       return res.status(404).json({ success: false, message: 'Cart not found' });
     }
 
-    cart.items = cart.items.filter(item => item.foodItem.toString() !== foodItemId);
+    const itemIndex = cart.items.findIndex(
+      (item) => item.foodItem.toString() === String(foodItemId),
+    );
+    if (itemIndex === -1) {
+      return res.status(404).json({ success: false, message: "Item not found in cart." });
+    }
+
+    cart.items.splice(itemIndex, 1);
     await cart.calculateTotalPrice();
 
     res.json({ success: true, message: 'Item removed from cart', cart });

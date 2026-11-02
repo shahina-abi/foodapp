@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import { axiosInstance } from "../../config/axiosIntance";
 import { toast } from "react-toastify";
 import CreateCouponForm from "../../components/admin/CouponForm";
-import Sidebar from "../../components/admin/SideBar";
 
 const ManageCoupons = () => {
   const [coupons, setCoupons] = useState([]);
@@ -39,10 +38,7 @@ const ManageCoupons = () => {
   };
 
   return (
-    <div className="flex">
-      {/* Sidebar */}
-      <Sidebar />
-      <div>
+    <div className="w-full max-w-5xl">
         <h1 className="text-3xl font-bold mb-6">Manage Coupons</h1>
 
         {/* Create Coupon Form */}
@@ -81,7 +77,6 @@ const ManageCoupons = () => {
             </tbody>
           </table>
         </div>
-      </div>
     </div>
   );
 };

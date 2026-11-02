@@ -115,7 +115,7 @@ export default function UserHeader() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
-  const { userData } = useSelector((state) => state.user);
+  const { isUserAuth, userData } = useSelector((state) => state.user);
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -153,27 +153,36 @@ export default function UserHeader() {
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
-  // ── Cart count from localStorage
   useEffect(() => {
-    const syncCart = () => {
-      try {
-        const cart = localStorage.getItem("cart");
-        const items = cart ? JSON.parse(cart) : [];
-        setCartCount(
-          items.reduce((sum, item) => sum + (item.quantity || 1), 0),
-        );
-      } catch {
+    let active = true;
+    const syncCart = async () => {
+      if (!isUserAuth) {
         setCartCount(0);
+        return;
+      }
+
+      try {
+        const { data } = await axiosInstance.get("/cart/getcart");
+        const items = data.success ? data.cart.items || [] : [];
+        if (active) {
+          setCartCount(
+            items.reduce((sum, item) => sum + (item.quantity || 0), 0),
+          );
+        }
+      } catch {
+        if (active) setCartCount(0);
       }
     };
+
     syncCart();
     window.addEventListener("storage", syncCart);
     window.addEventListener("cartChange", syncCart);
     return () => {
+      active = false;
       window.removeEventListener("storage", syncCart);
       window.removeEventListener("cartChange", syncCart);
     };
-  }, []);
+  }, [isUserAuth]);
 
   const getInitials = (name = "") =>
     name

@@ -116,12 +116,6 @@ const PaymentSuccess = () => {
   const queryParams = new URLSearchParams(location.search);
   const sessionId = queryParams.get("session_id");
 
-  const clearCart = async () => {
-    try {
-      await axiosInstance.delete("/cart/clear");
-    } catch {}
-  };
-
   const fetchSessionStatus = async (sessionId) => {
     try {
       const response = await axiosInstance.get(
@@ -129,7 +123,6 @@ const PaymentSuccess = () => {
       );
       if (response.data.success) {
         setOrderDetails(response.data.order);
-        clearCart();
       } else {
         setError(response.data.message || "Failed to confirm payment.");
       }
@@ -181,9 +174,9 @@ const PaymentSuccess = () => {
       </div>
     );
 
-  const subtotal = parseFloat(orderDetails?.totalPrice || 0) * 83;
-  const disc = parseFloat(orderDetails?.discount || 0) * 83;
-  const final = parseFloat(orderDetails?.finalPrice || 0) * 83;
+  const subtotal = parseFloat(orderDetails?.totalPrice || 0);
+  const disc = parseFloat(orderDetails?.discount || 0);
+  const final = parseFloat(orderDetails?.finalPrice || 0);
 
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4">

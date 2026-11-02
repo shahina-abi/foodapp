@@ -43,10 +43,14 @@ export const axiosInstance = axios.create({
 // Automatically attaches token from localStorage if cookie auth fails
 axiosInstance.interceptors.request.use(
   (config) => {
-    // Try to get token from localStorage as fallback
-    const userToken = localStorage.getItem("userToken");
-    if (userToken) {
-      config.headers.Authorization = `Bearer ${userToken}`;
+    if (!config.headers?.Authorization) {
+      const isAdminRequest = config.url?.startsWith("/admin/");
+      const token = localStorage.getItem(
+        isAdminRequest ? "adminToken" : "userToken",
+      );
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
     }
     return config;
   },

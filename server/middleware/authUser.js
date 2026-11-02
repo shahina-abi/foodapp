@@ -26,15 +26,10 @@ import jwt from "jsonwebtoken";
 
 export const authUser = (req, res, next) => {
     try {
-        // ✅ Check cookie first, then fall back to Authorization header
-        let token = req.cookies?.token;
-
-        if (!token) {
-            const authHeader = req.headers?.authorization;
-            if (authHeader && authHeader.startsWith("Bearer ")) {
-                token = authHeader.split(" ")[1];
-            }
-        }
+        const authHeader = req.headers?.authorization;
+        const token = authHeader?.startsWith("Bearer ")
+            ? authHeader.slice(7)
+            : req.cookies?.token;
 
         if (!token) {
             return res.status(401).json({ message: "token not provided" });
@@ -42,7 +37,7 @@ export const authUser = (req, res, next) => {
 
         const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
 
-        if (!decoded) {
+        if (!decoded || decoded.role !== "user") {
             return res.status(401).json({ message: "user not authorized" });
         }
 
