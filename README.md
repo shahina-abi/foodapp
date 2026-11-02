@@ -15,19 +15,19 @@ FoodBae is a restaurant ordering application with a customer-facing storefront a
 
 ## Tech Stack
 
-| Area | Technologies |
-| --- | --- |
-| Frontend | React 18, Vite, React Router, Redux Toolkit |
-| UI and styling | Tailwind CSS, DaisyUI, React Icons, Font Awesome, Lucide |
-| Charts and animation | Chart.js, Recharts, Framer Motion, GSAP, Swiper, Lenis |
-| API client and forms | Axios, React Hook Form |
-| Backend | Node.js, Express 4, ES modules |
-| Database | MongoDB with Mongoose |
-| Authentication | JSON Web Tokens, bcrypt, HTTP cookies |
-| Payments | Stripe Checkout and Stripe.js |
-| Image storage | Cloudinary and Multer |
-| Email | Nodemailer with Gmail |
-| Hosting | Vercel (separate client and server projects) |
+| Area                 | Technologies                                             |
+| -------------------- | -------------------------------------------------------- |
+| Frontend             | React 18, Vite, React Router, Redux Toolkit              |
+| UI and styling       | Tailwind CSS, DaisyUI, React Icons, Font Awesome, Lucide |
+| Charts and animation | Chart.js, Recharts, Framer Motion, GSAP, Swiper, Lenis   |
+| API client and forms | Axios, React Hook Form                                   |
+| Backend              | Node.js, Express 4, ES modules                           |
+| Database             | MongoDB with Mongoose                                    |
+| Authentication       | JSON Web Tokens, bcrypt, HTTP cookies                    |
+| Payments             | Stripe Checkout and Stripe.js                            |
+| Image storage        | Cloudinary and Multer                                    |
+| Email                | Nodemailer with Gmail                                    |
+| Hosting              | Vercel (separate client and server projects)             |
 
 ## Repository Layout
 
